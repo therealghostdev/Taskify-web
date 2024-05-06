@@ -8,9 +8,7 @@
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "start": "react-scripts start",
-    "build-react": "react-scripts build",
-    "test-react": "react-scripts test",
+    "test": "vite test",
     "lint-react": "eslint . --fix"
   },
   "dependencies": {
