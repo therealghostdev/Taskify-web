@@ -39,3 +39,6 @@ Whether you're a busy professional, a student with a packed schedule, or someone
 5. If changes are requested, make them and update pull request.
 
 6. Contact maintainer and wait for pr merge.
+
+**Other Repo:**
+- [Taskify Server](https://github.com/DaScOrPiO/Taskify-server)
