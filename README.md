@@ -16,7 +16,7 @@ Taskify is your ultimate productivity companion, designed to streamline your tas
 Whether you're a busy professional, a student with a packed schedule, or someone simply looking to stay organized, Taskify is your go-to solution for efficient task management. Start simplifying your productivity journey today with Taskify!
 
 
-## Dev Enivronment Setup: 
+## Dev Environment Setup: 
 
 1. Clone to you local machine using the command git clone `https://github.com/DaScOrPiO/Taskify-web.git`
 
@@ -28,7 +28,7 @@ Whether you're a busy professional, a student with a packed schedule, or someone
 
 ## contribution Guide:
 
-1. After sucessfull setup of project on local machine, request an issue to be assigned to you. If you haven't got one (contact `@DaScOrPiO`).
+1. After successfull setup of project on local machine, request an issue to be assigned to you. If you haven't got one (contact `@DaScOrPiO`).
 
 2. Create a new branch and make your changes.
 
