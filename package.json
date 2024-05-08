@@ -12,8 +12,10 @@
     "lint-react": "eslint . --fix"
   },
   "dependencies": {
+    "framer-motion": "^11.1.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.23.0",
     "sass": "^1.76.0",
     "vite-tsconfig-paths": "^4.3.2"
   },

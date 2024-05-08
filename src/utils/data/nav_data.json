@@ -1,0 +1,12 @@
+{
+  "signup": {
+    "Link": "/auth",
+    "name": "signup",
+    "icon": ""
+  },
+  "home": {
+    "Link": "/",
+    "name": "home",
+    "icon": ""
+  }
+}
