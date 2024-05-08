@@ -2,8 +2,12 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { Todo, ThemeContextType } from "../types/todo";
 
 // Create a context for managing the todo list
-const TodoContext = createContext<Todo[]>([]);
-const ThemeContext = createContext<ThemeContextType>({ darkMode: false, toggleDarkMode: () => {}, });
+const TodoContext = createContext<{ todos: Todo[]; updateTodos: (newTodos: Todo[]) => void }>({
+  todos: [],
+  updateTodos: () => {},
+});
+
+const ThemeContext = createContext<ThemeContextType>({ darkMode: false, toggleDarkMode: () => {} });
 const AuthContext = createContext<boolean>(false);
 
 // Custom hook to access the todo list context
@@ -19,6 +23,11 @@ export const useAuthContext = () => useContext(AuthContext);
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   // State for managing todo list
   const [todos, setTodos] = useState<Todo[]>([]);
+
+  // Function to update the todo list
+  const updateTodos = (newTodos: Todo[]) => {
+    setTodos(newTodos);
+  };
 
   // State for managing app theme
   const [darkMode, setDarkMode] = useState<boolean>(() => {
@@ -44,7 +53,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <TodoContext.Provider value={todos}>
+    <TodoContext.Provider value={{ todos, updateTodos }}>
       <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
         <AuthContext.Provider value={authenticated}>
           {children}
