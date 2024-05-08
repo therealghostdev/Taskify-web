@@ -28,7 +28,7 @@ Whether you're a busy professional, a student with a packed schedule, or someone
 
 ## contribution Guide:
 
-1. After successfull setup of project on local machine, request an issue to be assigned to you. If you haven't got one (contact `@DaScOrPiO`).
+1. After successful setup of project on local machine, request an issue to be assigned to you. If you haven't got one (contact `@DaScOrPiO`).
 
 2. Create a new branch and make your changes.
 
