@@ -1,0 +1,16 @@
+// root.scss
+$dark_bg: #000000;
+$light_text: #ffffff;
+$dark_text: #000000;
+$light_bg: #ffffff;
+$color_general1: #0069a3;
+$color_general2: #80ffa3;
+
+:root {
+  --light-theme-bg-color: #{$light_bg};
+  --light-theme-text-color: #{$dark_text};
+  --dark-theme-bg-color: #{$dark_bg};
+  --dark-theme-text-color: #{$light_text};
+  --button-general-bg-color: #{$color_general1};
+  --button-general-text-color: #{$light_text};
+}
