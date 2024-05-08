@@ -26,3 +26,16 @@ Whether you're a busy professional, a student with a packed schedule, or someone
 
 4. Run `yarn dev` or `npm run dev` to start the project on your local machine.
 
+## contribution Guide:
+
+1. After sucessfull setup of project on local machine, request an issue to be assigned to you. If you haven't got one (contact `@DaScOrPiO`).
+
+2. Create a new branch and make your changes.
+
+3. Once satisfied with your changes, make a pull request to staging branch.
+
+4. Request a review from project maintainer `@DaScOrPiO` and wait for a response.
+
+5. If changes are requested, make them and update pull request.
+
+6. Contact maintainer and wait for pr merge.
