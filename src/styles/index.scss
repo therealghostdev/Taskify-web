@@ -1,3 +1,23 @@
+@import "root.scss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*{
+    font-size: 20px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.dark-theme {
+  background-color: var(--dark-theme-bg-color);
+  color: var(--dark-theme-text-color);
+}
+
+.light-theme{
+    background-color: var(--light-theme-bg-color);
+    color: var(--light-theme-text-color);
+}
