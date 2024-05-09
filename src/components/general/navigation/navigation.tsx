@@ -8,13 +8,13 @@ import focusIcon from "../../../assets/clock.svg";
 import userIcon from "../../../assets/user.svg";
 import { Link } from "react-router-dom";
 import { useThemeContext } from "../../../utils/app_context/general";
-import { motion, useMotionValue } from "framer-motion";
+import { animate, motion, useMotionValue } from "framer-motion";
 
 export default function Nav() {
   const { darkMode } = useThemeContext();
   const navBarY = useMotionValue(80); // nav partially hidden by default
   const navRef = useRef<HTMLDivElement>(null);
-  const [animate, setAnimate] = React.useState({ y: 80 });
+  const [animate, setAnimate] = useState({ y: 90 });
 
   useEffect(() => {
     const handleMouseEnter = () => {
@@ -22,31 +22,37 @@ export default function Nav() {
     };
 
     const handleMouseLeave = () => {
-      setAnimate({ y: 80 }); // Set nav as not visible
+      setAnimate({ y: 90 }); // Set nav as partially hidden
+    };
+
+    const handleTouchStart = () => {
+      setAnimate({ y: 0 }); // Set nav as visible on touch start
     };
 
     if (navRef.current) {
-      navRef.current?.addEventListener("mouseenter", handleMouseEnter);
-      navRef.current?.addEventListener("mouseleave", handleMouseLeave);
+      navRef.current.addEventListener("mouseenter", handleMouseEnter);
+      navRef.current.addEventListener("mouseleave", handleMouseLeave);
+      navRef.current.addEventListener("touchstart", handleTouchStart);
     }
 
     return () => {
       if (navRef.current) {
-        navRef.current?.removeEventListener("mouseenter", handleMouseEnter);
-        navRef.current?.removeEventListener("mouseleave", handleMouseLeave);
+        navRef.current.removeEventListener("mouseenter", handleMouseEnter);
+        navRef.current.removeEventListener("mouseleave", handleMouseLeave);
+        navRef.current.removeEventListener("touchstart", handleTouchStart);
       }
     };
-  }, []);
+  }, [navBarY]);
 
   return (
     <motion.nav
       key="nav"
       ref={navRef}
-      className={`fixed bottom-0 w-screen h-[100px] text-white ${
+      className={`fixed bottom-0 w-screen h-[100px] text-white cursor-pointer ${
         darkMode ? "bg-[#363636]" : "bg-[#bdbdbd]"
       }`}
       style={{ y: navBarY }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
+      transition={{ duration: 0.8, type: "tween" }}
       animate={animate}
     >
       <div className="w-full h-full flex justify-between items-center px-4">
@@ -66,7 +72,6 @@ function NavItemComponent({
   darkMode: boolean;
 }) {
   let icon;
-
   switch (item.icon) {
     case "/home-2.svg":
       icon = homeIcon;
