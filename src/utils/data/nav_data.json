@@ -1,12 +1,27 @@
-{
-  "signup": {
-    "Link": "/auth",
-    "name": "signup",
-    "icon": ""
-  },
-  "home": {
+[
+  {
     "Link": "/",
-    "name": "home",
-    "icon": ""
+    "name": "Index",
+    "icon": "/home-2.svg"
+  },
+  {
+    "Link": "/calendar",
+    "name": "Calendar",
+    "icon": "/calendar.svg"
+  },
+  {
+    "Link": "#",
+    "name": "Add",
+    "icon": "/add.svg"
+  },
+  {
+    "Link": "/focus",
+    "name": "Focus",
+    "icon": "/clock.svg"
+  },
+  {
+    "Link": "/profile",
+    "name": "Profile",
+    "icon": "/user.svg"
   }
-}
+]
