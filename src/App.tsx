@@ -18,9 +18,9 @@ function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
   const authenticated = useAuthContext();
 
-  useEffect(() => {
-    localStorage.setItem("token", "hello");
-  }, [authenticated]);
+  // useEffect(() => {
+  //   localStorage.setItem("token", "hello");
+  // }, [authenticated]);
 
   return (
     <main
