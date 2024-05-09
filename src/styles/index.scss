@@ -3,8 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
-    font-size: 20px;
+* {
+  font-size: 20px;
 }
 
 body {
@@ -17,7 +17,11 @@ body {
   color: var(--dark-theme-text-color);
 }
 
-.light-theme{
-    background-color: var(--light-theme-bg-color);
-    color: var(--light-theme-text-color);
+.light-theme {
+  background-color: var(--light-theme-bg-color);
+  color: var(--light-theme-text-color);
+}
+
+.filter-invert {
+  filter: invert(100%);
 }

@@ -18,3 +18,9 @@ export interface ProtectedRouteProps {
   redirectTo: string;
   children: ReactNode;
 }
+
+export interface NavItem {
+  Link: string;
+  name: string;
+  icon: string;
+}
