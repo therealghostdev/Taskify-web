@@ -5,7 +5,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import Homepage from "./pages/homepage";
-import Nav from "./components/general/navigation";
+import Nav from "./components/general/navigation/navigation";
 import Auth from "./pages/auth";
 import Calendar from "./pages/calendar";
 import Focus from "./pages/focus_page";
@@ -18,9 +18,9 @@ function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
   const authenticated = useAuthContext();
 
-  // useEffect(() => {
-  //   localStorage.setItem("token", "hello");
-  // }, [authenticated]);
+  useEffect(() => {
+    localStorage.setItem("token", "hello");
+  }, [authenticated]);
 
   return (
     <main
@@ -56,7 +56,7 @@ function App() {
             }
           />
           <Route
-            path="/page3"
+            path="/profile"
             element={
               <ProtectedRoute authenticated={authenticated} redirectTo="/auth">
                 <Profile />
