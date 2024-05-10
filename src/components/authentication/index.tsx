@@ -58,7 +58,7 @@ export default function Index() {
             </button>
           </div>
           <div className='py-1  '>
-           <span className='footNote text-slate-400'> Don't have an account?</span> <a className='text-xs' href="">Register</a>
+           <span className='footNote text-slate-400'> Don't have an account?</span> <button className='text-xs'>Register</button>
           </div>
           </div>
         </form>
