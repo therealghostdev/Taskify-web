@@ -1,0 +1,34 @@
+// @import '../../styles/root.scss';
+$general-buttonColor: rgb(100, 10, 184);
+.logo{
+    flex: 1;
+}
+.form{
+    flex: 1;
+}
+
+form{
+    label{
+        div{
+            font-size: 0.8rem;
+        }
+    }
+    
+    .login{
+    // background-color: --button-general-bg-color;
+    background-color:$general-buttonColor ;
+}
+
+input{
+    padding: 5px 10px
+}
+.appleicon{
+    font-size: 1.2rem !important;
+}
+input::placeholder{
+    font-size: 0.75rem;
+}
+}
+.footNote{
+    font-size: 0.7rem;
+}
