@@ -1,5 +1,5 @@
 // @import '../../styles/root.scss';
-$general-buttonColor: rgb(100, 10, 184);
+$general-buttonColor: rgb(62, 10, 184);
 .logo{
     flex: 1;
 }
@@ -31,4 +31,14 @@ input::placeholder{
 }
 .footNote{
     font-size: 0.7rem;
+}
+.googleLogin{
+    button{
+        border-color:$general-buttonColor ;
+    }
+}
+.appleLogin{
+    button{
+        border-color:$general-buttonColor ;
+    }
 }

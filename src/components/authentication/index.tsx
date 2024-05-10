@@ -22,10 +22,10 @@ export default function Index() {
             </button>
           </div>
           <div className='flex items-center py-5 '>
-            <hr className='w-1/2 text-pink-700 '/><span>or</span><hr className='w-1/2' />
+            <hr className='w-1/2'/><span>or</span><hr className='w-1/2' />
           </div>
-          <div className='pb-3 w-full flex justify-center'>
-            <button className='w-full justify-center items-center py-2 flex border border-purple-800' type='button'>
+          <div className='googleLogin pb-3 w-full flex justify-center'>
+            <button className='w-full justify-center items-center py-2 flex border' type='button'>
               <span className='pr-2'>
                 <svg 
                       xmlns="http://www.w3.org/2000/svg"  
@@ -49,8 +49,8 @@ export default function Index() {
               <span className='text-xs'>Login with Google</span>
             </button>
           </div>
-          <div className='w-full flex justify-center'>
-            <button className='w-full  justify-center items-center py-2 flex border border-purple-800' type="button">
+          <div className='appleLogin w-full flex justify-center'>
+            <button className='w-full  justify-center items-center py-2 flex border' type="button">
               <span className='pr-2 flex  '>
                 <AppleIcon className='appleicon'/>
               </span>
