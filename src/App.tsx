@@ -13,7 +13,7 @@ import Profile from "./pages/profile";
 import {
   useThemeContext,
   useAuthContext,
-  usePopupContext,
+  useTrackContext,
 } from "./utils/app_context/general";
 import { useEffect } from "react";
 import { ProtectedRouteProps, Popup } from "./utils/types/todo";
@@ -22,7 +22,7 @@ import AddTask from "./components/general/add-task";
 function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
   const authenticated = useAuthContext();
-  const { newTaskPopup } = usePopupContext();
+  const { trackScreen } = useTrackContext();
 
   useEffect(() => {
     localStorage.setItem("token", "hello");
@@ -37,12 +37,10 @@ function App() {
       <Router>
         {authenticated && <Nav />}
         {authenticated &&
-          (newTaskPopup.category ||
-            newTaskPopup.date ||
-            newTaskPopup.name ||
-            newTaskPopup.title ||
-            newTaskPopup.priority ||
-            newTaskPopup.time) && <AddTask />}
+          trackScreen ===
+            ("name" || "calendar" || "time" || "priority" || "category") && (
+            <AddTask />
+          )}
         <Routes>
           <Route
             path="/"
