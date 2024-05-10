@@ -1,5 +1,5 @@
 import {
-//   usePopupContext,
+  //   usePopupContext,
   useTodoContext,
   useThemeContext,
   useTrackContext,
@@ -8,11 +8,11 @@ import Timer from "../../../assets/timer.svg";
 import tag from "../../../assets/tag.svg";
 import flag from "../../../assets/flag.svg";
 import send from "../../../assets/send.svg";
-import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { formValueTypes } from "../../../utils/types/todo";
 
 export default function AddTaskName() {
-//   const { newTaskPopup, togglePopupState } = usePopupContext();
+  //   const { newTaskPopup, togglePopupState } = usePopupContext();
   const { todos, updateTodos } = useTodoContext();
   const { trackScreen, trackScreenFunc } = useTrackContext();
   const { darkMode } = useThemeContext();
@@ -60,12 +60,19 @@ export default function AddTaskName() {
         task: formValues.taskname,
         task_description: formValues.taskdescription,
       }));
+      // console.log(updatedTodos);
 
       // Set the updated todos back to the context
       updateTodos(updatedTodos);
       trackScreenFunc("calendar");
+      // console.log(todos, "1");
+      
     }
   };
+
+  // useEffect(() => {
+  //   console.log(trackScreen, todos, "at taskname");
+  // }, [trackScreen, todos]);
 
   return (
     <div

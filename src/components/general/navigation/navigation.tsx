@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import navData from "../../../utils/data/nav_data.json";
 import type { NavItem } from "../../../utils/types/todo";
 import homeIcon from "../../../assets/home-2.svg";
@@ -19,10 +19,29 @@ export default function Nav() {
   const { darkMode } = useThemeContext();
   const navBarY = useMotionValue(80); // nav partially hidden by default
   const navRef = useRef<HTMLDivElement>(null);
+  const addButtonRef = useRef<HTMLButtonElement>(null); // Ref for the button
   const [animate, setAnimate] = useState({ y: 90 });
   // const { newTaskPopup, togglePopupState } = usePopupContext();
   const { trackScreen, trackScreenFunc } = useTrackContext();
   const { todos } = useTodoContext();
+
+  const addTask = () => {
+    todos.map((item) => {
+      if (item.task === "") {
+        trackScreenFunc("name");
+      } else if (item.expected_date_of_completion === "") {
+          trackScreenFunc("calendar");
+          console.log(trackScreen, todos);
+      } else if (item.time === "") {
+        trackScreenFunc("time");
+      } else if (item.task_priority === 0) {
+        trackScreenFunc("priority");
+      } else {
+      }
+    });
+
+    // console.log(trackScreen, todos);
+  };
 
   useEffect(() => {
     const handleMouseEnter = () => {
@@ -52,23 +71,21 @@ export default function Nav() {
     };
   }, [navBarY]);
 
-  const addTask = () => {
-    // togglePopupState("name");
-    todos.map((item) => {
-      if (item.task === "") {
-        trackScreenFunc("name");
-      } else if (item.expected_date_of_completion === "") {
-        trackScreenFunc("calendar");
-      } else if (item.time === "") {
-        trackScreenFunc("time");
-      } else if (item.task_priority === 0) {
-        trackScreenFunc("priority");
-      } else {
-      }
-    });
+  useEffect(() => {
+    const handleClick = () => {
+      addTask();
+    };
 
-    console.log(trackScreen);
-  };
+    if (addButtonRef.current) {
+      addButtonRef.current.addEventListener("click", handleClick);
+    }
+
+    return () => {
+      if (addButtonRef.current) {
+        addButtonRef.current.removeEventListener("click", handleClick);
+      }
+    };
+  }, [addTask]);
 
   return (
     <motion.nav
@@ -88,6 +105,7 @@ export default function Nav() {
             item={item}
             darkMode={darkMode}
             addTask={addTask}
+            addButtonRef={addButtonRef} // Pass the ref to NavItemComponent
           />
         ))}
       </div>
@@ -99,10 +117,12 @@ function NavItemComponent({
   item,
   darkMode,
   addTask,
+  addButtonRef, // Receive the ref as a prop
 }: {
   item: NavItem;
   darkMode: boolean;
   addTask: () => void;
+  addButtonRef: React.RefObject<HTMLButtonElement>; // Define the type of the ref
 }) {
   let icon;
   switch (item.icon) {
@@ -129,7 +149,7 @@ function NavItemComponent({
     <>
       {icon && icon === addIcon ? (
         <button
-          onClick={addTask}
+          ref={addButtonRef} // Assign the ref to the button
           className="flex items-center justify-center text-white w-14 h-14 bg-[#8687E7] rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         >
           <img src={icon} alt={item.name} className="w-6 h-6" />

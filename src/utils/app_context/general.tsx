@@ -19,24 +19,6 @@ const ThemeContext = createContext<ThemeContextType>({
 // authentication context
 const AuthContext = createContext<boolean>(false);
 
-// popup context for addtask ui flow
-// const AddTaskPopupContext = createContext<{
-//   newTaskPopup: Popup;
-//   togglePopupState: (popupName: keyof Popup) => void;
-//   setNewTaskPopup: React.Dispatch<React.SetStateAction<Popup>>;
-// }>({
-//   newTaskPopup: {
-//     name: false,
-//     title: false,
-//     date: false,
-//     time: false,
-//     category: false,
-//     priority: false,
-//   },
-//   togglePopupState: () => {},
-//   setNewTaskPopup: () => {},
-// });
-
 const TrackTaskScreenContext = createContext<{
   trackScreen: string;
   trackScreenFunc: (name: string) => void;
@@ -94,16 +76,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return !!localStorage.getItem("token");
   });
 
-  // // State for managing new task ui flow
-  // const [newTaskPopup, setNewTaskPopup] = useState<Popup>({
-  //   name: true,
-  //   title: false,
-  //   date: false,
-  //   time: false,
-  //   category: false,
-  //   priority: false,
-  // });
-
   // state for tracking task screen
   const [trackScreen, setTrackScreen] = useState<string>(() => {
     return "";
@@ -120,26 +92,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthenticated(!!token);
   }, []);
 
-  // Toggle popup state at different stages of task update
-  // const togglePopupState = (popupName: keyof Popup) => {
-  //   setNewTaskPopup((prev) => {
-  //     const updatedPopup = { ...prev };
-
-  //     // Close all other popups
-  //     Object.keys(updatedPopup).forEach((key) => {
-  //       if (key !== popupName) {
-  //         updatedPopup[key as keyof Popup] = false;
-  //       }
-  //     });
-
-  //     // Toggle the specified popup state
-  //     updatedPopup[popupName] = !prev[popupName];
-  //     return updatedPopup;
-  //   });
-  // };
-
   const trackScreenFunc = (name: string) => {
     setTrackScreen(name);
+    return name;
   };
 
   return (
@@ -149,11 +104,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           {/* <AddTaskPopupContext.Provider
             value={{ newTaskPopup, togglePopupState, setNewTaskPopup }}
           > */}
-            <TrackTaskScreenContext.Provider
-              value={{ trackScreen, trackScreenFunc }}
-            >
-              {children}
-            </TrackTaskScreenContext.Provider>
+          <TrackTaskScreenContext.Provider
+            value={{ trackScreen, trackScreenFunc }}
+          >
+            {children}
+          </TrackTaskScreenContext.Provider>
           {/* </AddTaskPopupContext.Provider> */}
         </AuthContext.Provider>
       </ThemeContext.Provider>

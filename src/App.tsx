@@ -37,10 +37,10 @@ function App() {
       <Router>
         {authenticated && <Nav />}
         {authenticated &&
-          trackScreen ===
-            ("name" || "calendar" || "time" || "priority" || "category") && (
-            <AddTask />
-          )}
+          ["name", "calendar", "time", "priority", "category"].includes(
+            trackScreen
+          ) && <AddTask />}
+
         <Routes>
           <Route
             path="/"
