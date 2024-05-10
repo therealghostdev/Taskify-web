@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Todo, ThemeContextType, Popup } from "../types/todo";
+import { Todo, ThemeContextType } from "../types/todo";
 
 // Create a context for managing the todo list
 const TodoContext = createContext<{

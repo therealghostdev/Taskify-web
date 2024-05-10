@@ -8,13 +8,13 @@ import Timer from "../../../assets/timer.svg";
 import tag from "../../../assets/tag.svg";
 import flag from "../../../assets/flag.svg";
 import send from "../../../assets/send.svg";
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { formValueTypes } from "../../../utils/types/todo";
 
 export default function AddTaskName() {
   //   const { newTaskPopup, togglePopupState } = usePopupContext();
   const { todos, updateTodos } = useTodoContext();
-  const { trackScreen, trackScreenFunc } = useTrackContext();
+  const { trackScreenFunc } = useTrackContext();
   const { darkMode } = useThemeContext();
   const input1Ref = useRef<HTMLInputElement>(null);
   const input2Ref = useRef<HTMLInputElement>(null);
@@ -69,10 +69,6 @@ export default function AddTaskName() {
       
     }
   };
-
-  // useEffect(() => {
-  //   console.log(trackScreen, todos, "at taskname");
-  // }, [trackScreen, todos]);
 
   return (
     <div

@@ -9,7 +9,6 @@ import userIcon from "../../../assets/user.svg";
 import { Link } from "react-router-dom";
 import {
   useThemeContext,
-  // usePopupContext,
   useTrackContext,
   useTodoContext,
 } from "../../../utils/app_context/general";
@@ -21,8 +20,7 @@ export default function Nav() {
   const navRef = useRef<HTMLDivElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null); // Ref for the button
   const [animate, setAnimate] = useState({ y: 90 });
-  // const { newTaskPopup, togglePopupState } = usePopupContext();
-  const { trackScreen, trackScreenFunc } = useTrackContext();
+  const { trackScreenFunc } = useTrackContext();
   const { todos } = useTodoContext();
 
   const addTask = () => {
@@ -31,7 +29,6 @@ export default function Nav() {
         trackScreenFunc("name");
       } else if (item.expected_date_of_completion === "") {
           trackScreenFunc("calendar");
-          console.log(trackScreen, todos);
       } else if (item.time === "") {
         trackScreenFunc("time");
       } else if (item.task_priority === 0) {
@@ -39,8 +36,6 @@ export default function Nav() {
       } else {
       }
     });
-
-    // console.log(trackScreen, todos);
   };
 
   useEffect(() => {
@@ -104,7 +99,7 @@ export default function Nav() {
             key={index}
             item={item}
             darkMode={darkMode}
-            addTask={addTask}
+            // addTask={addTask}
             addButtonRef={addButtonRef} // Pass the ref to NavItemComponent
           />
         ))}
@@ -116,12 +111,10 @@ export default function Nav() {
 function NavItemComponent({
   item,
   darkMode,
-  addTask,
   addButtonRef, // Receive the ref as a prop
 }: {
   item: NavItem;
   darkMode: boolean;
-  addTask: () => void;
   addButtonRef: React.RefObject<HTMLButtonElement>; // Define the type of the ref
 }) {
   let icon;
