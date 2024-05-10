@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import navData from "../../../utils/data/nav_data.json";
 import type { NavItem } from "../../../utils/types/todo";
 import homeIcon from "../../../assets/home-2.svg";
@@ -7,14 +7,22 @@ import addIcon from "../../../assets/add.svg";
 import focusIcon from "../../../assets/clock.svg";
 import userIcon from "../../../assets/user.svg";
 import { Link } from "react-router-dom";
-import { useThemeContext } from "../../../utils/app_context/general";
-import { animate, motion, useMotionValue } from "framer-motion";
+import {
+  useThemeContext,
+  // usePopupContext,
+  useTrackContext,
+  useTodoContext,
+} from "../../../utils/app_context/general";
+import { motion, useMotionValue } from "framer-motion";
 
 export default function Nav() {
   const { darkMode } = useThemeContext();
   const navBarY = useMotionValue(80); // nav partially hidden by default
   const navRef = useRef<HTMLDivElement>(null);
   const [animate, setAnimate] = useState({ y: 90 });
+  // const { newTaskPopup, togglePopupState } = usePopupContext();
+  const { trackScreen, trackScreenFunc } = useTrackContext();
+  const { todos } = useTodoContext();
 
   useEffect(() => {
     const handleMouseEnter = () => {
@@ -44,6 +52,24 @@ export default function Nav() {
     };
   }, [navBarY]);
 
+  const addTask = () => {
+    // togglePopupState("name");
+    todos.map((item) => {
+      if (item.task === "") {
+        trackScreenFunc("name");
+      } else if (item.expected_date_of_completion === "") {
+        trackScreenFunc("calendar");
+      } else if (item.time === "") {
+        trackScreenFunc("time");
+      } else if (item.task_priority === 0) {
+        trackScreenFunc("priority");
+      } else {
+      }
+    });
+
+    console.log(trackScreen);
+  };
+
   return (
     <motion.nav
       key="nav"
@@ -57,7 +83,12 @@ export default function Nav() {
     >
       <div className="w-full h-full flex justify-between items-center px-4">
         {navData.map((item, index) => (
-          <NavItemComponent key={index} item={item} darkMode={darkMode} />
+          <NavItemComponent
+            key={index}
+            item={item}
+            darkMode={darkMode}
+            addTask={addTask}
+          />
         ))}
       </div>
     </motion.nav>
@@ -67,9 +98,11 @@ export default function Nav() {
 function NavItemComponent({
   item,
   darkMode,
+  addTask,
 }: {
   item: NavItem;
   darkMode: boolean;
+  addTask: () => void;
 }) {
   let icon;
   switch (item.icon) {
@@ -95,7 +128,10 @@ function NavItemComponent({
   return (
     <>
       {icon && icon === addIcon ? (
-        <button className="flex items-center justify-center text-white w-14 h-14 bg-[#8687E7] rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <button
+          onClick={addTask}
+          className="flex items-center justify-center text-white w-14 h-14 bg-[#8687E7] rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        >
           <img src={icon} alt={item.name} className="w-6 h-6" />
         </button>
       ) : (

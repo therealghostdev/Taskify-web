@@ -10,17 +10,23 @@ import Auth from "./pages/auth";
 import Calendar from "./pages/calendar";
 import Focus from "./pages/focus_page";
 import Profile from "./pages/profile";
-import { useThemeContext, useAuthContext } from "./utils/app_context/general";
+import {
+  useThemeContext,
+  useAuthContext,
+  usePopupContext,
+} from "./utils/app_context/general";
 import { useEffect } from "react";
-import { ProtectedRouteProps } from "./utils/types/todo";
+import { ProtectedRouteProps, Popup } from "./utils/types/todo";
+import AddTask from "./components/general/add-task";
 
 function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
   const authenticated = useAuthContext();
+  const { newTaskPopup } = usePopupContext();
 
-  // useEffect(() => {
-  //   localStorage.setItem("token", "hello");
-  // }, [authenticated]);
+  useEffect(() => {
+    localStorage.setItem("token", "hello");
+  }, [authenticated]);
 
   return (
     <main
@@ -30,6 +36,13 @@ function App() {
     >
       <Router>
         {authenticated && <Nav />}
+        {authenticated &&
+          (newTaskPopup.category ||
+            newTaskPopup.date ||
+            newTaskPopup.name ||
+            newTaskPopup.title ||
+            newTaskPopup.priority ||
+            newTaskPopup.time) && <AddTask />}
         <Routes>
           <Route
             path="/"
