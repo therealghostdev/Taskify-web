@@ -7,6 +7,7 @@ import AddDate from "./AddDate";
 import { useEffect, useRef } from "react";
 import AddTime from "./AddTime";
 import AddPriority from "./AddPriority";
+import AddCategory from "./AddCategory";
 
 export default function AddTask() {
   const { todos } = useTodoContext();
@@ -46,6 +47,8 @@ export default function AddTask() {
           <AddTime />
         ) : trackScreen === "priority" ? (
           <AddPriority />
+        ) : trackScreen === "category" ? (
+          <AddCategory />
         ) : (
           ""
         )}

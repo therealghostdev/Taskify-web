@@ -29,7 +29,7 @@ export default function AddPriority() {
 
   return (
     <div
-      className={`w-full lg:h-[400px] overflow-y-auto h-full flex flex-col justify-center items-center gap-2 ${
+      className={`w-full lg:h-[400px] h-full flex flex-col justify-center items-center gap-2 ${
         darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
       }`}
     >
@@ -37,7 +37,7 @@ export default function AddPriority() {
         <h1 className="text-lg">Task Priority</h1>
       </div>
 
-      <div className="w-full flex flex-wrap items-center px-4 py-2">
+      <div className="w-full flex flex-wrap lg:overflow-y-auto lg:h-[200px] h-auto custom-scrollbar items-center px-4 py-2">
         {data.map((item, index) => (
           <button
             key={index}

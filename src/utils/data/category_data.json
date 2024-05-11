@@ -1,0 +1,67 @@
+[
+  {
+    "icon": "/grocery.svg",
+    "name": "Grocery",
+    "color": "#CCFF80"
+  },
+
+  {
+    "icon": "/briefcase.svg",
+    "name": "Work",
+    "color": "#FF9680"
+  },
+
+  {
+    "icon": "/sport.svg",
+    "name": "Sports",
+    "color": "#80FFFF"
+  },
+
+  {
+    "icon": "/design.svg",
+    "name": "Design",
+    "color": "#80FFD9"
+  },
+
+  {
+    "icon": "/education.svg",
+    "name": "University",
+    "color": "#809CFF"
+  },
+
+  {
+    "icon": "/social.svg",
+    "name": "Social",
+    "color": "#FF80EB"
+  },
+
+  {
+    "icon": "/music.svg",
+    "name": "Music",
+    "color": "#FC80FF"
+  },
+
+  {
+    "icon": "/heartbeat.svg",
+    "name": "Health",
+    "color": "#80FFA3"
+  },
+
+  {
+    "icon": "/video-camera.svg",
+    "name": "Movie",
+    "color": "#80D1FF"
+  },
+
+  {
+    "icon": "/home.svg",
+    "name": "Home",
+    "color": "#FFCC80"
+  },
+
+  {
+    "icon": "/add.svg",
+    "name": "Create New",
+    "color": "#80FFD1"
+  }
+]
