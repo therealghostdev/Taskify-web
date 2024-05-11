@@ -159,7 +159,7 @@ function NavItemComponent({
             alt={item.name}
             className={`w-6 h-6 ${darkMode ? "" : "filter-invert"}`}
           />
-          <span className={`text-xs ${darkMode ? "text-white" : "text-black"}`}>
+          <span className={`text-xl ${darkMode ? "text-white" : "text-black"}`}>
             {item.name}
           </span>
         </Link>

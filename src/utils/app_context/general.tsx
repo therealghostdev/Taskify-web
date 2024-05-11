@@ -101,15 +101,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     <TodoContext.Provider value={{ todos, updateTodos }}>
       <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
         <AuthContext.Provider value={authenticated}>
-          {/* <AddTaskPopupContext.Provider
-            value={{ newTaskPopup, togglePopupState, setNewTaskPopup }}
-          > */}
           <TrackTaskScreenContext.Provider
             value={{ trackScreen, trackScreenFunc }}
           >
             {children}
           </TrackTaskScreenContext.Provider>
-          {/* </AddTaskPopupContext.Provider> */}
         </AuthContext.Provider>
       </ThemeContext.Provider>
     </TodoContext.Provider>

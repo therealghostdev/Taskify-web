@@ -66,13 +66,13 @@ export default function AddTime() {
       <div className="flex justify-center items-center">
         <button
           onClick={cancel}
-          className="z-50 w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-2 my-6 mx-4"
+          className="z-50 w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
         >
           Cancel
         </button>
         <button
           onClick={handleSave}
-          className="z-50 w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-2 my-6 mx-4"
+          className="z-50 w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
         >
           Save
         </button>
