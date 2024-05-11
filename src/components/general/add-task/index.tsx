@@ -5,6 +5,7 @@ import {
 import AddTaskName from "./AddTaskName";
 import AddDate from "./AddDate";
 import { useEffect, useRef } from "react";
+import AddTime from "./AddTime";
 
 export default function AddTask() {
   const { todos } = useTodoContext();
@@ -40,6 +41,8 @@ export default function AddTask() {
           <AddTaskName />
         ) : trackScreen === "calendar" ? (
           <AddDate />
+        ) : trackScreen === "time" ? (
+          <AddTime />
         ) : (
           ""
         )}
