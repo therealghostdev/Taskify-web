@@ -34,10 +34,11 @@ export default function AddTime() {
     }));
 
     updateTodos(updatedTodo);
+    trackScreenFunc("priority");
   };
 
   const cancel = () => {
-    trackScreenFunc("priority");
+    trackScreenFunc("");
   };
 
   return (
@@ -46,9 +47,10 @@ export default function AddTime() {
         darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
       }`}
     >
-      <div className="w-full border-b-[#ffffff] border-b flex justify-center items-center py-4 px-2">
+      <div className="w-full border-b-[#ffffff] border-b flex justify-center items-center py-4 px-2 mb-4">
         <h1 className="text-lg">Choose Time</h1>
       </div>
+
       <div className="w-full">
         <Datetime
           input={false}
