@@ -14,8 +14,6 @@ export default function AddPriority() {
   const valueRef = useRef<HTMLSpanElement>(null);
 
   const handleSave = () => {
-    console.log(valueRef.current?.textContent);
-
     const updatedTodo = todos.map((item) => ({
       ...item,
       task_priority: Number(valueRef.current?.textContent),
