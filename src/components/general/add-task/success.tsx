@@ -2,6 +2,7 @@ import TodoIcon from "../../../assets/todo-list.svg";
 import {
   useThemeContext,
   useTrackContext,
+  useTodoContext,
 } from "../../../utils/app_context/general";
 import SuccessIcon from "../../../assets/success.svg";
 import CloseIcon from "@mui/icons-material/Close";
@@ -9,9 +10,22 @@ import CloseIcon from "@mui/icons-material/Close";
 export default function Success() {
   const { darkMode } = useThemeContext();
   const { trackScreenFunc } = useTrackContext();
+  const { todos, updateTodos } = useTodoContext();
 
   const closeBtnClick = () => {
     trackScreenFunc("");
+
+    const reset = todos.map((item) => ({
+      ...item,
+      task: "",
+      category: "",
+      task_description: "",
+      task_priority: 0,
+      expected_date_of_completion: "",
+      time: "",
+    }));
+    
+    updateTodos(reset);
   };
 
   return (

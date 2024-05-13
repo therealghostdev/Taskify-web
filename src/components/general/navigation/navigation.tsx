@@ -33,8 +33,9 @@ export default function Nav() {
         trackScreenFunc("time");
       } else if (item.task_priority === 0) {
         trackScreenFunc("priority");
-      } else {
-      }
+      } else if (item.category === "") {
+        trackScreenFunc("category");
+      }else{}
     });
   };
 
