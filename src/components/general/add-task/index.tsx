@@ -8,6 +8,7 @@ import { useEffect, useRef } from "react";
 import AddTime from "./AddTime";
 import AddPriority from "./AddPriority";
 import AddCategory from "./AddCategory";
+import Success from "./success";
 
 export default function AddTask() {
   const { todos } = useTodoContext();
@@ -31,7 +32,7 @@ export default function AddTask() {
   }, []);
 
   return (
-    ["name", "calendar", "time", "priority", "category"].includes(
+    ["name", "calendar", "time", "priority", "category", "success"].includes(
       trackScreen
     ) && (
       <div
@@ -49,6 +50,8 @@ export default function AddTask() {
           <AddPriority />
         ) : trackScreen === "category" ? (
           <AddCategory />
+        ) : trackScreen === "success" ? (
+          <Success />
         ) : (
           ""
         )}
