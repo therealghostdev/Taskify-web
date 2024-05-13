@@ -57,11 +57,5 @@
     "icon": "/home.svg",
     "name": "Home",
     "color": "#FFCC80"
-  },
-
-  {
-    "icon": "/add.svg",
-    "name": "Create New",
-    "color": "#80FFD1"
   }
 ]

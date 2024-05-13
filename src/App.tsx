@@ -16,11 +16,11 @@ import {
   useTrackContext,
 } from "./utils/app_context/general";
 import { useEffect } from "react";
-import { ProtectedRouteProps, Popup } from "./utils/types/todo";
+import { ProtectedRouteProps } from "./utils/types/todo";
 import AddTask from "./components/general/add-task";
 
 function App() {
-  const { darkMode, toggleDarkMode } = useThemeContext();
+  const { darkMode } = useThemeContext();
   const authenticated = useAuthContext();
   const { trackScreen } = useTrackContext();
 
@@ -37,9 +37,14 @@ function App() {
       <Router>
         {authenticated && <Nav />}
         {authenticated &&
-          ["name", "calendar", "time", "priority", "category"].includes(
-            trackScreen
-          ) && <AddTask />}
+          [
+            "name",
+            "calendar",
+            "time",
+            "priority",
+            "category",
+            "success",
+          ].includes(trackScreen) && <AddTask />}
 
         <Routes>
           <Route

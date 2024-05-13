@@ -1,5 +1,9 @@
 import { useRef, useState } from "react";
-import { useThemeContext } from "../../../utils/app_context/general";
+import {
+  useThemeContext,
+  useTodoContext,
+  useTrackContext,
+} from "../../../utils/app_context/general";
 import data from "../../../utils/data/category_data.json";
 import groceryIcon from "../../../assets/grocery.svg";
 import workIcon from "../../../assets/briefcase.svg";
@@ -17,6 +21,8 @@ export default function AddCategory() {
   const { darkMode } = useThemeContext();
   const valueRef = useRef<HTMLParagraphElement>(null);
   const [active, setActive] = useState<number | null>(null);
+  const { todos, updateTodos } = useTodoContext();
+  const { trackScreenFunc } = useTrackContext();
 
   const getIconRender = (item: string) => {
     let icon;
@@ -89,6 +95,15 @@ export default function AddCategory() {
     }
   };
 
+  const handleSave = () => {
+    const updatedTodos = todos.map((item) => ({
+      ...item,
+      category: valueRef.current?.textContent || "",
+    }));
+    updateTodos(updatedTodos);
+    trackScreenFunc("success");
+  };
+
   return (
     <div
       className={`w-full h-full ${
@@ -118,14 +133,29 @@ export default function AddCategory() {
                 </span>
               </button>
             </div>
-            <p ref={valueRef} className={active === index ? "text-white" : ""}>{item.name}</p>
+            <p ref={valueRef} className={active === index ? "text-white" : ""}>
+              {item.name}
+            </p>
           </div>
         ))}
+
+        <div
+          className={`flex flex-col md:w-[100px] w-[60px] my-2 mx-2 py-4 px-2 justify-center items-center hover:bg-[#8687E7] cursor-pointer`}
+        >
+          <div className="bg-[#80FFD1]">
+            <button className="text-white flex flex-col items-center m-2 px-4 py-2 cursor-pointer">
+              <span>
+                <img src={addIcon} alt="add priority" />
+              </span>
+            </button>
+          </div>
+          <p>Create New</p>
+        </div>
       </div>
 
       <div className="w-full flex justify-center items-center px-4 py-2">
         <button
-          //   onClick={handleSave}
+          onClick={handleSave}
           className="w-full rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
         >
           Add Category
