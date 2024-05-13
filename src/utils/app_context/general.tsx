@@ -78,7 +78,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   // state for tracking task screen
   const [trackScreen, setTrackScreen] = useState<string>(() => {
-    return "category";
+    return "priority";
   });
 
   // Toggle dark mode
