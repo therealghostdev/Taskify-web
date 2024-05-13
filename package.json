@@ -9,7 +9,8 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "npm test",
-    "lint-react": "eslint . --fix"
+    "lint-react": "eslint . --fix",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "framer-motion": "^11.1.9",
