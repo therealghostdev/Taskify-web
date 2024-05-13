@@ -25,6 +25,8 @@ export default function AddCategory() {
   const valueRef = useRef<HTMLParagraphElement>(null);
   const [active, setActive] = useState<number | null>(null);
   const { todos, updateTodos } = useTodoContext();
+
+  const [category, setCategory] = useState<string>("");
   const { trackScreen, trackScreenFunc } = useTrackContext();
   const [addNewScreen, setAddNewScreen] = useState<boolean>(false);
   const [SelectedColor, setSelectedColor] = useState<Number | null>(null);
@@ -141,13 +143,36 @@ export default function AddCategory() {
     }
   };
 
+  const handleCategoryClick = (name: string) => {
+    setCategory(name);
+  };
+
   const handleSave = () => {
+    todos.map(() => {
+      if (category === "") {
+        notify("Add task category");
+      } else {
+        todos.forEach((item) => {
+          if (
+            item.task_description === "" ||
+            item.task === "" ||
+            item.expected_date_of_completion === "" ||
+            item.task_priority === 0 ||
+            item.time === ""
+          ) {
+            trackScreenFunc("");
+          } else {
+            trackScreenFunc("success");
+          }
+        });
+      }
+    });
+
     const updatedTodos = todos.map((item) => ({
       ...item,
-      category: valueRef.current?.textContent || "",
+      category: category,
     }));
     updateTodos(updatedTodos);
-    trackScreenFunc("success");
   };
   // End of line for category screen main ui
 
@@ -217,7 +242,10 @@ export default function AddCategory() {
                   active === index ? "bg-[#8687E7]" : ""
                 }`}
               >
-                <div className={`${getDefaultBgColor(item.name)}`}>
+                <div
+                  className={`${getDefaultBgColor(item.name)}`}
+                  onClick={() => handleCategoryClick(item.name)}
+                >
                   <button className="text-white flex flex-col items-center m-2 px-4 py-2 cursor-pointer">
                     <span className="w-full">
                       <img

@@ -1,5 +1,4 @@
 import {
-  //   usePopupContext,
   useTodoContext,
   useThemeContext,
   useTrackContext,
@@ -12,12 +11,12 @@ import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { formValueTypes } from "../../../utils/types/todo";
 
 export default function AddTaskName() {
-  //   const { newTaskPopup, togglePopupState } = usePopupContext();
   const { todos, updateTodos } = useTodoContext();
   const { trackScreenFunc } = useTrackContext();
   const { darkMode } = useThemeContext();
   const input1Ref = useRef<HTMLInputElement>(null);
   const input2Ref = useRef<HTMLInputElement>(null);
+  const buttonContainerRef = useRef<HTMLDivElement>(null);
 
   const [formValues, setFormValues] = useState<formValueTypes>({
     taskname: "",
@@ -60,13 +59,26 @@ export default function AddTaskName() {
         task: formValues.taskname,
         task_description: formValues.taskdescription,
       }));
-      // console.log(updatedTodos);
 
       // Set the updated todos back to the context
       updateTodos(updatedTodos);
       trackScreenFunc("calendar");
-      // console.log(todos, "1");
-      
+    }
+  };
+
+  const containerRefClickHandler = (e: any) => {
+    e.preventDefault();
+    const target = e.target;
+
+    // Check if the clicked element is an img element
+    if (target.tagName === "IMG") {
+      const alt = target.alt;
+      // set screen
+      if (alt === "timer") {
+        trackScreenFunc("calendar");
+      } else {
+        trackScreenFunc(alt);
+      }
     }
   };
 
@@ -126,7 +138,11 @@ export default function AddTaskName() {
         )}
 
         <div className="w-full flex justify-center items-center my-4">
-          <div className="flex items-center w-3/4">
+          <div
+            className="flex items-center w-3/4"
+            ref={buttonContainerRef}
+            onClick={containerRefClickHandler}
+          >
             <button className="mr-12">
               <img
                 src={Timer}
