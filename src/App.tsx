@@ -18,6 +18,8 @@ import {
 import { useEffect } from "react";
 import { ProtectedRouteProps } from "./utils/types/todo";
 import AddTask from "./components/general/add-task";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const { darkMode } = useThemeContext();
@@ -82,6 +84,7 @@ function App() {
           <Route path="/auth" element={<Auth />} />
         </Routes>
       </Router>
+      <ToastContainer autoClose={5000} hideProgressBar={false} />
     </main>
   );
 }

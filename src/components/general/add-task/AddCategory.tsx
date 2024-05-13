@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import {
   useThemeContext,
   useTodoContext,
@@ -18,6 +18,7 @@ import homeIcon from "../../../assets/home.svg";
 import addIcon from "../../../assets/add.svg";
 import { newTaskCategoryType } from "../../../utils/types/todo";
 import CheckIcon from "@mui/icons-material/Check";
+import { toast } from "react-toastify";
 
 export default function AddCategory() {
   const { darkMode } = useThemeContext();
@@ -25,14 +26,22 @@ export default function AddCategory() {
   const [active, setActive] = useState<number | null>(null);
   const { todos, updateTodos } = useTodoContext();
   const { trackScreen, trackScreenFunc } = useTrackContext();
-  const [addNewScreen, setAddNewScreen] = useState<boolean>(true);
+  const [addNewScreen, setAddNewScreen] = useState<boolean>(false);
   const [SelectedColor, setSelectedColor] = useState<Number | null>(null);
+
+  const [newCategoryName, setNewCategoryName] = useState<string>("");
   const [SelectIcon, setSelectIcon] = useState<boolean>(false);
+  const newTaskNameRef = useRef<HTMLInputElement>(null);
+
+  // for new category
   const [newCategory, setNewCategory] = useState<newTaskCategoryType>({
     name: "",
     icon: "", //file
     color: "",
   });
+
+  const notify = (msg: string) =>
+    toast(msg, { theme: darkMode ? "dark" : "light" });
 
   const addNewColor = [
     "bg-[#CCFF80]",
@@ -140,7 +149,9 @@ export default function AddCategory() {
     updateTodos(updatedTodos);
     trackScreenFunc("success");
   };
+  // End of line for category screen main ui
 
+  // Functions for newCategory screen
   const switchScreen = () => {
     setAddNewScreen(!addNewScreen);
   };
@@ -153,6 +164,11 @@ export default function AddCategory() {
 
   const selectIconBtnClick = () => {
     setSelectIcon(!SelectIcon);
+  };
+
+  const handlewCategoryInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setNewCategoryName(e.target.value);
+    setNewCategory((prev) => ({ ...prev, name: e.target.value }));
   };
 
   // set item to type file on later stage of development
@@ -172,14 +188,19 @@ export default function AddCategory() {
       newCategory.color !== "" &&
       newCategory.icon !== ""
     )
-      setAddNewScreen(false);
+      return setAddNewScreen(false);
+    notify("Choose category items");
+
+    if (newCategory.name === "") {
+      newTaskNameRef.current?.focus();
+    }
   };
 
   return (
     <>
       {trackScreen === "category" && !addNewScreen ? (
         <div
-          className={`w-full h-full ${
+          className={`w-full md:h-full h-[600px] custom-scrollbar overflow-y-auto ${
             darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
           }`}
         >
@@ -187,21 +208,24 @@ export default function AddCategory() {
             <h1 className="text-lg">Task Priority</h1>
           </div>
 
-          <div className="w-full flex flex-wrap items-center px-4 py-2 lg:h-[200px] h-auto lg:overflow-y-auto custom-scrollbar">
+          <div className="w-full flex flex-wrap items-center px-4 py-2 lg:h-[250px] h-auto lg:overflow-y-auto custom-scrollbar">
             {data.map((item, index) => (
               <div
                 onClick={() => updateActive(index)}
                 key={index}
-                className={`flex flex-col md:w-[100px] w-[60px] my-2 mx-2 py-4 px-2 justify-center items-center hover:bg-[#8687E7] cursor-pointer ${
+                className={`flex flex-col md:w-[100px] w-[100px] my-2 mx-2 py-4 px-2 justify-center items-center hover:bg-[#8687E7] cursor-pointer ${
                   active === index ? "bg-[#8687E7]" : ""
                 }`}
               >
                 <div className={`${getDefaultBgColor(item.name)}`}>
                   <button className="text-white flex flex-col items-center m-2 px-4 py-2 cursor-pointer">
-                    <span>
+                    <span className="w-full">
                       <img
                         src={(item.icon = getIconRender(item.name))}
-                        alt="priority-icon"
+                        alt="category icon"
+                        width={100}
+                        height={100}
+                        className="w-screen"
                       />
                     </span>
                   </button>
@@ -217,7 +241,7 @@ export default function AddCategory() {
 
             <div
               onClick={switchScreen}
-              className={`flex flex-col md:w-[100px] w-[60px] my-2 mx-2 py-4 px-2 justify-center items-center hover:bg-[#8687E7] cursor-pointer`}
+              className={`flex flex-col md:w-[100px] w-[100px] my-2 mx-2 py-4 px-2 justify-center items-center hover:bg-[#8687E7] cursor-pointer`}
             >
               <div className="bg-[#80FFD1]">
                 <button className="text-white flex flex-col items-center m-2 px-4 py-2 cursor-pointer">
@@ -241,7 +265,7 @@ export default function AddCategory() {
         </div>
       ) : (
         <div
-          className={`md:w-full lg:h-[450px] md:h-full h-screen w-screen py-6 px-4 md:static fixed top-0 left-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${
+          className={`md:w-full lg:h-[450px] md:h-full h-screen w-screen py-6 px-4 md:static fixed top-0 left-0 overflow-y-auto overflow-x-hidden custom-scrollbar md:block flex flex-col md:gap-y-0 gap-y-12 ${
             darkMode
               ? "md:bg-[#363636] bg-[#000000] text-white"
               : "bg-[#ffffff] text-black"
@@ -257,11 +281,18 @@ export default function AddCategory() {
                 Category Name:
               </label>
               <input
+                ref={newTaskNameRef}
                 type="text"
-                name=""
+                name="newTaskName"
+                value={newCategoryName}
+                onChange={handlewCategoryInputChange}
                 id="category-name"
                 placeholder="Category name"
-                className="py-2 px-2 rounded-sm bg-[#1d1d1d]"
+                className={`py-2 px-2 rounded-sm focus:border-none focus:outline-none focus:outline ${
+                  darkMode
+                    ? "bg-[#1d1d1d]  text-white focus:outline-[#bdbdbd]"
+                    : "bg-[#bdbdbd] text-black focus:outline-[#1d1d1d]"
+                }`}
               />
             </div>
 
@@ -328,7 +359,7 @@ export default function AddCategory() {
             </div>
           </div>
 
-          <div className="w-full flex justify-between items-center">
+          <div className="w-full flex justify-between items-center md:static absolute bottom-0 left-0">
             <button
               onClick={cancelNewCategory}
               className="w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
