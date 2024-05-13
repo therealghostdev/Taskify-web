@@ -39,3 +39,9 @@ export interface formValueTypes {
   taskname: string;
   taskdescription: string;
 }
+
+export interface newTaskCategoryType {
+  name: string;
+  icon: string; // change to file later
+  color: string;
+}

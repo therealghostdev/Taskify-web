@@ -16,13 +16,50 @@ import healthIcon from "../../../assets/heartbeat.svg";
 import movieIcon from "../../../assets/video-camera.svg";
 import homeIcon from "../../../assets/home.svg";
 import addIcon from "../../../assets/add.svg";
+import { newTaskCategoryType } from "../../../utils/types/todo";
+import CheckIcon from "@mui/icons-material/Check";
 
 export default function AddCategory() {
   const { darkMode } = useThemeContext();
   const valueRef = useRef<HTMLParagraphElement>(null);
   const [active, setActive] = useState<number | null>(null);
   const { todos, updateTodos } = useTodoContext();
-  const { trackScreenFunc } = useTrackContext();
+  const { trackScreen, trackScreenFunc } = useTrackContext();
+  const [addNewScreen, setAddNewScreen] = useState<boolean>(true);
+  const [SelectedColor, setSelectedColor] = useState<Number | null>(null);
+  const [SelectIcon, setSelectIcon] = useState<boolean>(false);
+  const [newCategory, setNewCategory] = useState<newTaskCategoryType>({
+    name: "",
+    icon: "", //file
+    color: "",
+  });
+
+  const addNewColor = [
+    "bg-[#CCFF80]",
+    "bg-[#FF9680]",
+    "bg-[#FF9680]",
+    "bg-[#809CFF]",
+    "bg-[#809CFF]",
+    "bg-[#FF80EB]",
+    "bg-[#FC80FF]",
+    "bg-[#80FFA3]",
+    "bg-[#FFCC80]",
+    "bg-[#80D1FF]",
+    "bg-[#80FFD1]",
+  ];
+
+  const addNewIcon = [
+    groceryIcon,
+    workIcon,
+    sportIcon,
+    designIcon,
+    universityIcon,
+    socialIcon,
+    musicIcon,
+    healthIcon,
+    movieIcon,
+    homeIcon,
+  ];
 
   const getIconRender = (item: string) => {
     let icon;
@@ -104,63 +141,209 @@ export default function AddCategory() {
     trackScreenFunc("success");
   };
 
+  const switchScreen = () => {
+    setAddNewScreen(!addNewScreen);
+  };
+
+  // set export item to type file on later stage of development
+  const colorSelect = (item: string, index: number) => {
+    setNewCategory((prev) => ({ ...prev, color: item }));
+    setSelectedColor(index);
+  };
+
+  const selectIconBtnClick = () => {
+    setSelectIcon(!SelectIcon);
+  };
+
+  // set item to type file on later stage of development
+  const iconSelect = (item: string) => {
+    setNewCategory((prev) => ({ ...prev, icon: item }));
+    setSelectIcon(false);
+  };
+
+  const cancelNewCategory = () => {
+    setNewCategory((prev) => ({ ...prev, name: "", color: "", icon: "" }));
+    setAddNewScreen(false);
+  };
+
+  const saveNewCategory = () => {
+    if (
+      newCategory.name !== "" &&
+      newCategory.color !== "" &&
+      newCategory.icon !== ""
+    )
+      setAddNewScreen(false);
+  };
+
   return (
-    <div
-      className={`w-full h-full ${
-        darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
-      }`}
-    >
-      <div className="w-full border-b-[#ffffff] border-b flex justify-center items-center py-4 px-2 mb-4">
-        <h1 className="text-lg">Task Priority</h1>
-      </div>
-
-      <div className="w-full flex flex-wrap items-center px-4 py-2 lg:h-[200px] h-auto lg:overflow-y-auto custom-scrollbar">
-        {data.map((item, index) => (
-          <div
-            onClick={() => updateActive(index)}
-            key={index}
-            className={`flex flex-col md:w-[100px] w-[60px] my-2 mx-2 py-4 px-2 justify-center items-center hover:bg-[#8687E7] cursor-pointer ${
-              active === index ? "bg-[#8687E7]" : ""
-            }`}
-          >
-            <div className={`${getDefaultBgColor(item.name)}`}>
-              <button className="text-white flex flex-col items-center m-2 px-4 py-2 cursor-pointer">
-                <span>
-                  <img
-                    src={(item.icon = getIconRender(item.name))}
-                    alt="priority-icon"
-                  />
-                </span>
-              </button>
-            </div>
-            <p ref={valueRef} className={active === index ? "text-white" : ""}>
-              {item.name}
-            </p>
-          </div>
-        ))}
-
+    <>
+      {trackScreen === "category" && !addNewScreen ? (
         <div
-          className={`flex flex-col md:w-[100px] w-[60px] my-2 mx-2 py-4 px-2 justify-center items-center hover:bg-[#8687E7] cursor-pointer`}
+          className={`w-full h-full ${
+            darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
+          }`}
         >
-          <div className="bg-[#80FFD1]">
-            <button className="text-white flex flex-col items-center m-2 px-4 py-2 cursor-pointer">
-              <span>
-                <img src={addIcon} alt="add priority" />
-              </span>
+          <div className="w-full border-b-[#ffffff] border-b flex justify-center items-center py-4 px-2 mb-4">
+            <h1 className="text-lg">Task Priority</h1>
+          </div>
+
+          <div className="w-full flex flex-wrap items-center px-4 py-2 lg:h-[200px] h-auto lg:overflow-y-auto custom-scrollbar">
+            {data.map((item, index) => (
+              <div
+                onClick={() => updateActive(index)}
+                key={index}
+                className={`flex flex-col md:w-[100px] w-[60px] my-2 mx-2 py-4 px-2 justify-center items-center hover:bg-[#8687E7] cursor-pointer ${
+                  active === index ? "bg-[#8687E7]" : ""
+                }`}
+              >
+                <div className={`${getDefaultBgColor(item.name)}`}>
+                  <button className="text-white flex flex-col items-center m-2 px-4 py-2 cursor-pointer">
+                    <span>
+                      <img
+                        src={(item.icon = getIconRender(item.name))}
+                        alt="priority-icon"
+                      />
+                    </span>
+                  </button>
+                </div>
+                <p
+                  ref={valueRef}
+                  className={active === index ? "text-white" : ""}
+                >
+                  {item.name}
+                </p>
+              </div>
+            ))}
+
+            <div
+              onClick={switchScreen}
+              className={`flex flex-col md:w-[100px] w-[60px] my-2 mx-2 py-4 px-2 justify-center items-center hover:bg-[#8687E7] cursor-pointer`}
+            >
+              <div className="bg-[#80FFD1]">
+                <button className="text-white flex flex-col items-center m-2 px-4 py-2 cursor-pointer">
+                  <span>
+                    <img src={addIcon} alt="add priority" />
+                  </span>
+                </button>
+              </div>
+              <p>Create New</p>
+            </div>
+          </div>
+
+          <div className="w-full flex justify-center items-center px-4 py-2">
+            <button
+              onClick={handleSave}
+              className="w-full rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
+            >
+              Add Category
             </button>
           </div>
-          <p>Create New</p>
         </div>
-      </div>
-
-      <div className="w-full flex justify-center items-center px-4 py-2">
-        <button
-          onClick={handleSave}
-          className="w-full rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
+      ) : (
+        <div
+          className={`md:w-full lg:h-[450px] md:h-full h-screen w-screen py-6 px-4 md:static fixed top-0 left-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${
+            darkMode
+              ? "md:bg-[#363636] bg-[#000000] text-white"
+              : "bg-[#ffffff] text-black"
+          }`}
         >
-          Add Category
-        </button>
-      </div>
-    </div>
+          <div>
+            <h1 className="text-2xl">Create New Category</h1>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <div className="md:w-2/4 w-3/4 flex flex-col my-4 px-4">
+              <label htmlFor="category-name" className="my-4">
+                Category Name:
+              </label>
+              <input
+                type="text"
+                name=""
+                id="category-name"
+                placeholder="Category name"
+                className="py-2 px-2 rounded-sm bg-[#1d1d1d]"
+              />
+            </div>
+
+            <div className="md:w-2/4 w-3/4 px-4 flex flex-col">
+              <label htmlFor="category-icon" className="my-4">
+                Category icon:
+              </label>
+              <div className="flex">
+                <button
+                  onClick={selectIconBtnClick}
+                  className={`px-4 py-2 rounded-md ${
+                    darkMode
+                      ? "md:bg-[#1d1d1d] bg-[#363636] text-white"
+                      : "bg-[#bdbdbd] text-black"
+                  }`}
+                >
+                  Choose from library
+                </button>
+                {newCategory.icon !== "" && (
+                  <div
+                    className={`mx-2 rounded-md px-2 py-2 flex justify-center items-center ${
+                      darkMode
+                        ? "md:bg-[#1d1d1d] bg-[#363636] text-white"
+                        : "bg-[#bdbdbd] text-black"
+                    }`}
+                  >
+                    <img src={newCategory?.icon} alt="category icon" />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {SelectIcon && (
+              <div className="flex w-full overflow-x-auto">
+                {addNewIcon.map((item, index) => (
+                  <img
+                    onClick={() => iconSelect(item)}
+                    key={index}
+                    src={item}
+                    className="mx-2 cursor-pointer"
+                    alt="category icon"
+                    width={40}
+                    height={40}
+                  />
+                ))}
+              </div>
+            )}
+
+            <div className="px-4 w-full flex flex-col">
+              <label htmlFor="category-color">Category color:</label>
+              <div className="flex w-[800px] overflow-x-auto">
+                {addNewColor.map((item, index) => (
+                  <div
+                    onClick={() => colorSelect(item, index)}
+                    key={index}
+                    className={`${item} w-8 h-8 rounded-full my-2 mx-2 cursor-pointer flex justify-center items-center`}
+                  >
+                    {SelectedColor === index && (
+                      <CheckIcon sx={{ color: "white" }} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full flex justify-between items-center">
+            <button
+              onClick={cancelNewCategory}
+              className="w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={saveNewCategory}
+              className="w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
