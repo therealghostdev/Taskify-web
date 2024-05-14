@@ -1,0 +1,58 @@
+.rdt {
+  width: 100%;
+  height: 100%;
+  .rdtPicker {
+    background-color: transparent;
+    z-index: 0 !important;
+    border: none;
+    .rdtCounters {
+      background-color: transparent;
+      color: white;
+      width: 600px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 2px;
+
+      .rdtCounter {
+        height: 200px;
+        width: 100%;
+        margin: 0 16px;
+        background-color: #272727;
+
+        .rdtBtn {
+          margin: 5px;
+          &:hover {
+            background-color: #8687e7;
+          }
+        }
+      }
+
+      .rdtCounterSeparator {
+        width: 5%;
+        color: inherit !important;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .rdtCounters {
+    width: 380px !important;
+    .rdtCounter {
+      height: 100px;
+      width: 80px !important;
+    }
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .rdtCounters {
+    width: 320px !important;
+    .rdtCounter {
+      height: 100px;
+      width: 80px !important;
+    }
+  }
+}
