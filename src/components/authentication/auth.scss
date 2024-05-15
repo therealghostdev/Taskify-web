@@ -1,7 +1,7 @@
 
 $general-buttonColor: #8687E7;
 $hover-buttonColor: #9294fd;
-$disabled-buttonColor: #9aa3ac69;
+$disabled-buttonColor: #9aa3ac3a;
 .logo{
     flex: 1;
     
@@ -32,6 +32,7 @@ form{
     background-color:$general-buttonColor ;
     &.disabledButton{
         background-color:$disabled-buttonColor;
+        color: rgba(255, 255, 255, 0.651);
         
     }
     &.disabledButton:hover{
