@@ -10,6 +10,14 @@ const TodoContext = createContext<{
   updateTodos: () => {},
 });
 
+const CalendarTodoContext = createContext<{
+  calendarTodos: Todo[];
+  updateCalendarTodos: (newTodos: Todo[]) => void;
+}>({
+  calendarTodos: [],
+  updateCalendarTodos: () => {},
+});
+
 // create context to toggle darkmode on/off
 const ThemeContext = createContext<ThemeContextType>({
   darkMode: false,
@@ -29,6 +37,9 @@ const TrackTaskScreenContext = createContext<{
 
 // Custom hook to access the todo list context
 export const useTodoContext = () => useContext(TodoContext);
+
+// Custom hook to access and edit calendar page todo list context
+export const useCalendarTodoContext = () => useContext(CalendarTodoContext);
 
 // Custom hook to access the theme context
 export const useThemeContext = () => useContext(ThemeContext);
@@ -59,6 +70,23 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   // Function to update the todo list
   const updateTodos = (newTodos: Todo[]) => {
     setTodos(newTodos);
+  };
+
+  // State for managing calendar-page todo list
+  const [calendarTodos, setCalendarTodos] = useState<Todo[]>([
+    {
+      task: "",
+      task_description: "",
+      time: "",
+      category: "",
+      task_priority: 0,
+      expected_date_of_completion: "",
+    },
+  ]);
+
+  // Function to update the todo list
+  const updateCalendarTodos = (newTodos: Todo[]) => {
+    setCalendarTodos(newTodos);
   };
 
   // State for managing app theme
@@ -99,15 +127,19 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <TodoContext.Provider value={{ todos, updateTodos }}>
-      <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
-        <AuthContext.Provider value={authenticated}>
-          <TrackTaskScreenContext.Provider
-            value={{ trackScreen, trackScreenFunc }}
-          >
-            {children}
-          </TrackTaskScreenContext.Provider>
-        </AuthContext.Provider>
-      </ThemeContext.Provider>
+      <CalendarTodoContext.Provider
+        value={{ calendarTodos, updateCalendarTodos }}
+      >
+        <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
+          <AuthContext.Provider value={authenticated}>
+            <TrackTaskScreenContext.Provider
+              value={{ trackScreen, trackScreenFunc }}
+            >
+              {children}
+            </TrackTaskScreenContext.Provider>
+          </AuthContext.Provider>
+        </ThemeContext.Provider>
+      </CalendarTodoContext.Provider>
     </TodoContext.Provider>
   );
 };

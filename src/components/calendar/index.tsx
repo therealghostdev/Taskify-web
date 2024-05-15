@@ -16,11 +16,17 @@ import movieIcon from "../../assets/video-camera.svg";
 import homeIcon from "../../assets/home.svg";
 import addIcon from "../../assets/add.svg";
 import flagIcon from "../../assets/flag.svg";
+import {
+  useCalendarTodoContext,
+  useTrackContext,
+} from "../../utils/app_context/general";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [filteredData, setFilteredData] = useState<TaskDataType[] | null>(null);
+  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
+  const { trackScreenFunc } = useTrackContext();
 
   const handleDateChange = (value: any) => {
     if (value instanceof Date) {
@@ -41,7 +47,7 @@ export default function Index() {
     });
     setFilteredData(filteredTasks);
   };
-  console.log(filteredData);
+  // console.log(filteredData);
 
   const currentYear = new Date().getFullYear();
   const lastDateOfYear = new Date(currentYear, 11, 31);
@@ -132,6 +138,21 @@ export default function Index() {
     return icon;
   };
 
+  const getTaskData = (item: TaskDataType) => {
+    const updatedTodos = calendarTodos.map((content) => ({
+      ...content,
+      id: item.id,
+      task: item.task_name,
+      task_priority: item.task_priority,
+      category: item.task_category,
+      task_description: item.task_title,
+      time: item.completion_time,
+    }));
+    updateCalendarTodos(updatedTodos);
+
+    trackScreenFunc("name");
+  };
+
   useEffect(() => {
     getTaskByDate();
 
@@ -174,14 +195,15 @@ export default function Index() {
 
         {filteredData && (
           <div className="w-full flex flex-col justify-center items-center">
-            {filteredData.map((item, index) => (
+            {filteredData.map((item) => (
               <div
-                key={index}
+                key={item.id}
+                onClick={() => getTaskData(item)}
                 className={`${
                   darkMode
                     ? "bg-[#4C4C4C] text-white"
                     : "bg-[#c7c7c7] text-black"
-                } lg:w-2/4 w-full flex justify-between items-center py-6 my-4 rounded-md px-2`}
+                } lg:w-2/4 w-full flex justify-between items-center py-6 my-4 rounded-md px-2 cursor-pointer`}
               >
                 <div className="w-[20px] mr-4">
                   <input type="radio" disabled />

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 export interface Todo {
+  id?: number;
   task: string;
   task_description: string;
   task_priority: number;
@@ -47,6 +48,7 @@ export interface newTaskCategoryType {
 }
 
 export interface TaskDataType {
+  id: number;
   task_name: string;
   task_title: string;
   created_at: string;
@@ -55,4 +57,4 @@ export interface TaskDataType {
   task_category: string;
   task_priority: number;
   completed: boolean;
-};
+}
