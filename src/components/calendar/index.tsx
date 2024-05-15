@@ -52,9 +52,14 @@ export default function Index() {
   const currentYear = new Date().getFullYear();
   const lastDateOfYear = new Date(currentYear, 11, 31);
 
-  const formatDate = (date) => {
+  const formatDate = (date: string) => {
     const currentDate = new Date();
-    const formattedDate = new Date(date);
+    const [day, month, year] = date.split("/");
+    const formattedDate = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day)
+    );
 
     if (formattedDate.toDateString() === currentDate.toDateString()) {
       return "Today";
@@ -64,9 +69,6 @@ export default function Index() {
       return "Yesterday";
     } else {
       // Format date as "dd/mm/yyyy"
-      const day = formattedDate.getDate();
-      const month = formattedDate.getMonth() + 1;
-      const year = formattedDate.getFullYear();
       return `${day}/${month}/${year}`;
     }
   };
