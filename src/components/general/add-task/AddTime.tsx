@@ -20,6 +20,8 @@ export default function AddTime() {
     if (moment.isMoment(time)) {
       setSelectedTime(time);
       const formattedTime = time.format("HH:mm").toString();
+      console.log(formattedTime);
+      
       setTime(formattedTime);
     }
   };

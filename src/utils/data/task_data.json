@@ -1,0 +1,52 @@
+[
+  {
+    "task_name": "Do Math homework",
+    "task_title": "Do chapter 2 to 5 for next week",
+    "created_at": "15/05/2024",
+    "completion_date": "16/05/2024",
+    "completion_time": "02:14",
+    "task_category": "University",
+    "task_priority": 1,
+    "completed": false
+  },
+  {
+    "task_name": "Take out dogs",
+    "task_title": "taking a walk",
+    "created_at": "14/05/2024",
+    "completion_date": "15/05/2024",
+    "completion_time": "02:14",
+    "task_category": "Social",
+    "task_priority": 5,
+    "completed": false
+  },
+  {
+    "task_name": "Go shopping",
+    "task_title": "Treat myself",
+    "created_at": "14/05/2024",
+    "completion_date": "15/05/2024",
+    "completion_time": "18:30",
+    "task_category": "Social",
+    "task_priority": 4,
+    "completed": false
+  },
+  {
+    "task_name": "Get breakfast",
+    "task_title": "Eat something",
+    "created_at": "14/05/2024",
+    "completion_date": "14/05/2024",
+    "completion_time": "07:30",
+    "task_category": "Grocery",
+    "task_priority": 1,
+    "completed": true
+  },
+  {
+    "task_name": "Watch the new episode of GOT",
+    "task_title": "relax",
+    "created_at": "14/05/2024",
+    "completion_date": "14/05/2024",
+    "completion_time": "02:14",
+    "task_category": "Movie",
+    "task_priority": 10,
+    "completed": true
+  }
+]

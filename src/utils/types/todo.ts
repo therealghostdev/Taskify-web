@@ -45,3 +45,14 @@ export interface newTaskCategoryType {
   icon: string; // change to file later
   color: string;
 }
+
+export interface TaskDataType {
+  task_name: string;
+  task_title: string;
+  created_at: string;
+  completion_date: string;
+  completion_time: string;
+  task_category: string;
+  task_priority: number;
+  completed: boolean;
+};
