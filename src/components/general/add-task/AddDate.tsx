@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "../../../styles/calendar.scss";
 import {
   useThemeContext,
   useTodoContext,
   useTrackContext,
+  useCalendarTodoContext,
 } from "../../../utils/app_context/general";
 
 const AddDate = () => {
   const { darkMode } = useThemeContext();
   const { trackScreenFunc } = useTrackContext();
   const { todos, updateTodos } = useTodoContext();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
+  const [calendarTodoDate, setCalendarTodoDate] = useState<Date | null>(null);
 
   // Calculate the last date of the current year
   const currentYear = new Date().getFullYear();
@@ -23,19 +26,58 @@ const AddDate = () => {
     }
   };
 
-  const handleSave = () => {
-    const updatedTodos = todos.map((item) => ({
-      ...item,
-      expected_date_of_completion: selectedDate.toLocaleDateString("en-GB"),
-    }));
+  // checks for calendar page task details
+  const updatedSelectedDate = () => {
+    calendarTodos.forEach((item) => {
+      if (item.expected_date_of_completion !== "") {
+        const [day, month, year] = item.expected_date_of_completion.split("/");
 
-    updateTodos(updatedTodos);
-    trackScreenFunc("time");
+        const date = new Date(
+          parseInt(year),
+          parseInt(month) - 1,
+          parseInt(day)
+        );
+
+        setSelectedDate(date);
+      }
+    });
+  };
+
+  const handleSave = () => {
+    if (calendarTodoDate && calendarTodoDate instanceof Date) {
+      const updatedTodo = calendarTodos.map((item) => ({
+        ...item,
+        expected_date_of_completion:
+          calendarTodoDate.toLocaleDateString("en-GB"),
+      }));
+      updateCalendarTodos(updatedTodo);
+      trackScreenFunc("time");
+    } else {
+      const updatedTodos = todos.map((item) => ({
+        ...item,
+        expected_date_of_completion: selectedDate.toLocaleDateString("en-GB"),
+      }));
+
+      updateTodos(updatedTodos);
+      trackScreenFunc("time");
+    }
   };
 
   const cancel = () => {
     trackScreenFunc("");
   };
+
+  useEffect(() => {
+    updatedSelectedDate();
+  }, []);
+
+  useEffect(() => {
+    calendarTodos.map((item) => {
+      if (item.expected_date_of_completion !== "") {
+        setCalendarTodoDate(selectedDate);
+      }
+    });
+  }, [selectedDate]);
 
   return (
     <div

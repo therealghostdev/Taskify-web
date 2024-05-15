@@ -38,16 +38,12 @@ export default function Index() {
     const filteredTasks = data.filter((item) => {
       const completionDate = item.completion_date;
 
-      console.log(
-        completionDate === selectedDate.toLocaleDateString("en-GB").toString()
-      );
       return (
         completionDate === selectedDate.toLocaleDateString("en-GB").toString()
       );
     });
     setFilteredData(filteredTasks);
   };
-  // console.log(filteredData);
 
   const currentYear = new Date().getFullYear();
   const lastDateOfYear = new Date(currentYear, 11, 31);
@@ -149,6 +145,7 @@ export default function Index() {
       category: item.task_category,
       task_description: item.task_title,
       time: item.completion_time,
+      expected_date_of_completion: item.completion_date,
     }));
     updateCalendarTodos(updatedTodos);
 
@@ -237,7 +234,7 @@ export default function Index() {
                       </div>
                     </div>
 
-                    <div className="w-[40px] h-[20px] flex items-center justify-center border px-2 py-4 border-[#8687E7]">
+                    <div className="w-[40px] h-[20px] flex items-center justify-center border px-2 py-4 border-[#8687E7] rounded-md">
                       <img
                         src={flagIcon}
                         alt="priority-icon"
