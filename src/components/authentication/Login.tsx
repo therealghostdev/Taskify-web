@@ -1,5 +1,5 @@
 // import { useState } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './auth.scss';
 // import Register from './Register';
 import AppleIcon from '@mui/icons-material/Apple'
@@ -11,20 +11,30 @@ export default function Login({registerSwap}: RegisterProps) {
   const [password, setPassword]=useState('')
   const [valid, setValid] = useState(false)
 
+  // const formValid = ()=>{
+  //   userName &&
+  //   password
+  //   setValid(!valid)
+  // }
+  useEffect(()=>{
+    userName.trim() !== '' &&
+    password.trim() !== '' ? 
+      setValid(true) : setValid(false)
+    
+  },[userName, password])
+
   const login = (e)=>{
     e.preventDefault();
     clearForm()
+    
 
   }
   const clearForm =()=>{
     setUserName('')
     setPassword('')
   }
-  const formValid = ()=>{
-    userName &&
-    password
-    setValid(!valid)
-  }
+  
+ 
   return(
     <div className='flex '>
       <div className='logo xsm:hidden lg:flex'>
@@ -43,7 +53,7 @@ export default function Login({registerSwap}: RegisterProps) {
             <input value={password} onChange={(e)=>setPassword(e.target.value)} className='border border-slate-400 text-xs rounded w-full dark:bg-black bg-slate-200' type="password" placeholder='Enter your Password' />
           </label>
           <div className='pt-7 pb-3 w-full flex justify-center'>
-            <button className={`login ${valid ? 'disabled:bg-slate-700': ''} text-sm w-full py-2 rounded-lg`} type='submit'>
+            <button disabled={!valid} className={`login ${!valid ? 'disabledButton cursor-not-allowed': ''} text-sm cursor-pointer w-full py-2 rounded-lg`} type='submit'>
               Login
             </button>
           </div>
