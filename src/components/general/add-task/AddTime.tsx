@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Datetime from "react-datetime";
 import moment, { Moment } from "moment";
 import "react-datetime/css/react-datetime.css";
@@ -7,6 +7,7 @@ import {
   useThemeContext,
   useTodoContext,
   useTrackContext,
+  useCalendarTodoContext,
 } from "../../../utils/app_context/general";
 
 export default function AddTime() {
@@ -15,33 +16,65 @@ export default function AddTime() {
   const { todos, updateTodos } = useTodoContext();
   const { trackScreenFunc } = useTrackContext();
   const [time, setTime] = useState<string>("");
+  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
+  const [calendarTime, setCalendarTime] = useState<string>("");
 
   const handleTimeChange = (time: Moment | string) => {
     if (moment.isMoment(time)) {
       setSelectedTime(time);
       const formattedTime = time.format("HH:mm").toString();
       console.log(formattedTime);
-      
+
       setTime(formattedTime);
     }
+  };
+
+  // checks if calendar time isn't empty
+  const getCalendarTimeValue = () => {
+    calendarTodos.map((item) => {
+      if (item.time !== "") {
+        return setCalendarTime(item.time);
+      }
+    });
   };
 
   // Define the value to use based on whether selectedTime is null
   const value = selectedTime ? selectedTime : moment();
 
   const handleSave = () => {
-    const updatedTodo = todos.map((item) => ({
-      ...item,
-      time,
-    }));
+    if (calendarTime && calendarTime !== "") {
+      const updatedTodo = calendarTodos.map((item) => ({
+        ...item,
+        time,
+      }));
+      updateCalendarTodos(updatedTodo);
+      trackScreenFunc("priority");
+    } else {
+      const updatedTodo = todos.map((item) => ({
+        ...item,
+        time,
+      }));
 
-    updateTodos(updatedTodo);
-    trackScreenFunc("priority");
+      updateTodos(updatedTodo);
+      trackScreenFunc("priority");
+    }
   };
 
   const cancel = () => {
     trackScreenFunc("");
   };
+
+  useEffect(() => {
+    getCalendarTimeValue();
+  }, []);
+
+  // updates time value
+  useEffect(() => {
+    if (calendarTime && calendarTime !== "") {
+      const parsedTime = moment(calendarTime, "HH:mm");
+      setSelectedTime(parsedTime);
+    }
+  }, [calendarTime]);
 
   return (
     <div
