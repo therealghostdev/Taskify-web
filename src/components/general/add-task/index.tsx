@@ -26,7 +26,17 @@ export default function AddTask() {
         !flowContainerRef.current.contains(e.target as Node)
       ) {
         trackScreenFunc("");
-        updateEditTodos([]);
+        const reset = editTodos.map((item) => ({
+          ...item,
+          task: "",
+          category: "",
+          task_description: "",
+          task_priority: 0,
+          expected_date_of_completion: "",
+          time: "",
+        }));
+        
+        updateEditTodos(reset);
       }
     };
 

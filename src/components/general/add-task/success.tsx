@@ -3,6 +3,7 @@ import {
   useThemeContext,
   useTrackContext,
   useTodoContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
 import SuccessIcon from "../../../assets/success.svg";
 import CloseIcon from "@mui/icons-material/Close";
@@ -11,6 +12,7 @@ export default function Success() {
   const { darkMode } = useThemeContext();
   const { trackScreenFunc } = useTrackContext();
   const { todos, updateTodos } = useTodoContext();
+  const { editTodos, updateEditTodos } = useEditTodoContext();
 
   const closeBtnClick = () => {
     trackScreenFunc("");
@@ -24,8 +26,20 @@ export default function Success() {
       expected_date_of_completion: "",
       time: "",
     }));
-    
+
     updateTodos(reset);
+
+    const reset2 = editTodos.map((item) => ({
+      ...item,
+      task: "",
+      category: "",
+      task_description: "",
+      task_priority: 0,
+      expected_date_of_completion: "",
+      time: "",
+    }));
+
+    updateEditTodos(reset2);
   };
 
   return (
