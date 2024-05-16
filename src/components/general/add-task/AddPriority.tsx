@@ -38,6 +38,7 @@ export default function AddPriority() {
         task_priority: priority,
       }));
       updateCalendarTodos(updatedTodo);
+      trackScreenFunc("category");
     } else {
       const updatedTodo = todos.map((item) => ({
         ...item,
@@ -66,6 +67,7 @@ export default function AddPriority() {
 
   useEffect(() => {
     getCalendarPriorityValue();
+    priorityBtnClick(priority);
   }, []);
 
   useEffect(() => {

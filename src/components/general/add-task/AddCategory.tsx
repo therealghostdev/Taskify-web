@@ -1,8 +1,9 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
   useThemeContext,
   useTodoContext,
   useTrackContext,
+  useCalendarTodoContext,
 } from "../../../utils/app_context/general";
 import data from "../../../utils/data/category_data.json";
 import groceryIcon from "../../../assets/grocery.svg";
@@ -23,7 +24,7 @@ import { toast } from "react-toastify";
 export default function AddCategory() {
   const { darkMode } = useThemeContext();
   const valueRef = useRef<HTMLParagraphElement>(null);
-  const [active, setActive] = useState<number | null>(null);
+  const [active, setActive] = useState<string | null>(null);
   const { todos, updateTodos } = useTodoContext();
 
   const [category, setCategory] = useState<string>("");
@@ -34,6 +35,8 @@ export default function AddCategory() {
   const [newCategoryName, setNewCategoryName] = useState<string>("");
   const [SelectIcon, setSelectIcon] = useState<boolean>(false);
   const newTaskNameRef = useRef<HTMLInputElement>(null);
+  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
+  const [calendarCategory, setCalendarCategory] = useState<string>("");
 
   // for new category
   const [newCategory, setNewCategory] = useState<newTaskCategoryType>({
@@ -112,8 +115,8 @@ export default function AddCategory() {
     return icon;
   };
 
-  const updateActive = (index: number) => {
-    setActive(index);
+  const updateActive = (item: string) => {
+    setActive(item);
   };
 
   const getDefaultBgColor = (itemName: string) => {
@@ -143,37 +146,57 @@ export default function AddCategory() {
     }
   };
 
+  // checks for calendar page category value
+  const getCalendarCategoryValue = () => {
+    calendarTodos.map((item) => {
+      if (item.category !== "") {
+        setCategory(item.category);
+      }
+    });
+  };
+
   const handleCategoryClick = (name: string) => {
     setCategory(name);
   };
 
   const handleSave = () => {
-    todos.map(() => {
-      if (category === "") {
-        notify("Add task category");
-      } else {
-        todos.forEach((item) => {
-          if (
-            item.task_description === "" ||
-            item.task === "" ||
-            item.expected_date_of_completion === "" ||
-            item.task_priority === 0 ||
-            item.time === ""
-          ) {
-            trackScreenFunc("");
-          } else {
-            trackScreenFunc("success");
-          }
-        });
+    // Check if category is empty
+    if (category === "") {
+      notify("Add task category");
+      return; // Return early if category is empty
+    }
+
+    // Update calendarTodos if calendarCategory is not empty
+    if (calendarCategory !== "") {
+      const updatedCalendarTodos = calendarTodos.map((item) => ({
+        ...item,
+        category: category,
+      }));
+      updateCalendarTodos(updatedCalendarTodos);
+      trackScreenFunc(calendarCategory !== "" ? "success" : "");
+    } else {
+      // Otherwise, update todos
+      const updatedTodos = todos.map((item) => ({
+        ...item,
+        category: category,
+      }));
+      updateTodos(updatedTodos);
+      trackScreenFunc("success");
+    }
+  };
+
+  useEffect(() => {
+    getCalendarCategoryValue();
+  }, []);
+
+  useEffect(() => {
+    calendarTodos.map((item) => {
+      if (item.category !== "") {
+        setCalendarCategory(category);
       }
     });
-
-    const updatedTodos = todos.map((item) => ({
-      ...item,
-      category: category,
-    }));
-    updateTodos(updatedTodos);
-  };
+    updateActive(category);
+  }, [category]);
   // End of line for category screen main ui
 
   // Functions for newCategory screen
@@ -236,10 +259,10 @@ export default function AddCategory() {
           <div className="w-full flex flex-wrap items-center px-4 py-2 lg:h-[250px] h-auto lg:overflow-y-auto custom-scrollbar">
             {data.map((item, index) => (
               <div
-                onClick={() => updateActive(index)}
+                onClick={() => updateActive(item.name)}
                 key={index}
                 className={`flex flex-col md:w-[100px] w-[100px] my-2 mx-2 py-4 px-2 justify-center items-center hover:bg-[#8687E7] cursor-pointer ${
-                  active === index ? "bg-[#8687E7]" : ""
+                  active === item.name ? "bg-[#8687E7]" : ""
                 }`}
               >
                 <div
@@ -260,7 +283,7 @@ export default function AddCategory() {
                 </div>
                 <p
                   ref={valueRef}
-                  className={active === index ? "text-white" : ""}
+                  className={active === item.name ? "text-white" : ""}
                 >
                   {item.name}
                 </p>
