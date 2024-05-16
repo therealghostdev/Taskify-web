@@ -2,13 +2,15 @@ import {
   useTodoContext,
   useThemeContext,
   useTrackContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
 import Timer from "../../../assets/timer.svg";
 import tag from "../../../assets/tag.svg";
 import flag from "../../../assets/flag.svg";
 import send from "../../../assets/send.svg";
-import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { formValueTypes } from "../../../utils/types/todo";
+import { motion } from "framer-motion";
 
 export default function AddTaskName() {
   const { todos, updateTodos } = useTodoContext();
@@ -17,13 +19,34 @@ export default function AddTaskName() {
   const input1Ref = useRef<HTMLInputElement>(null);
   const input2Ref = useRef<HTMLInputElement>(null);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
+  const { editTodos, updateEditTodos } = useEditTodoContext();
 
+  // update values in edit todo state
+  const [editTaskname, setEditTaskname] = useState<formValueTypes>({
+    taskname: "",
+    taskdescription: "",
+  });
+
+  // form input
   const [formValues, setFormValues] = useState<formValueTypes>({
     taskname: "",
     taskdescription: "",
   });
 
   const [error, setError] = useState("");
+
+  // checks if there's date in calendar page state.
+  const getTaskDetailsformTodoState = () => {
+    editTodos.map((item) => {
+      if (item.task !== "" || item.task_description !== "") {
+        setEditTaskname((prev) => ({
+          ...prev,
+          taskname: item.task,
+          taskdescription: item.task_description,
+        }));
+      }
+    });
+  };
 
   const validateInputs = () => {
     let error = false;
@@ -53,16 +76,27 @@ export default function AddTaskName() {
     } else {
       setError("");
 
-      // Update all todos with the new values
-      const updatedTodos = todos.map((todo) => ({
-        ...todo,
-        task: formValues.taskname,
-        task_description: formValues.taskdescription,
-      }));
+      // checks if calendar page was interacted with and state has been populated before Update all todos with the new values
+      if (editTaskname.taskname === "" || editTaskname.taskdescription === "") {
+        const updatedTodos = todos.map((todo) => ({
+          ...todo,
+          task: formValues.taskname,
+          task_description: formValues.taskdescription,
+        }));
 
-      // Set the updated todos back to the context
-      updateTodos(updatedTodos);
-      trackScreenFunc("calendar");
+        // Set the updated todos back to the context
+        updateTodos(updatedTodos);
+        trackScreenFunc("calendar");
+      } else {
+        const updatedCalendarTodos = editTodos.map((item) => ({
+          ...item,
+          task: formValues.taskname,
+          task_description: formValues.taskdescription,
+        }));
+
+        updateEditTodos(updatedCalendarTodos);
+        trackScreenFunc("calendar");
+      }
     }
   };
 
@@ -82,8 +116,25 @@ export default function AddTaskName() {
     }
   };
 
+  useEffect(() => {
+    getTaskDetailsformTodoState();
+  }, []);
+
+  // populates inputs if calendar page state is not empty
+  useEffect(() => {
+    setFormValues((prev) => ({
+      ...prev,
+      taskdescription: editTaskname.taskdescription,
+      taskname: editTaskname.taskname,
+    }));
+  }, [editTaskname]);
+
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, type: "tween" }}
       className={`w-full h-full ${
         darkMode ? "bg-[#363636]" : "bg-[#bdbdbd]"
       } px-4 py-2 flex flex-col justify-around`}
@@ -179,6 +230,6 @@ export default function AddTaskName() {
           </div>
         </div>
       </form>
-    </div>
+    </motion.div>
   );
 }

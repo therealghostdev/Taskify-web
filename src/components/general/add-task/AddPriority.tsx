@@ -1,12 +1,14 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useThemeContext,
   useTodoContext,
   useTrackContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
 import data from "../../../utils/data/priority_data.json";
 import flagIcon from "../../../assets/flag.svg";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 export default function AddPriority() {
   const { darkMode } = useThemeContext();
@@ -15,25 +17,44 @@ export default function AddPriority() {
   const valueRef = useRef<HTMLSpanElement>(null);
   const [activebtn, setActiveBtn] = useState<number | null>(null);
   const [priority, setPriority] = useState<number>(0);
+  const { editTodos, updateEditTodos } = useEditTodoContext();
+  const [editPriority, setEditPriority] = useState<number>(0);
 
   const notify = (msg: string) =>
     toast(msg, { theme: darkMode ? "dark" : "light" });
 
-  const handleSave = () => {
-    const updatedTodo = todos.map((item) => ({
-      ...item,
-      task_priority: priority,
-    }));
-
-    updateTodos(updatedTodo);
-
-    todos.map(() => {
-      if (priority === 0) {
-        return notify("Add task priority");
-      } else {
-        trackScreenFunc("category");
+  // check if edit priority value isn't empty
+  const getEditPriorityValue = () => {
+    editTodos.map((item) => {
+      if (item.task_priority !== 0) {
+        setPriority(item.task_priority);
       }
     });
+  };
+
+  const handleSave = () => {
+    if (editPriority !== 0) {
+      const updatedTodo = editTodos.map((item) => ({
+        ...item,
+        task_priority: priority,
+      }));
+      updateEditTodos(updatedTodo);
+      trackScreenFunc("category");
+    } else {
+      const updatedTodo = todos.map((item) => ({
+        ...item,
+        task_priority: priority,
+      }));
+
+      updateTodos(updatedTodo);
+      todos.map(() => {
+        if (priority === 0) {
+          return notify("Add task priority");
+        } else {
+          trackScreenFunc("category");
+        }
+      });
+    }
   };
 
   const priorityBtnClick = (index: number) => {
@@ -45,8 +66,25 @@ export default function AddPriority() {
     trackScreenFunc("");
   };
 
+  useEffect(() => {
+    getEditPriorityValue();
+    priorityBtnClick(priority);
+  }, []);
+
+  useEffect(() => {
+    editTodos.map((item) => {
+      if (item.task_priority !== 0) {
+        setEditPriority(priority);
+      }
+    });
+  }, [priority]);
+
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, type: "tween" }}
       className={`w-full lg:h-[400px] h-full flex flex-col justify-center items-center gap-2 ${
         darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
       }`}
@@ -85,6 +123,6 @@ export default function AddPriority() {
           Save
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
