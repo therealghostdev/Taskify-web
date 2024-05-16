@@ -10,7 +10,7 @@ import AddTime from "./AddTime";
 import AddPriority from "./AddPriority";
 import AddCategory from "./AddCategory";
 import Success from "./success";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
 export default function AddTask() {
   const { editTodos, updateEditTodos } = useEditTodoContext();
