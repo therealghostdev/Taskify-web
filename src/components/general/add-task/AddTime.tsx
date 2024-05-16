@@ -7,7 +7,7 @@ import {
   useThemeContext,
   useTodoContext,
   useTrackContext,
-  useCalendarTodoContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
 
 export default function AddTime() {
@@ -16,8 +16,8 @@ export default function AddTime() {
   const { todos, updateTodos } = useTodoContext();
   const { trackScreenFunc } = useTrackContext();
   const [time, setTime] = useState<string>("");
-  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
-  const [calendarTime, setCalendarTime] = useState<string>("");
+  const { editTodos, updateEditTodos } = useEditTodoContext();
+  const [editTime, setEditTime] = useState<string>("");
 
   const handleTimeChange = (time: Moment | string) => {
     if (moment.isMoment(time)) {
@@ -29,11 +29,11 @@ export default function AddTime() {
     }
   };
 
-  // checks if calendar time isn't empty
-  const getCalendarTimeValue = () => {
-    calendarTodos.map((item) => {
+  // checks if edit time state isn't empty
+  const getEditTimeValue = () => {
+    editTodos.map((item) => {
       if (item.time !== "") {
-        setCalendarTime(item.time);
+        setEditTime(item.time);
       }
     });
   };
@@ -42,12 +42,12 @@ export default function AddTime() {
   const value = selectedTime ? selectedTime : moment();
 
   const handleSave = () => {
-    if (calendarTime && calendarTime !== "") {
-      const updatedTodo = calendarTodos.map((item) => ({
+    if (editTime && editTime !== "") {
+      const updatedTodo = editTodos.map((item) => ({
         ...item,
         time: selectedTime ? selectedTime?.format("HH:mm") : "",
       }));
-      updateCalendarTodos(updatedTodo);
+      updateEditTodos(updatedTodo);
       trackScreenFunc("priority");
     } else {
       const updatedTodo = todos.map((item) => ({
@@ -65,16 +65,16 @@ export default function AddTime() {
   };
 
   useEffect(() => {
-    getCalendarTimeValue();
+    getEditTimeValue();
   }, []);
 
   // updates time value
   useEffect(() => {
-    if (calendarTime && calendarTime !== "") {
-      const parsedTime = moment(calendarTime, "HH:mm");
+    if (editTime && editTime !== "") {
+      const parsedTime = moment(editTime, "HH:mm");
       setSelectedTime(parsedTime);
     }
-  }, [calendarTime]);
+  }, [editTime]);
 
   return (
     <div

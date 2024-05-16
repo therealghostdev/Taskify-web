@@ -2,7 +2,7 @@ import {
   useTodoContext,
   useThemeContext,
   useTrackContext,
-  useCalendarTodoContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
 import Timer from "../../../assets/timer.svg";
 import tag from "../../../assets/tag.svg";
@@ -18,10 +18,10 @@ export default function AddTaskName() {
   const input1Ref = useRef<HTMLInputElement>(null);
   const input2Ref = useRef<HTMLInputElement>(null);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
-  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
+  const { editTodos, updateEditTodos } = useEditTodoContext();
 
-  // calendar page todo details
-  const [calendarTaskname, setCalendarTaskname] = useState<formValueTypes>({
+  // update values in edit todo state
+  const [editTaskname, setEditTaskname] = useState<formValueTypes>({
     taskname: "",
     taskdescription: "",
   });
@@ -36,9 +36,9 @@ export default function AddTaskName() {
 
   // checks if there's date in calendar page state.
   const getTaskDetailsformTodoState = () => {
-    calendarTodos.map((item) => {
+    editTodos.map((item) => {
       if (item.task !== "" || item.task_description !== "") {
-        setCalendarTaskname((prev) => ({
+        setEditTaskname((prev) => ({
           ...prev,
           taskname: item.task,
           taskdescription: item.task_description,
@@ -77,8 +77,8 @@ export default function AddTaskName() {
 
       // checks if calendar page was interacted with and state has been populated before Update all todos with the new values
       if (
-        calendarTaskname.taskname === "" ||
-        calendarTaskname.taskdescription === ""
+        editTaskname.taskname === "" ||
+        editTaskname.taskdescription === ""
       ) {
         const updatedTodos = todos.map((todo) => ({
           ...todo,
@@ -90,13 +90,13 @@ export default function AddTaskName() {
         updateTodos(updatedTodos);
         trackScreenFunc("calendar");
       } else {
-        const updatedCalendarTodos = calendarTodos.map((item) => ({
+        const updatedCalendarTodos = editTodos.map((item) => ({
           ...item,
           task: formValues.taskname,
           task_description: formValues.taskdescription,
         }));
 
-        updateCalendarTodos(updatedCalendarTodos);
+        updateEditTodos(updatedCalendarTodos);
         trackScreenFunc("calendar");
       }
     }
@@ -126,10 +126,10 @@ export default function AddTaskName() {
   useEffect(() => {
     setFormValues((prev) => ({
       ...prev,
-      taskdescription: calendarTaskname.taskdescription,
-      taskname: calendarTaskname.taskname,
+      taskdescription: editTaskname.taskdescription,
+      taskname: editTaskname.taskname,
     }));
-  }, [calendarTaskname]);
+  }, [editTaskname]);
 
   return (
     <div

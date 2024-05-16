@@ -17,7 +17,7 @@ import homeIcon from "../../assets/home.svg";
 import addIcon from "../../assets/add.svg";
 import flagIcon from "../../assets/flag.svg";
 import {
-  useCalendarTodoContext,
+  useEditTodoContext,
   useTrackContext,
 } from "../../utils/app_context/general";
 
@@ -25,7 +25,7 @@ export default function Index() {
   const { darkMode } = useThemeContext();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [filteredData, setFilteredData] = useState<TaskDataType[] | null>(null);
-  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
+  const { editTodos, updateEditTodos } = useEditTodoContext();
   const { trackScreenFunc } = useTrackContext();
 
   const handleDateChange = (value: any) => {
@@ -137,7 +137,7 @@ export default function Index() {
   };
 
   const getTaskData = (item: TaskDataType) => {
-    const updatedTodos = calendarTodos.map((content) => ({
+    const updatedTodos = editTodos.map((content) => ({
       ...content,
       id: item.id,
       task: item.task_name,
@@ -147,7 +147,7 @@ export default function Index() {
       time: item.completion_time,
       expected_date_of_completion: item.completion_date,
     }));
-    updateCalendarTodos(updatedTodos);
+    updateEditTodos(updatedTodos);
 
     trackScreenFunc("name");
   };

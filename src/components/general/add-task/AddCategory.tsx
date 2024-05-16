@@ -3,7 +3,7 @@ import {
   useThemeContext,
   useTodoContext,
   useTrackContext,
-  useCalendarTodoContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
 import data from "../../../utils/data/category_data.json";
 import groceryIcon from "../../../assets/grocery.svg";
@@ -35,8 +35,8 @@ export default function AddCategory() {
   const [newCategoryName, setNewCategoryName] = useState<string>("");
   const [SelectIcon, setSelectIcon] = useState<boolean>(false);
   const newTaskNameRef = useRef<HTMLInputElement>(null);
-  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
-  const [calendarCategory, setCalendarCategory] = useState<string>("");
+  const { editTodos, updateEditTodos } = useEditTodoContext();
+  const [editCategory, setEditCategory] = useState<string>("");
 
   // for new category
   const [newCategory, setNewCategory] = useState<newTaskCategoryType>({
@@ -148,7 +148,7 @@ export default function AddCategory() {
 
   // checks for calendar page category value
   const getCalendarCategoryValue = () => {
-    calendarTodos.map((item) => {
+    editTodos.map((item) => {
       if (item.category !== "") {
         setCategory(item.category);
       }
@@ -166,14 +166,14 @@ export default function AddCategory() {
       return; // Return early if category is empty
     }
 
-    // Update calendarTodos if calendarCategory is not empty
-    if (calendarCategory !== "") {
-      const updatedCalendarTodos = calendarTodos.map((item) => ({
+    // Update editTodos if editCategory is not empty
+    if (editCategory !== "") {
+      const updatedCalendarTodos = editTodos.map((item) => ({
         ...item,
         category: category,
       }));
-      updateCalendarTodos(updatedCalendarTodos);
-      trackScreenFunc(calendarCategory !== "" ? "success" : "");
+      updateEditTodos(updatedCalendarTodos);
+      trackScreenFunc(editCategory !== "" ? "success" : "");
     } else {
       // Otherwise, update todos
       const updatedTodos = todos.map((item) => ({
@@ -190,9 +190,9 @@ export default function AddCategory() {
   }, []);
 
   useEffect(() => {
-    calendarTodos.map((item) => {
+    editTodos.map((item) => {
       if (item.category !== "") {
-        setCalendarCategory(category);
+        setEditCategory(category);
       }
     });
     updateActive(category);

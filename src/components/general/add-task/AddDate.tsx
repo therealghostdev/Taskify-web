@@ -5,7 +5,7 @@ import {
   useThemeContext,
   useTodoContext,
   useTrackContext,
-  useCalendarTodoContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
 
 const AddDate = () => {
@@ -13,8 +13,8 @@ const AddDate = () => {
   const { trackScreenFunc } = useTrackContext();
   const { todos, updateTodos } = useTodoContext();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
-  const [calendarTodoDate, setCalendarTodoDate] = useState<Date | null>(null);
+  const { editTodos, updateEditTodos } = useEditTodoContext();
+  const [editTodoState, setEditTodoState] = useState<Date | null>(null);
 
   // Calculate the last date of the current year
   const currentYear = new Date().getFullYear();
@@ -26,9 +26,9 @@ const AddDate = () => {
     }
   };
 
-  // checks for calendar page task details
+  // checks for edit task details
   const updatedSelectedDate = () => {
-    calendarTodos.forEach((item) => {
+    editTodos.forEach((item) => {
       if (item.expected_date_of_completion !== "") {
         const [day, month, year] = item.expected_date_of_completion.split("/");
 
@@ -44,13 +44,13 @@ const AddDate = () => {
   };
 
   const handleSave = () => {
-    if (calendarTodoDate && calendarTodoDate instanceof Date) {
-      const updatedTodo = calendarTodos.map((item) => ({
+    if (editTodoState && editTodoState instanceof Date) {
+      const updatedTodo = editTodos.map((item) => ({
         ...item,
         expected_date_of_completion:
-          calendarTodoDate.toLocaleDateString("en-GB"),
+          editTodoState.toLocaleDateString("en-GB"),
       }));
-      updateCalendarTodos(updatedTodo);
+      updateEditTodos(updatedTodo);
       trackScreenFunc("time");
     } else {
       const updatedTodos = todos.map((item) => ({
@@ -72,9 +72,9 @@ const AddDate = () => {
   }, []);
 
   useEffect(() => {
-    calendarTodos.map((item) => {
+    editTodos.map((item) => {
       if (item.expected_date_of_completion !== "") {
-        setCalendarTodoDate(selectedDate);
+        setEditTodoState(selectedDate);
       }
     });
   }, [selectedDate]);

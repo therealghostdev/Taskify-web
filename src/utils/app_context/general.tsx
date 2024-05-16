@@ -10,12 +10,12 @@ const TodoContext = createContext<{
   updateTodos: () => {},
 });
 
-const CalendarTodoContext = createContext<{
-  calendarTodos: Todo[];
-  updateCalendarTodos: (newTodos: Todo[]) => void;
+const EditTodoContext = createContext<{
+  editTodos: Todo[];
+  updateEditTodos: (newTodos: Todo[]) => void;
 }>({
-  calendarTodos: [],
-  updateCalendarTodos: () => {},
+  editTodos: [],
+  updateEditTodos: () => {},
 });
 
 // create context to toggle darkmode on/off
@@ -39,7 +39,7 @@ const TrackTaskScreenContext = createContext<{
 export const useTodoContext = () => useContext(TodoContext);
 
 // Custom hook to access and edit calendar page todo list context
-export const useCalendarTodoContext = () => useContext(CalendarTodoContext);
+export const useEditTodoContext = () => useContext(EditTodoContext);
 
 // Custom hook to access the theme context
 export const useThemeContext = () => useContext(ThemeContext);
@@ -73,7 +73,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // State for managing calendar-page todo list
-  const [calendarTodos, setCalendarTodos] = useState<Todo[]>([
+  const [editTodos, setEditTodos] = useState<Todo[]>([
     {
       task: "",
       task_description: "",
@@ -85,8 +85,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   ]);
 
   // Function to update the todo list
-  const updateCalendarTodos = (newTodos: Todo[]) => {
-    setCalendarTodos(newTodos);
+  const updateEditTodos = (newTodos: Todo[]) => {
+    setEditTodos(newTodos);
   };
 
   // State for managing app theme
@@ -127,8 +127,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <TodoContext.Provider value={{ todos, updateTodos }}>
-      <CalendarTodoContext.Provider
-        value={{ calendarTodos, updateCalendarTodos }}
+      <EditTodoContext.Provider
+        value={{ editTodos, updateEditTodos }}
       >
         <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
           <AuthContext.Provider value={authenticated}>
@@ -139,7 +139,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             </TrackTaskScreenContext.Provider>
           </AuthContext.Provider>
         </ThemeContext.Provider>
-      </CalendarTodoContext.Provider>
+      </EditTodoContext.Provider>
     </TodoContext.Provider>
   );
 };

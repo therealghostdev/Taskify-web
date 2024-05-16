@@ -1,7 +1,7 @@
 import {
   useTrackContext,
   useTodoContext,
-  useCalendarTodoContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
 import AddTaskName from "./AddTaskName";
 import AddDate from "./AddDate";
@@ -13,11 +13,11 @@ import Success from "./success";
 
 export default function AddTask() {
   const { todos } = useTodoContext();
-  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
+  const { editTodos, updateEditTodos } = useEditTodoContext();
   const { trackScreen, trackScreenFunc } = useTrackContext();
   const flowContainerRef = useRef<HTMLDivElement>(null);
   // console.log(todos, trackScreen);
-  console.log(calendarTodos);
+  console.log(editTodos);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -26,7 +26,7 @@ export default function AddTask() {
         !flowContainerRef.current.contains(e.target as Node)
       ) {
         trackScreenFunc("");
-        updateCalendarTodos([]);
+        updateEditTodos([]);
       }
     };
 

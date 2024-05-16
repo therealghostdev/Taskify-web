@@ -3,7 +3,7 @@ import {
   useThemeContext,
   useTodoContext,
   useTrackContext,
-  useCalendarTodoContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
 import data from "../../../utils/data/priority_data.json";
 import flagIcon from "../../../assets/flag.svg";
@@ -16,15 +16,15 @@ export default function AddPriority() {
   const valueRef = useRef<HTMLSpanElement>(null);
   const [activebtn, setActiveBtn] = useState<number | null>(null);
   const [priority, setPriority] = useState<number>(0);
-  const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
-  const [calendarPriority, setCalendarPriority] = useState<number>(0);
+  const { editTodos, updateEditTodos } = useEditTodoContext();
+  const [editPriority, setEditPriority] = useState<number>(0);
 
   const notify = (msg: string) =>
     toast(msg, { theme: darkMode ? "dark" : "light" });
 
-  // check if calendar priority value isn't empty
-  const getCalendarPriorityValue = () => {
-    calendarTodos.map((item) => {
+  // check if edit priority value isn't empty
+  const getEditPriorityValue = () => {
+    editTodos.map((item) => {
       if (item.task_priority !== 0) {
         setPriority(item.task_priority);
       }
@@ -32,12 +32,12 @@ export default function AddPriority() {
   };
 
   const handleSave = () => {
-    if (calendarPriority !== 0) {
-      const updatedTodo = calendarTodos.map((item) => ({
+    if (editPriority !== 0) {
+      const updatedTodo = editTodos.map((item) => ({
         ...item,
         task_priority: priority,
       }));
-      updateCalendarTodos(updatedTodo);
+      updateEditTodos(updatedTodo);
       trackScreenFunc("category");
     } else {
       const updatedTodo = todos.map((item) => ({
@@ -66,14 +66,14 @@ export default function AddPriority() {
   };
 
   useEffect(() => {
-    getCalendarPriorityValue();
+    getEditPriorityValue();
     priorityBtnClick(priority);
   }, []);
 
   useEffect(() => {
-    calendarTodos.map((item) => {
+    editTodos.map((item) => {
       if (item.task_priority !== 0) {
-        setCalendarPriority(priority);
+        setEditPriority(priority);
       }
     });
   }, [priority]);
