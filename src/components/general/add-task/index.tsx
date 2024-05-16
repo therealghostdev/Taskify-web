@@ -1,6 +1,5 @@
 import {
   useTrackContext,
-  useTodoContext,
   useEditTodoContext,
 } from "../../../utils/app_context/general";
 import AddTaskName from "./AddTaskName";
@@ -12,12 +11,9 @@ import AddCategory from "./AddCategory";
 import Success from "./success";
 
 export default function AddTask() {
-  const { todos } = useTodoContext();
   const { editTodos, updateEditTodos } = useEditTodoContext();
   const { trackScreen, trackScreenFunc } = useTrackContext();
   const flowContainerRef = useRef<HTMLDivElement>(null);
-  // console.log(todos, trackScreen);
-  console.log(editTodos);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -35,7 +31,7 @@ export default function AddTask() {
           expected_date_of_completion: "",
           time: "",
         }));
-        
+
         updateEditTodos(reset);
       }
     };
