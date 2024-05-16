@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Datetime from "react-datetime";
 import moment, { Moment } from "moment";
 import "react-datetime/css/react-datetime.css";
-import "./time.scss";
+import "../../../styles/time.scss";
 import {
   useThemeContext,
   useTodoContext,
@@ -23,8 +23,6 @@ export default function AddTime() {
     if (moment.isMoment(time)) {
       setSelectedTime(time);
       const formattedTime = time.format("HH:mm").toString();
-      console.log(formattedTime);
-
       setTime(formattedTime);
     }
   };
