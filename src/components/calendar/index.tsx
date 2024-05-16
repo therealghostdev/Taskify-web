@@ -16,6 +16,7 @@ import movieIcon from "../../assets/video-camera.svg";
 import homeIcon from "../../assets/home.svg";
 import addIcon from "../../assets/add.svg";
 import flagIcon from "../../assets/flag.svg";
+import noItem from "../../assets/Checklist-rafiki 1.svg";
 import {
   useEditTodoContext,
   useTrackContext,
@@ -27,6 +28,7 @@ export default function Index() {
   const [filteredData, setFilteredData] = useState<TaskDataType[] | null>(null);
   const { editTodos, updateEditTodos } = useEditTodoContext();
   const { trackScreenFunc } = useTrackContext();
+  const [activeBtn, setActiveBtn] = useState<boolean>(false);
 
   const handleDateChange = (value: any) => {
     if (value instanceof Date) {
@@ -43,6 +45,20 @@ export default function Index() {
       );
     });
     setFilteredData(filteredTasks);
+    setActiveBtn(false);
+  };
+
+  const getTaskByCompleteStatus = () => {
+    const filteredTask = data.filter((item) => {
+      return (
+        item.completed === true &&
+        item.completion_date ===
+          selectedDate.toLocaleDateString("en-GB").toString()
+      );
+    });
+
+    setFilteredData(filteredTask);
+    setActiveBtn(true);
   };
 
   const currentYear = new Date().getFullYear();
@@ -178,15 +194,19 @@ export default function Index() {
           }`}
         >
           <button
-            // onClick={cancel}
-            className="w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
+            onClick={getTaskByDate}
+            className={`${
+              !activeBtn ? "bg-[#8687E7] text-white" : ""
+            } w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4`}
           >
             Today
           </button>
 
           <button
-            // onClick={cancel}
-            className="w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
+            onClick={getTaskByCompleteStatus}
+            className={`${
+              activeBtn ? "bg-[#8687E7] text-white" : ""
+            } w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4`}
           >
             Completed
           </button>
@@ -246,6 +266,27 @@ export default function Index() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {filteredData && filteredData?.length <= 0 && (
+          <div className="px-4 py-6 flex flex-col justify-center items-center w-full md:h-[400px]">
+            <div className="w-full flex flex-col justify-center items-center">
+              <img
+                src={noItem}
+                alt="no-item"
+                width={100}
+                height={100}
+                className="h-full md:w-1/4 w-full"
+              />
+              <h1
+                className={`text-2xl ${
+                  darkMode ? "text-[#AFAFAF]" : "text-[#808080]"
+                }`}
+              >
+                No Task to display
+              </h1>
+            </div>
           </div>
         )}
       </div>
