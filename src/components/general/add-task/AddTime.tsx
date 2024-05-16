@@ -9,6 +9,7 @@ import {
   useTrackContext,
   useEditTodoContext,
 } from "../../../utils/app_context/general";
+import { motion } from "framer-motion";
 
 export default function AddTime() {
   const [selectedTime, setSelectedTime] = useState<Moment | null>(moment());
@@ -75,7 +76,11 @@ export default function AddTime() {
   }, [editTime]);
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, type: "tween" }}
       className={`${
         darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
       }`}
@@ -110,6 +115,6 @@ export default function AddTime() {
           Save
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

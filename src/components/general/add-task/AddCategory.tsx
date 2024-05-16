@@ -20,6 +20,7 @@ import addIcon from "../../../assets/add.svg";
 import { newTaskCategoryType } from "../../../utils/types/todo";
 import CheckIcon from "@mui/icons-material/Check";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 export default function AddCategory() {
   const { darkMode } = useThemeContext();
@@ -247,7 +248,11 @@ export default function AddCategory() {
   return (
     <>
       {trackScreen === "category" && !addNewScreen ? (
-        <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8, type: "tween" }}
           className={`w-full md:h-full h-[600px] custom-scrollbar overflow-y-auto ${
             darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
           }`}
@@ -313,9 +318,12 @@ export default function AddCategory() {
               Add Category
             </button>
           </div>
-        </div>
+        </motion.div>
       ) : (
-        <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className={`md:w-full lg:h-[450px] md:h-full h-screen w-screen py-6 px-4 md:static fixed top-0 left-0 overflow-y-auto overflow-x-hidden custom-scrollbar md:block flex flex-col md:gap-y-0 gap-y-12 ${
             darkMode
               ? "md:bg-[#363636] bg-[#000000] text-white"
@@ -424,7 +432,7 @@ export default function AddCategory() {
               Save
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
     </>
   );

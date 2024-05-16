@@ -10,6 +10,7 @@ import flag from "../../../assets/flag.svg";
 import send from "../../../assets/send.svg";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { formValueTypes } from "../../../utils/types/todo";
+import { motion } from "framer-motion";
 
 export default function AddTaskName() {
   const { todos, updateTodos } = useTodoContext();
@@ -76,10 +77,7 @@ export default function AddTaskName() {
       setError("");
 
       // checks if calendar page was interacted with and state has been populated before Update all todos with the new values
-      if (
-        editTaskname.taskname === "" ||
-        editTaskname.taskdescription === ""
-      ) {
+      if (editTaskname.taskname === "" || editTaskname.taskdescription === "") {
         const updatedTodos = todos.map((todo) => ({
           ...todo,
           task: formValues.taskname,
@@ -132,7 +130,11 @@ export default function AddTaskName() {
   }, [editTaskname]);
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, type: "tween" }}
       className={`w-full h-full ${
         darkMode ? "bg-[#363636]" : "bg-[#bdbdbd]"
       } px-4 py-2 flex flex-col justify-around`}
@@ -228,6 +230,6 @@ export default function AddTaskName() {
           </div>
         </div>
       </form>
-    </div>
+    </motion.div>
   );
 }

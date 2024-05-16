@@ -7,6 +7,7 @@ import {
   useTrackContext,
   useEditTodoContext,
 } from "../../../utils/app_context/general";
+import { motion } from "framer-motion";
 
 const AddDate = () => {
   const { darkMode } = useThemeContext();
@@ -47,8 +48,7 @@ const AddDate = () => {
     if (editTodoState && editTodoState instanceof Date) {
       const updatedTodo = editTodos.map((item) => ({
         ...item,
-        expected_date_of_completion:
-          editTodoState.toLocaleDateString("en-GB"),
+        expected_date_of_completion: editTodoState.toLocaleDateString("en-GB"),
       }));
       updateEditTodos(updatedTodo);
       trackScreenFunc("time");
@@ -80,7 +80,11 @@ const AddDate = () => {
   }, [selectedDate]);
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, type: "tween" }}
       className={`w-full h-full text-[#8687E7] ${
         darkMode ? "bg-[#363636]" : "bg-[#bdbdbd]"
       }`}
@@ -107,7 +111,7 @@ const AddDate = () => {
           Save
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
