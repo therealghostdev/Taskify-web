@@ -33,7 +33,7 @@ export default function AddTime() {
   const getCalendarTimeValue = () => {
     calendarTodos.map((item) => {
       if (item.time !== "") {
-        return setCalendarTime(item.time);
+        setCalendarTime(item.time);
       }
     });
   };
@@ -45,7 +45,7 @@ export default function AddTime() {
     if (calendarTime && calendarTime !== "") {
       const updatedTodo = calendarTodos.map((item) => ({
         ...item,
-        time,
+        time: selectedTime ? selectedTime?.format("HH:mm") : "",
       }));
       updateCalendarTodos(updatedTodo);
       trackScreenFunc("priority");

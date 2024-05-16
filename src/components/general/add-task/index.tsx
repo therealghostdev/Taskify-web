@@ -16,7 +16,7 @@ export default function AddTask() {
   const { calendarTodos, updateCalendarTodos } = useCalendarTodoContext();
   const { trackScreen, trackScreenFunc } = useTrackContext();
   const flowContainerRef = useRef<HTMLDivElement>(null);
-  console.log(todos, trackScreen);
+  // console.log(todos, trackScreen);
   console.log(calendarTodos);
 
   useEffect(() => {
