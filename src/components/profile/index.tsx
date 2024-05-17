@@ -12,10 +12,18 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BoltIcon from "@mui/icons-material/Bolt";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { useState } from "react";
+import Popup from "./popup";
 
 export default function Index() {
   const authenticated = useAuthContext();
   const { darkMode } = useThemeContext();
+  const [popup, setPopup] = useState<boolean>(true);
+  const [singleInput, setSingleInput] = useState<boolean>(false);
+  const [camera, setCamera] = useState<boolean>(false);
+  const [popupText, setPopupText] = useState<string>("");
+
+  const closePopup = () => setPopup(false);
 
   return (
     <section
@@ -23,6 +31,25 @@ export default function Index() {
         darkMode ? "text-white" : "text-black"
       }`}
     >
+      {popup && (
+        <div
+          className={`${
+            popup
+              ? darkMode
+                ? "dark-overlay fixed top-0 left-0"
+                : "light-overlay fixed top-0 left-0 z-10"
+              : ""
+          }`}
+        >
+          <Popup
+            singleInput={singleInput}
+            camera={camera}
+            text={popupText}
+            close={closePopup}
+          />
+        </div>
+      )}
+
       <div className="w-full flex flex-col justify-center items-center">
         <div className="w-full flex flex-col justify-center items-center md:w-2/4 px-4 py-2">
           <div className="w-40 h-40 flex justify-center items-center rounded-full">
@@ -54,26 +81,6 @@ export default function Index() {
           </button>
         </div>
       </div>
-
-      <section className="w-full flex flex-col justify-center items-center">
-        <div className="md:w-2/4 w-full my-4 flex flex-col gap-4">
-          <h1
-            className={`${
-              darkMode ? "text-[#bdbdbd]" : "text-[#363636]"
-            } text-lg`}
-          >
-            Settings
-          </h1>
-
-          <button className={`text-2xl flex justify-between bg-transparent`}>
-            <span>
-              <SettingsIcon className="mr-4" />
-              App Settings
-            </span>
-            <span>&gt;</span>
-          </button>
-        </div>
-      </section>
 
       <section className="w-full flex flex-col justify-center items-center">
         <div className="md:w-2/4 w-full my-4 flex flex-col gap-4">
@@ -157,7 +164,19 @@ export default function Index() {
             <span>&gt;</span>
           </button>
 
-          <button className={`text-2xl flex justify-between text-[#FF4949] my-2`}>
+          <button
+            className={`text-2xl flex justify-between bg-transparent my-2`}
+          >
+            <span>
+              <ThumbUpIcon className="mr-4" />
+              Support us
+            </span>
+            <span>&gt;</span>
+          </button>
+
+          <button
+            className={`text-2xl flex justify-between text-[#FF4949] my-2`}
+          >
             <span>
               <LogoutIcon className="mr-4" />
               Logout

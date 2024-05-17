@@ -52,12 +52,14 @@ body {
 
 .dark-overlay {
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   background-color: #000000c5;
+  overflow: hidden;
 }
 
 .light-overlay {
   width: 100vw;
-  min-height: 100vh;
-  background-color: #999;
+  height: 100vh;
+  background-color: #999999c5;
+  overflow: hidden;
 }
