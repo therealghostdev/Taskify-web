@@ -12,18 +12,63 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BoltIcon from "@mui/icons-material/Bolt";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Popup from "./popup";
 
 export default function Index() {
   const authenticated = useAuthContext();
   const { darkMode } = useThemeContext();
-  const [popup, setPopup] = useState<boolean>(true);
+  const [popup, setPopup] = useState<boolean>(false);
   const [singleInput, setSingleInput] = useState<boolean>(false);
   const [camera, setCamera] = useState<boolean>(false);
   const [popupText, setPopupText] = useState<string>("");
+  let accountRef = useRef<HTMLSpanElement | null>(null);
+  let passwordRef = useRef<HTMLSpanElement | null>(null);
+  let imageRef = useRef<HTMLSpanElement | null>(null);
 
   const closePopup = () => setPopup(false);
+
+  const getAccountRefTextValues = () => {
+    if (accountRef.current) {
+      const textContent = accountRef.current.textContent;
+      const text = textContent?.split(" ").pop()?.toString();
+      if (text) {
+        setPopupText(text);
+      }
+    }
+
+    setPopup(true);
+    setSingleInput(true);
+    setCamera(false);
+  };
+
+  const getPasswordRefTextValues = () => {
+    if (passwordRef.current) {
+      const textContent = passwordRef.current.textContent;
+      const text = textContent?.split(" ").pop()?.toString();
+      if (text) {
+        setPopupText(text);
+      }
+    }
+
+    setPopup(true);
+    setSingleInput(false);
+    setCamera(false);
+  };
+
+  const getImageRefTextValues = () => {
+    if (imageRef.current) {
+      const textContent = imageRef.current.textContent;
+      const text = textContent?.split(" ").pop()?.toString();
+      if (text) {
+        setPopupText(text);
+      }
+    }
+
+    setPopup(true);
+    setSingleInput(false);
+    setCamera(true);
+  };
 
   return (
     <section
@@ -93,9 +138,10 @@ export default function Index() {
           </h1>
 
           <button
+            onClick={getAccountRefTextValues}
             className={`text-2xl flex justify-between bg-transparent my-2`}
           >
-            <span>
+            <span ref={accountRef}>
               <PersonIcon className="mr-4" />
               Change account name
             </span>
@@ -103,9 +149,10 @@ export default function Index() {
           </button>
 
           <button
+            onClick={getPasswordRefTextValues}
             className={`text-2xl flex justify-between bg-transparent my-2`}
           >
-            <span>
+            <span ref={passwordRef}>
               <KeyIcon className="mr-4" />
               Change account password
             </span>
@@ -113,9 +160,10 @@ export default function Index() {
           </button>
 
           <button
+            onClick={getImageRefTextValues}
             className={`text-2xl flex justify-between bg-transparent my-2`}
           >
-            <span>
+            <span ref={imageRef}>
               <CameraAltIcon className="mr-4" />
               Change account image
             </span>

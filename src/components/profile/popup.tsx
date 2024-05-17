@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useThemeContext } from "../../utils/app_context/general";
 import { PopupPropsTypes, changePasswordProps } from "../../utils/types/todo";
 import { toast } from "react-toastify";
@@ -10,6 +10,20 @@ export default function Popup(props: PopupPropsTypes) {
     oldPassword: "",
     newPassword: "",
   });
+
+  const popupBox = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const clickOutside = (e: MouseEvent) => {
+      if (popupBox.current && !popupBox.current.contains(e.target as Node)) {
+        props.close();
+      }
+    };
+
+    document.addEventListener("mousedown", clickOutside);
+
+    return () => document.removeEventListener("mousedown", clickOutside);
+  }, []);
 
   const validateTextInput = () => {
     let error = false;
@@ -66,9 +80,14 @@ export default function Popup(props: PopupPropsTypes) {
     }
   };
 
+  const cancel = () => {
+    props.close();
+  };
+
   return (
     <div className="flex justify-center items-center w-full h-full px-8 py-4">
       <div
+        ref={popupBox}
         className={`lg:w-2/4 md:w-3/4 w-full rounded-md px-6 py-2 gap-y-6   ${
           darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
         } ${
@@ -78,7 +97,9 @@ export default function Popup(props: PopupPropsTypes) {
         }`}
       >
         <div className="border-b border-b-[#ffffff] w-full px-2 my-6">
-          <h1 className="text-center text-2xl my-4">Change account name</h1>
+          <h1 className="text-center text-2xl my-4">
+            Change account {props.text}
+          </h1>
         </div>
         {props.singleInput && (
           <div className="w-full">
@@ -99,7 +120,7 @@ export default function Popup(props: PopupPropsTypes) {
 
             <div className="flex justify-center items-center mt-8">
               <button
-                // onClick={cancel}
+                onClick={cancel}
                 className="w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
               >
                 Cancel
@@ -160,7 +181,7 @@ export default function Popup(props: PopupPropsTypes) {
 
             <div className="flex justify-center items-center mt-8">
               <button
-                // onClick={cancel}
+                onClick={cancel}
                 className="w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
               >
                 Cancel
