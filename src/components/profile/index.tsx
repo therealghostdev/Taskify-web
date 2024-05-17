@@ -2,8 +2,6 @@ import {
   useAuthContext,
   useThemeContext,
 } from "../../utils/app_context/general";
-import profileImg from "../../assets/default-profile.svg";
-import SettingsIcon from "@mui/icons-material/Settings";
 import PersonIcon from "@mui/icons-material/Person";
 import KeyIcon from "@mui/icons-material/Key";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
@@ -12,8 +10,12 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BoltIcon from "@mui/icons-material/Bolt";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Popup from "./popup";
+import userData from "../../utils/data/user_data.json";
+import defaultImg from "../../assets/default-profile.png";
+import taskData from "../../utils/data/task_data.json";
+import { TaskDataType } from "../../utils/types/todo";
 
 export default function Index() {
   const authenticated = useAuthContext();
@@ -25,8 +27,24 @@ export default function Index() {
   let accountRef = useRef<HTMLSpanElement | null>(null);
   let passwordRef = useRef<HTMLSpanElement | null>(null);
   let imageRef = useRef<HTMLSpanElement | null>(null);
+  const [filteredTask, setFilteredTask] = useState<TaskDataType[] | null>(null);
+  const [completedTasks, setCompletedTasks] = useState<TaskDataType[] | null>(
+    null
+  );
 
   const closePopup = () => setPopup(false);
+
+  const filterTasksByCurrentDate = (tasks: TaskDataType[]) => {
+    const currentDate = new Date().toLocaleDateString("en-GB");
+    return tasks.filter((task) => task.completion_date === currentDate);
+  };
+
+  const returnCompletedTaskData = (tasks: TaskDataType[]) => {
+    const currentDate = new Date().toLocaleDateString("en-GB");
+    return tasks.filter(
+      (task) => task.completed === true && task.completion_date === currentDate
+    );
+  };
 
   const getAccountRefTextValues = () => {
     if (accountRef.current) {
@@ -70,6 +88,14 @@ export default function Index() {
     setCamera(true);
   };
 
+  useEffect(() => {
+    const filtered = filterTasksByCurrentDate(taskData);
+    const completed = returnCompletedTaskData(taskData);
+
+    setFilteredTask(filtered);
+    setCompletedTasks(completed);
+  }, []);
+
   return (
     <section
       className={`w-full px-6 py-4 flex justify-center items- flex-col ${
@@ -97,14 +123,28 @@ export default function Index() {
 
       <div className="w-full flex flex-col justify-center items-center">
         <div className="w-full flex flex-col justify-center items-center md:w-2/4 px-4 py-2">
-          <div className="w-40 h-40 flex justify-center items-center rounded-full">
-            <img
-              src={profileImg}
-              alt="profile-img"
-              className="w-full h-full rounded-full"
-            />
-          </div>
-          <h1 className={`text-2xl`}>Marth Hays</h1>
+          {userData.map((user, index) => (
+            <div
+              key={index}
+              className="w-full flex flex-col justify-center items-center"
+            >
+              <div className="w-40 h-40 flex justify-center items-center rounded-full">
+                <img
+                  src={user.image || defaultImg}
+                  alt="profile-img"
+                  className="w-full h-full rounded-full"
+                />
+              </div>
+              {authenticated ? (
+                <h1 className="text-2xl">{`${user.firstname} ${user.lastname}`}</h1>
+              ) : (
+                <h1 className="text-2xl">No name found</h1>
+              )}
+              <h2 className="text-lg">
+                @{authenticated ? user.username : "no username found"}
+              </h2>
+            </div>
+          ))}
         </div>
 
         <div className="md:w-2/4 w-full flex justify-center items-center my-5">
@@ -114,7 +154,7 @@ export default function Index() {
               darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
             } px-4 py-6 w-2/4`}
           >
-            10 Task Left
+            {filteredTask ? filteredTask.length : "0"} Task Left
           </button>
           <button
             disabled
@@ -122,7 +162,7 @@ export default function Index() {
               darkMode ? "bg-[#363636]" : "bg-[#bdbdbd]"
             } px-4 py-6 w-2/4`}
           >
-            5 Task done
+            {completedTasks ? completedTasks.length : "0"} Task done
           </button>
         </div>
       </div>
@@ -143,7 +183,7 @@ export default function Index() {
           >
             <span ref={accountRef}>
               <PersonIcon className="mr-4" />
-              Change account name
+              Change username
             </span>
             <span>&gt;</span>
           </button>
