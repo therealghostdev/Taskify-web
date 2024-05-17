@@ -6,12 +6,21 @@ import { toast } from "react-toastify";
 export default function Popup(props: PopupPropsTypes) {
   const { darkMode } = useThemeContext();
   const [textInput, setTextInputs] = useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
   const [changePassword, setChangePassword] = useState<changePasswordProps>({
     oldPassword: "",
     newPassword: "",
   });
 
   const popupBox = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFile(file);
+    }
+  };
 
   useEffect(() => {
     const clickOutside = (e: MouseEvent) => {
@@ -83,6 +92,19 @@ export default function Popup(props: PopupPropsTypes) {
   const cancel = () => {
     props.close();
   };
+
+  const getImageFromGallery = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  useEffect(() => {
+    if (file !== null) {
+      notify("Image upload sucessfully");
+      props.close();
+    }
+  }, [file]);
 
   return (
     <div className="flex justify-center items-center w-full h-full px-8 py-4">
@@ -202,9 +224,21 @@ export default function Popup(props: PopupPropsTypes) {
               Take picture
             </button>
 
-            <button className="bg-transparent py-4 px-2 flex w-full my-2">
-              Import from Gallery
-            </button>
+            <div>
+              <button
+                className="bg-transparent py-4 px-2 flex w-full my-2"
+                onClick={getImageFromGallery}
+              >
+                Import from Gallery
+              </button>
+              <input
+                accept="image/png, image/jpeg"
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileInputChange}
+              />
+            </div>
 
             <button className="bg-transparent py-4 px-2 flex w-full my-2">
               Import from Google Drive
