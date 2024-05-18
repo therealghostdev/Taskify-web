@@ -374,7 +374,8 @@ export default function Popup(props: PopupPropsTypes) {
               />
             </div>
 
-            <button className="bg-transparent py-4 px-2 flex w-full my-2">
+            <button onClick={() => notify("Feature still in progress")}
+             className="bg-transparent py-4 px-2 flex w-full my-2">
               Import from Google Drive
             </button>
           </div>
