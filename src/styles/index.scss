@@ -63,3 +63,29 @@ body {
   background-color: #999999c5;
   overflow: hidden;
 }
+
+.camera-button {
+  position: absolute;
+  left: 44%;
+  bottom: 0%;
+}
+
+@media screen and (min-width: 1024px) {
+  .camera-button {
+    left: 44%;
+    bottom: 0%;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .camera-button{
+    bottom: 23%;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .camera-button{
+    bottom: 32%;
+    left: 42%;
+  }
+}

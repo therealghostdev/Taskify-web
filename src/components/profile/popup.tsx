@@ -7,6 +7,9 @@ export default function Popup(props: PopupPropsTypes) {
   const { darkMode } = useThemeContext();
   const [textInput, setTextInputs] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
+  const [cameraBox, setCameraBox] = useState<boolean>(false);
+  const [width, setWidth] = useState<number>(window.innerWidth);
+  const [isMobile, setIsmobile] = useState<boolean>(false);
   const [changePassword, setChangePassword] = useState<changePasswordProps>({
     oldPassword: "",
     newPassword: "",
@@ -14,6 +17,9 @@ export default function Popup(props: PopupPropsTypes) {
 
   const popupBox = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const cameraButttonRef = useRef<HTMLButtonElement | null>(null);
 
   const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -99,18 +105,121 @@ export default function Popup(props: PopupPropsTypes) {
     }
   };
 
+  const takePictureMobile = () => {
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click();
+    }
+  };
+
+  const startCamera = async () => {
+    try {
+      setCameraBox(true);
+      console.log("camra");
+
+      const constraints = {
+        video: {
+          facingMode: "environment",
+        },
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+          if (e.code === "Space") {
+            captureImage(stream);
+          }
+        };
+
+        const handleButtonClick = () => {
+          captureImage(stream);
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+        cameraButttonRef.current?.addEventListener("click", handleButtonClick);
+
+        return () => {
+          document.removeEventListener("keydown", handleKeyDown);
+          stream.getTracks().forEach((track) => track.stop());
+          cameraButttonRef.current?.removeEventListener(
+            "click",
+            handleButtonClick
+          );
+        };
+      }
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+    }
+  };
+  useEffect(() => {
+    if (cameraBox) {
+      startCamera();
+    }
+  }, [cameraBox]);
+
+  const captureImage = (stream: MediaStream) => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    if (videoRef.current && ctx) {
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      const capturedImage = canvas.toDataURL("image/png");
+      const blob = dataURItoBlob(capturedImage);
+      const file = new File([blob], "captured.png", { type: blob.type });
+      setFile(file);
+      stream.getTracks().forEach((track) => track.stop());
+
+      setTimeout(() => {
+        props.close();
+      }, 100);
+    }
+  };
+
+  const dataURItoBlob = (dataURI: string) => {
+    const byteString = atob(dataURI.split(",")[1]);
+    const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
+  };
+
   useEffect(() => {
     if (file !== null) {
-      notify("Image upload sucessfully");
+      notify("Image upload successfully");
       props.close();
     }
+
+    console.log(file);
   }, [file]);
+
+  useEffect(() => {
+    setWidth(window.innerWidth);
+  }, []);
+
+  // useEffect(() => {
+  //   console.log(isMobile);
+  // }, [isMobile]);
+
+  useEffect(() => {
+    if (width < 1024) {
+      setIsmobile(true);
+    } else {
+      setIsmobile(false);
+    }
+  }, [width]);
 
   return (
     <div className="flex justify-center items-center w-full h-full px-8 py-4">
       <div
         ref={popupBox}
-        className={`lg:w-2/4 md:w-3/4 w-full rounded-md px-6 py-2 gap-y-6   ${
+        className={`lg:w-2/4 md:w-3/4 w-full rounded-md px-6 py-2 gap-y-6 ${
           darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
         } ${
           props.camera
@@ -135,8 +244,7 @@ export default function Popup(props: PopupPropsTypes) {
                   darkMode
                     ? "bg-[#363636] text-[#AFAFAF] focus:outline-[#ffffff] outline outline-[#ffffff]"
                     : "bg-[#bdbdbd] text-[#000000] focus:outline-[#000000] outline outline-[#000000]"
-                } border-none outline-none
-            px-4 py-2`}
+                } border-none outline-none px-4 py-2`}
               />
             </div>
 
@@ -174,8 +282,7 @@ export default function Popup(props: PopupPropsTypes) {
                     darkMode
                       ? "bg-[#363636] text-[#AFAFAF] focus:outline-[#ffffff] outline outline-[#ffffff]"
                       : "bg-[#bdbdbd] text-[#000000] focus:outline-[#000000] outline outline-[#000000]"
-                  } border-none outline-none
-            px-4 py-2`}
+                  } border-none outline-none px-4 py-2`}
                 />
               </div>
             </div>
@@ -195,8 +302,7 @@ export default function Popup(props: PopupPropsTypes) {
                     darkMode
                       ? "bg-[#363636] text-[#AFAFAF] focus:outline-[#ffffff] outline outline-[#ffffff]"
                       : "bg-[#bdbdbd] text-[#000000] focus:outline-[#000000] outline outline-[#000000]"
-                  } border-none outline-none
-            px-4 py-2`}
+                  } border-none outline-none px-4 py-2`}
                 />
               </div>
             </div>
@@ -220,9 +326,46 @@ export default function Popup(props: PopupPropsTypes) {
 
         {props.camera && (
           <div className={`flex flex-col gap-2`}>
-            <button className="bg-transparent py-4 px-2 flex w-full my-2">
-              Take picture
-            </button>
+            <div>
+              <button
+                className="bg-transparent py-4 px-2 flex w-full my-2"
+                onClick={() => {
+                  window.innerWidth < 1024
+                    ? takePictureMobile()
+                    : startCamera();
+                }}
+              >
+                Take picture
+              </button>
+              {cameraBox && !isMobile ? (
+                <div
+                  className={`w-full md:h-screen h-[50px] fixed top-0 lg:left-0 left-0 ${
+                    darkMode ? "dark-overlay" : "light-overlay"
+                  }`}
+                >
+                  <video
+                    ref={videoRef}
+                    className="w-full h-full"
+                    autoPlay
+                    playsInline
+                  ></video>
+                  <button
+                    ref={cameraButttonRef}
+                    className="md:w-20 md:h-20 w-16 h-16 rounded-full bg-[#8687E7] z-50 camera-button cursor-pointer flex justify-center items-center"
+                  >
+                    <div className="w-2/4 h-2/4 border-8 border-[#bdbdbd] rounded-full"></div>
+                  </button>
+                </div>
+              ) : (
+                <input
+                  accept="image/png, image/jpeg"
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleFileInputChange}
+                />
+              )}
+            </div>
 
             <div>
               <button
