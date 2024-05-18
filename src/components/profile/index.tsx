@@ -16,6 +16,8 @@ import userData from "../../utils/data/user_data.json";
 import defaultImg from "../../assets/default-profile.png";
 import taskData from "../../utils/data/task_data.json";
 import { TaskDataType } from "../../utils/types/todo";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
 
 export default function Index() {
   const authenticated = useAuthContext();
@@ -33,6 +35,10 @@ export default function Index() {
   );
 
   const closePopup = () => setPopup(false);
+
+  const customId = "1";
+  const notify = (message: string) =>
+    toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
   const filterTasksByCurrentDate = (tasks: TaskDataType[]) => {
     const currentDate = new Date().toLocaleDateString("en-GB");
@@ -104,7 +110,7 @@ export default function Index() {
     >
       {popup && (
         <div
-          className={`${
+          className={`flex items-center justify-center ${
             popup
               ? darkMode
                 ? "dark-overlay fixed top-0 left-0"
@@ -112,12 +118,24 @@ export default function Index() {
               : ""
           }`}
         >
-          <Popup
-            singleInput={singleInput}
-            camera={camera}
-            text={popupText}
-            close={closePopup}
-          />
+          <AnimatePresence>
+            {popup && (
+              <motion.div
+                className="flex justify-center items-center w-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8, type: "tween" }}
+              >
+                <Popup
+                  singleInput={singleInput}
+                  camera={camera}
+                  text={popupText}
+                  close={closePopup}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
@@ -223,6 +241,7 @@ export default function Index() {
           </h1>
 
           <button
+            onClick={() => notify("coming soon")}
             className={`text-2xl flex justify-between bg-transparent my-2`}
           >
             <span>
@@ -233,6 +252,7 @@ export default function Index() {
           </button>
 
           <button
+            onClick={() => notify("coming soon")}
             className={`text-2xl flex justify-between bg-transparent my-2`}
           >
             <span>
@@ -243,6 +263,7 @@ export default function Index() {
           </button>
 
           <button
+            onClick={() => notify("coming soon")}
             className={`text-2xl flex justify-between bg-transparent my-2`}
           >
             <span>
@@ -253,6 +274,7 @@ export default function Index() {
           </button>
 
           <button
+            onClick={() => notify("coming soon")}
             className={`text-2xl flex justify-between bg-transparent my-2`}
           >
             <span>
@@ -263,6 +285,7 @@ export default function Index() {
           </button>
 
           <button
+            onClick={() => notify("coming soon")}
             className={`text-2xl flex justify-between text-[#FF4949] my-2`}
           >
             <span>

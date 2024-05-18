@@ -77,8 +77,9 @@ export default function Popup(props: PopupPropsTypes) {
     return error;
   };
 
+  const customId = "1";
   const notify = (message: string) =>
-    toast(message, { theme: darkMode ? "dark" : "light" });
+    toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
   const handlePasswordInputsChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -114,7 +115,6 @@ export default function Popup(props: PopupPropsTypes) {
   const startCamera = async () => {
     try {
       setCameraBox(true);
-      console.log("camra");
 
       const constraints = {
         video: {
@@ -153,11 +153,6 @@ export default function Popup(props: PopupPropsTypes) {
       console.error("Error accessing camera:", err);
     }
   };
-  useEffect(() => {
-    if (cameraBox) {
-      startCamera();
-    }
-  }, [cameraBox]);
 
   const captureImage = (stream: MediaStream) => {
     const canvas = document.createElement("canvas");
@@ -195,17 +190,11 @@ export default function Popup(props: PopupPropsTypes) {
       notify("Image upload successfully");
       props.close();
     }
-
-    console.log(file);
   }, [file]);
 
   useEffect(() => {
     setWidth(window.innerWidth);
   }, []);
-
-  // useEffect(() => {
-  //   console.log(isMobile);
-  // }, [isMobile]);
 
   useEffect(() => {
     if (width < 1024) {
