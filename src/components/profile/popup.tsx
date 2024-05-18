@@ -337,7 +337,7 @@ export default function Popup(props: PopupPropsTypes) {
               >
                 Take picture
               </button>
-              {cameraBox && !isMobile ? (
+              {cameraBox && !isMobile && (
                 <div
                   className={`w-full md:h-screen h-[50px] fixed top-0 lg:left-0 left-0 ${
                     darkMode ? "dark-overlay" : "light-overlay"
@@ -356,11 +356,13 @@ export default function Popup(props: PopupPropsTypes) {
                     <div className="w-2/4 h-2/4 border-8 border-[#bdbdbd] rounded-full"></div>
                   </button>
                 </div>
-              ) : (
+              )}
+
+              {!cameraBox && isMobile && (
                 <input
                   accept="image/png, image/jpeg"
                   type="file"
-                  ref={fileInputRef}
+                  ref={cameraInputRef}
                   style={{ display: "none" }}
                   onChange={handleFileInputChange}
                 />
