@@ -7,11 +7,6 @@ export default {
         "xsm": "160px"
       },
     },
-    extend: {
-      screens:{
-        "xsm":"160px"
-      },
-    },
   },
   plugins: [],
 };
