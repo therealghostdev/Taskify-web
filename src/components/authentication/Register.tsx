@@ -1,3 +1,4 @@
+import { useState, FormEvent } from 'react';
 import './auth.scss';
 import AppleIcon from '@mui/icons-material/Apple'
 interface LoginProps{
@@ -5,26 +6,79 @@ interface LoginProps{
 }
 
 export default function Register({loginSwap}:LoginProps) {
+  const [userName, setUserName]=useState('')
+  const [password, setPassword]=useState('')
+  const [confirmPassword, setConfirmPassword]=useState('')
+  const [valid, setValid] = useState(false)
+  
+  const [error, setError]= useState({password:'', confirm:''})
+
+  const clearForm=()=>{
+    setUserName('')
+    setPassword('')
+    setConfirmPassword('')
+  }
+  const register=(e:FormEvent<HTMLFormElement>)=>{
+    e.preventDefault();
+    const newErrors = { password:'', confirmPassword:''}
+     if (password.length < 6) {
+      newErrors.password = 'Password should have more than 6 characters';
+    }
+
+    if (confirmPassword !== password) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    if (!newErrors.password && !newErrors.confirmPassword) {
+      setValid(true);
+      // setIsTouched(true);
+      console.log('successful');
+      clearForm();
+    } else {
+      setValid(false);
+      setError(newErrors);
+    }
+  }
   return (
     <div className='flex '>
     <div className='logo xsm:hidden lg:flex'>
     <div>Taskify</div>
     </div>
     <div className="formContainer h-screen flex justify-center items-center" >
-      <form className=' rounded-lg dark:bg-slate-900 bg-slate-300 px-3  sm:w-80 xsm:w-11/12 h-auto flex flex-col  justify-center'>
+      <form 
+      onSubmit={register}
+      className=' rounded-lg dark:bg-slate-900 bg-slate-300 px-3  sm:w-80 xsm:w-11/12 h-auto flex flex-col  justify-center'>
       <h1 id='loginHead' className='text-2xl pb-8 font-semibold dark:text-white text-black'>Register</h1>
       <div className='flex flex-col items-center '>
         <label className=' w-full pb-3'>
           <div className='font-medium dark:text-white text-black'>Username</div>
-          <input className='text-xs w-full h-7  py-2 dark:bg-black bg-slate-200 rounded border border-slate-400' type="text" placeholder='Enter your Username' />
+          <input 
+          value={userName}
+          onChange={e=>setUserName(e.target.value)}
+          className='text-xs w-full h-7  py-2 dark:bg-black bg-slate-200 rounded border border-slate-400' type="text" placeholder='Enter your Username' />
         </label>
         <label className='w-full pb-3'>
           <div className='font-medium'>Password</div>
-          <input className='border text-xs h-7 border-slate-400 rounded w-full dark:bg-black bg-slate-200' type="password" placeholder='Enter your Password' />
+          <input 
+          value={password}
+          onChange={e=>setPassword(e.target.value)}
+          className={`${error.password ? 'border border-[red]':''} border text-xs h-7 border-slate-400 rounded w-full dark:bg-black bg-slate-200`} type="password" placeholder='Enter your Password' />
+          {error.password && (
+            <div className='text-[red] text-[0.7rem]'>
+              {error.password}
+            </div>
+          )}
         </label>
         <label className='w-full pb-3'>
           <div className='font-medium'>Confirm Password</div>
-          <input className='text-xs border h-7 border-slate-400 rounded w-full dark:bg-black bg-slate-200' type="password" placeholder='Enter your Password' />
+          <input 
+          value={confirmPassword}
+          onChange={e=>setConfirmPassword(e.target.value)}
+          className={`${error.confirm? 'border border-[red]':''} text-xs border h-7 border-slate-400 rounded w-full dark:bg-black bg-slate-200`} type="password" placeholder='Enter your Password' />
+           {error.confirm && (
+            <div className='text-[red] text-[0.7rem]'>
+              {error.confirm}
+            </div>
+          )}
         </label>
         <div className='pt-7 pb-3 w-full flex justify-center'>
           <button className='login text-sm w-full py-2 rounded-lg' type='submit'>
