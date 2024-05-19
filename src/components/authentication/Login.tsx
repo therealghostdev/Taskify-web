@@ -28,7 +28,7 @@ export default function Login({registerSwap}: RegisterProps) {
   }
   
 
-  const login = (e)=>{
+  const login = (e:FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     clearForm()
     
