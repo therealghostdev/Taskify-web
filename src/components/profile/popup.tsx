@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useThemeContext } from "../../utils/app_context/general";
 import { PopupPropsTypes, changePasswordProps } from "../../utils/types/todo";
 import { toast } from "react-toastify";
+import useDrivePicker from "react-google-drive-picker";
 
 export default function Popup(props: PopupPropsTypes) {
   const { darkMode } = useThemeContext();
@@ -14,6 +15,8 @@ export default function Popup(props: PopupPropsTypes) {
     oldPassword: "",
     newPassword: "",
   });
+
+  const [openPicker, authResponse] = useDrivePicker();
 
   const popupBox = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -100,6 +103,40 @@ export default function Popup(props: PopupPropsTypes) {
     props.close();
   };
 
+  // upload images from google drive
+  const handleOpenPicker = () => {
+    openPicker({
+      clientId:
+        "103158776318-32h6jcem1ke2gdu2jng6vv3rob1e9715.apps.googleusercontent.com",
+      developerKey: "AIzaSyDdXzH8017rD0V1ZgWW0E53NNgiU85Y7XU",
+      viewId: "DOCS",
+      showUploadView: true,
+      showUploadFolders: true,
+      supportDrives: true,
+      multiselect: true,
+      callbackFunction: (data) => {
+        if (data.action === "cancel") {
+          notify("operation canceled");
+          return;
+        }
+        const isValid = data.docs.every((item) =>
+          item.mimeType.startsWith("image/")
+        );
+        if (!isValid) {
+          notify("Invalid file type selected");
+          return;
+        } else {
+          const fileUrl = data.docs[0].url;
+          const fileId = fileUrl.split("/")[5]; // Extract the file ID from the URL
+          const accessToken = authResponse?.access_token;
+          console.log(fileId, accessToken); // To be used for further file processing
+          notify("Upload successful");
+          props.close();
+        }
+      },
+    });
+  };
+
   const getImageFromGallery = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -112,6 +149,7 @@ export default function Popup(props: PopupPropsTypes) {
     }
   };
 
+  // upload images from desktop devices
   const startCamera = async () => {
     try {
       setCameraBox(true);
@@ -189,6 +227,7 @@ export default function Popup(props: PopupPropsTypes) {
     if (file !== null) {
       notify("Image upload successfully");
       props.close();
+      console.log(file);
     }
   }, [file]);
 
@@ -324,7 +363,7 @@ export default function Popup(props: PopupPropsTypes) {
                     : startCamera();
                 }}
               >
-                Take picture
+                Take picture (Desktop)
               </button>
               {cameraBox && !isMobile && (
                 <div
@@ -374,8 +413,10 @@ export default function Popup(props: PopupPropsTypes) {
               />
             </div>
 
-            <button onClick={() => notify("Feature still in progress")}
-             className="bg-transparent py-4 px-2 flex w-full my-2">
+            <button
+              onClick={handleOpenPicker}
+              className="bg-transparent py-4 px-2 flex w-full my-2"
+            >
               Import from Google Drive
             </button>
           </div>
