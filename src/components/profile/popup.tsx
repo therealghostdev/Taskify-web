@@ -104,11 +104,12 @@ export default function Popup(props: PopupPropsTypes) {
   };
 
   // upload images from google drive
+  const clientId = import.meta.env.VITE_CLIENT_ID;
+  const key = import.meta.env.VITE_API_KEY;
   const handleOpenPicker = () => {
     openPicker({
-      clientId:
-        "103158776318-32h6jcem1ke2gdu2jng6vv3rob1e9715.apps.googleusercontent.com",
-      developerKey: "AIzaSyDdXzH8017rD0V1ZgWW0E53NNgiU85Y7XU",
+      clientId: clientId,
+      developerKey: key,
       viewId: "DOCS",
       showUploadView: true,
       showUploadFolders: true,
@@ -127,9 +128,8 @@ export default function Popup(props: PopupPropsTypes) {
           return;
         } else {
           const fileUrl = data.docs[0].url;
-          const fileId = fileUrl.split("/")[5]; // Extract the file ID from the URL
-          const accessToken = authResponse?.access_token;
-          console.log(fileId, accessToken); // To be used for further file processing
+          const fileId = fileUrl.split("/")[5]; // Extract the file ID from the URL for use for further file processing
+          const accessToken = authResponse?.access_token; // To be used for further file processing
           notify("Upload successful");
           props.close();
         }
