@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 
 export interface Todo {
   task: string;
+  task_description: string;
   task_priority: number;
   expected_date_of_completion: string;
   category: string;
@@ -23,4 +24,24 @@ export interface NavItem {
   Link: string;
   name: string;
   icon: string;
+}
+
+export interface Popup {
+  name: boolean;
+  title: boolean;
+  date: boolean;
+  time: boolean;
+  category: boolean;
+  priority: boolean;
+}
+
+export interface formValueTypes {
+  taskname: string;
+  taskdescription: string;
+}
+
+export interface newTaskCategoryType {
+  name: string;
+  icon: string; // change to file later
+  color: string;
 }

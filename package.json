@@ -9,7 +9,8 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "npm test",
-    "lint-react": "eslint . --fix"
+    "lint-react": "eslint . --fix",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -18,13 +19,16 @@
     "@mui/material": "^5.15.17",
     "framer-motion": "^11.1.9",
     "react": "^18.2.0",
+    "react-calendar": "^5.0.0",
+    "react-datetime": "^3.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.0",
-    "sass": "^1.76.0",
+    "react-toastify": "^10.0.5",
+    "react-router-dom": "^6.23.1",
+    "sass": "^1.77.1",
     "vite-tsconfig-paths": "^4.3.2"
   },
   "devDependencies": {
-    "@types/react": "^18.3.1",
+    "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
@@ -33,7 +37,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.6",
+    "eslint-plugin-react-refresh": "^0.4.7",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5",

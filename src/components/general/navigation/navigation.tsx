@@ -7,14 +7,37 @@ import addIcon from "../../../assets/add.svg";
 import focusIcon from "../../../assets/clock.svg";
 import userIcon from "../../../assets/user.svg";
 import { Link } from "react-router-dom";
-import { useThemeContext } from "../../../utils/app_context/general";
-import { animate, motion, useMotionValue } from "framer-motion";
+import {
+  useThemeContext,
+  useTrackContext,
+  useTodoContext,
+} from "../../../utils/app_context/general";
+import { motion, useMotionValue } from "framer-motion";
 
 export default function Nav() {
   const { darkMode } = useThemeContext();
   const navBarY = useMotionValue(80); // nav partially hidden by default
   const navRef = useRef<HTMLDivElement>(null);
+  const addButtonRef = useRef<HTMLButtonElement>(null); // Ref for the button
   const [animate, setAnimate] = useState({ y: 90 });
+  const { trackScreenFunc } = useTrackContext();
+  const { todos } = useTodoContext();
+
+  const addTask = () => {
+    todos.map((item) => {
+      if (item.task === "") {
+        trackScreenFunc("name");
+      } else if (item.expected_date_of_completion === "") {
+          trackScreenFunc("calendar");
+      } else if (item.time === "") {
+        trackScreenFunc("time");
+      } else if (item.task_priority === 0) {
+        trackScreenFunc("priority");
+      } else if (item.category === "") {
+        trackScreenFunc("category");
+      }else{}
+    });
+  };
 
   useEffect(() => {
     const handleMouseEnter = () => {
@@ -44,6 +67,22 @@ export default function Nav() {
     };
   }, [navBarY]);
 
+  useEffect(() => {
+    const handleClick = () => {
+      addTask();
+    };
+
+    if (addButtonRef.current) {
+      addButtonRef.current.addEventListener("click", handleClick);
+    }
+
+    return () => {
+      if (addButtonRef.current) {
+        addButtonRef.current.removeEventListener("click", handleClick);
+      }
+    };
+  }, [addTask]);
+
   return (
     <motion.nav
       key="nav"
@@ -57,7 +96,13 @@ export default function Nav() {
     >
       <div className="w-full h-full flex justify-between items-center px-4">
         {navData.map((item, index) => (
-          <NavItemComponent key={index} item={item} darkMode={darkMode} />
+          <NavItemComponent
+            key={index}
+            item={item}
+            darkMode={darkMode}
+            // addTask={addTask}
+            addButtonRef={addButtonRef} // Pass the ref to NavItemComponent
+          />
         ))}
       </div>
     </motion.nav>
@@ -67,9 +112,11 @@ export default function Nav() {
 function NavItemComponent({
   item,
   darkMode,
+  addButtonRef, // Receive the ref as a prop
 }: {
   item: NavItem;
   darkMode: boolean;
+  addButtonRef: React.RefObject<HTMLButtonElement>; // Define the type of the ref
 }) {
   let icon;
   switch (item.icon) {
@@ -95,7 +142,10 @@ function NavItemComponent({
   return (
     <>
       {icon && icon === addIcon ? (
-        <button className="flex items-center justify-center text-white w-14 h-14 bg-[#8687E7] rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <button
+          ref={addButtonRef} // Assign the ref to the button
+          className="flex items-center justify-center text-white w-14 h-14 bg-[#8687E7] rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        >
           <img src={icon} alt={item.name} className="w-6 h-6" />
         </button>
       ) : (
@@ -110,7 +160,7 @@ function NavItemComponent({
             alt={item.name}
             className={`w-6 h-6 ${darkMode ? "" : "filter-invert"}`}
           />
-          <span className={`text-xs ${darkMode ? "text-white" : "text-black"}`}>
+          <span className={`text-xl ${darkMode ? "text-white" : "text-black"}`}>
             {item.name}
           </span>
         </Link>

@@ -10,17 +10,25 @@ import Auth from "./pages/auth";
 import Calendar from "./pages/calendar";
 import Focus from "./pages/focus_page";
 import Profile from "./pages/profile";
-import { useThemeContext, useAuthContext } from "./utils/app_context/general";
+import {
+  useThemeContext,
+  useAuthContext,
+  useTrackContext,
+} from "./utils/app_context/general";
 import { useEffect } from "react";
 import { ProtectedRouteProps } from "./utils/types/todo";
+import AddTask from "./components/general/add-task";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-  const { darkMode, toggleDarkMode } = useThemeContext();
+  const { darkMode } = useThemeContext();
   const authenticated = useAuthContext();
+  const { trackScreen } = useTrackContext();
 
-  // useEffect(() => {
-  //   localStorage.setItem("token", "hello");
-  // }, [authenticated]);
+  useEffect(() => {
+    localStorage.setItem("token", "hello");
+  }, [authenticated]);
 
   return (
     <main
@@ -30,6 +38,16 @@ function App() {
     >
       <Router>
         {authenticated && <Nav />}
+        {authenticated &&
+          [
+            "name",
+            "calendar",
+            "time",
+            "priority",
+            "category",
+            "success",
+          ].includes(trackScreen) && <AddTask />}
+
         <Routes>
           <Route
             path="/"
@@ -67,6 +85,7 @@ function App() {
           <Route path="/auth" element={<Auth />} />
         </Routes>
       </Router>
+      <ToastContainer autoClose={5000} hideProgressBar={false} />
     </main>
   );
 }
