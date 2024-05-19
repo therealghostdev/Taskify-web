@@ -22,7 +22,7 @@ export default function Popup(props: PopupPropsTypes) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const cameraButttonRef = useRef<HTMLButtonElement | null>(null);
+  const cameraButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -128,8 +128,8 @@ export default function Popup(props: PopupPropsTypes) {
           return;
         } else {
           const fileUrl = data.docs[0].url;
-          const fileId = fileUrl.split("/")[5]; // Extract the file ID from the URL for use for further file processing
-          const accessToken = authResponse?.access_token; // To be used for further file processing
+          fileUrl.split("/")[5]; // Extract the file ID from the URL for use for further file processing
+          authResponse?.access_token; // accessToken to be used for further file processing
           notify("Upload successful");
           props.close();
         }
@@ -176,19 +176,22 @@ export default function Popup(props: PopupPropsTypes) {
         };
 
         document.addEventListener("keydown", handleKeyDown);
-        cameraButttonRef.current?.addEventListener("click", handleButtonClick);
+        cameraButtonRef.current?.addEventListener("click", handleButtonClick);
 
         return () => {
           document.removeEventListener("keydown", handleKeyDown);
           stream.getTracks().forEach((track) => track.stop());
-          cameraButttonRef.current?.removeEventListener(
+          cameraButtonRef.current?.removeEventListener(
             "click",
             handleButtonClick
           );
         };
       }
     } catch (err) {
-      console.error("Error accessing camera:", err);
+      if (err) {
+        setCameraBox(false);
+        notify("Camera permission is denied");
+      }
     }
   };
 
@@ -227,7 +230,6 @@ export default function Popup(props: PopupPropsTypes) {
     if (file !== null) {
       notify("Image upload successfully");
       props.close();
-      console.log(file);
     }
   }, [file]);
 
@@ -378,7 +380,7 @@ export default function Popup(props: PopupPropsTypes) {
                     playsInline
                   ></video>
                   <button
-                    ref={cameraButttonRef}
+                    ref={cameraButtonRef}
                     className="md:w-20 md:h-20 w-16 h-16 rounded-full bg-[#8687E7] z-50 camera-button cursor-pointer flex justify-center items-center"
                   >
                     <div className="w-2/4 h-2/4 border-8 border-[#bdbdbd] rounded-full"></div>
