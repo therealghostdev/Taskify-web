@@ -1,5 +1,5 @@
 // import { useState } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
 import './auth.scss';
 // import Register from './Register';
 import AppleIcon from '@mui/icons-material/Apple'
@@ -22,16 +22,17 @@ export default function Login({registerSwap}: RegisterProps) {
       setValid(true) : setValid(false)
     
   },[userName, password])
+  const clearForm =()=>{
+    setUserName('')
+    setPassword('')
+  }
+  
 
   const login = (e)=>{
     e.preventDefault();
     clearForm()
     
 
-  }
-  const clearForm =()=>{
-    setUserName('')
-    setPassword('')
   }
   
  
