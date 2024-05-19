@@ -58,3 +58,15 @@ export interface TaskDataType {
   task_priority: number;
   completed: boolean;
 }
+
+export interface PopupPropsTypes {
+  camera: boolean;
+  text: string;
+  singleInput: boolean;
+  close: () => void;
+}
+
+export interface changePasswordProps {
+  newPassword: string;
+  oldPassword: string;
+}
