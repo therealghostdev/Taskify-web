@@ -83,7 +83,7 @@ export default function Register({loginSwap}:LoginProps) {
                 <div className="text-red-500 text-xs">{errors.confirmPassword}</div>
           )}
         </label>
-        <div className='pt-7 pb-3 w-full flex justify-center'>
+        <div className='register pt-7 pb-3 w-full flex justify-center'>
           <button onClick={handleRegisterClick} className='login text-sm w-full py-2 rounded-lg' type='submit'>
             Register
           </button>

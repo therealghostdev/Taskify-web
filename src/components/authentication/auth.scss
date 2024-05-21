@@ -1,7 +1,6 @@
-
+$disabled-buttonColor: rgb(58, 56, 56);
 $general-buttonColor: #8687E7;
-$hover-buttonColor: #9294fd;
-$disabled-buttonColor: #9aa3ac3a;
+$hover-buttonColor: rgb(56, 8, 168);
 .logo{
     flex: 1;
     
@@ -45,7 +44,11 @@ form{
 .login:hover{
     background-color: $hover-buttonColor;
 }
-
+.register{
+    button{
+        background-color: $general-buttonColor;
+    }
+}
 input{
     padding: 5px 10px;
 }

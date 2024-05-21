@@ -1,4 +1,6 @@
 
+
+
 import { useEffect, useState, FormEvent } from 'react';
 import './auth.scss';
 
@@ -19,15 +21,18 @@ export default function Login({registerSwap}: RegisterProps) {
     
   },[userName, password])
 
-  const login = (e :FormEvent<HTMLFormElement>)=>{
+  
+  const clearForm =()=>{
+    setUserName('')
+    setPassword('')
+  }
+  
+
+  const login = (e:FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     clearForm()
     
 
-  }
-  const clearForm =()=>{
-    setUserName('')
-    setPassword('')
   }
   
  
