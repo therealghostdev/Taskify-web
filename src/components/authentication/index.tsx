@@ -4,8 +4,8 @@ import Register from './Register'
 
 
 export default function Index() {
-  const [isLogin, setIsLogin] = useState(true)
-   const [isRegister, setIsRegister] = useState(false)
+  const [isLogin, setIsLogin] = useState<boolean>(true)
+   const [isRegister, setIsRegister] = useState<boolean>(false)
 
   const registerSwap = ()=>{
     setIsLogin(!isLogin)

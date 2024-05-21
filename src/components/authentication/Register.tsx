@@ -1,33 +1,90 @@
+import { useState, FormEvent } from 'react';
 import './auth.scss';
 import AppleIcon from '@mui/icons-material/Apple'
+import Index from '../home';
 interface LoginProps{
   loginSwap: ()=>void
 }
 
 export default function Register({loginSwap}:LoginProps) {
+  const [userName, setUserName] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [valid, setValid] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState({ password: '', confirmPassword: '' });
+
+  const clearForm =()=>{
+  setUserName('')
+  setPassword('')
+  setConfirmPassword('')
+}
+
+  const register = (e: FormEvent<HTMLFormElement>)=>{
+    e.preventDefault();
+    const newErrors = { password: '', confirmPassword: '' };
+
+    if (password.length < 6) {
+      newErrors.password = 'Password should have more than 6 characters';
+    }
+
+    if (confirmPassword !== password) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    if (!newErrors.password && !newErrors.confirmPassword) {
+      setValid(true);
+      setIsLoading(true);
+      console.log('successful');
+      clearForm();
+    } else {
+      setValid(false);
+      setErrors(newErrors);
+    }
+    
+  }
+  //will finish with this when the backend is available
+  const handleRegisterClick= ()=>{
+    const loader = "Signing up..."
+    valid? <Index /> :''
+  }
+  
   return (
     <div className='flex '>
     <div className='logo xsm:hidden lg:flex'>
     <div>Taskify</div>
     </div>
     <div className="formContainer h-screen flex justify-center items-center" >
-      <form className=' rounded-lg dark:bg-slate-900 bg-slate-300 px-3  sm:w-80 xsm:w-11/12 h-auto flex flex-col  justify-center'>
+      <form onSubmit={register} className=' rounded-lg dark:bg-slate-900 bg-slate-300 px-3  sm:w-80 xsm:w-11/12 h-auto flex flex-col  justify-center'>
       <h1 id='loginHead' className='text-2xl pb-8 font-semibold dark:text-white text-black'>Register</h1>
       <div className='flex flex-col items-center '>
         <label className=' w-full pb-3'>
           <div className='font-medium dark:text-white text-black'>Username</div>
-          <input className='text-xs w-full h-7  py-2 dark:bg-black bg-slate-200 rounded border border-slate-400' type="text" placeholder='Enter your Username' />
+          <input 
+          value={userName}
+          onChange={(e)=>setUserName(e.target.value)} 
+          className='text-xs w-full h-7  py-2 dark:bg-black bg-slate-200 rounded border border-slate-400' type="text" placeholder='Enter your Username' />
         </label>
         <label className='w-full pb-3'>
           <div className='font-medium'>Password</div>
-          <input className='border text-xs h-7 border-slate-400 rounded w-full dark:bg-black bg-slate-200' type="password" placeholder='Enter your Password' />
+          <input 
+          value={password}
+          onChange={(e)=>setPassword(e.target.value)}
+          className={`${errors.password ? 'border-red-500':''} border text-xs h-7 border-slate-400 rounded w-full dark:bg-black bg-slate-200`} type="password" placeholder='Enter your Password' />
+          {errors.password && <div className="text-red-500 text-xs">{errors.password}</div>}
         </label>
         <label className='w-full pb-3'>
           <div className='font-medium'>Confirm Password</div>
-          <input className='text-xs border h-7 border-slate-400 rounded w-full dark:bg-black bg-slate-200' type="password" placeholder='Enter your Password' />
+          <input 
+          value={confirmPassword}
+          onChange={e=>setConfirmPassword(e.target.value)}
+          className={`${errors.confirmPassword ? 'border-red-500' :''} text-xs border h-7 border-slate-400 rounded w-full dark:bg-black bg-slate-200`} type="password" placeholder='Confirm your Password' />
+          {errors.confirmPassword && (
+                <div className="text-red-500 text-xs">{errors.confirmPassword}</div>
+          )}
         </label>
         <div className='pt-7 pb-3 w-full flex justify-center'>
-          <button className='login text-sm w-full py-2 rounded-lg' type='submit'>
+          <button onClick={handleRegisterClick} className='login text-sm w-full py-2 rounded-lg' type='submit'>
             Register
           </button>
         </div>

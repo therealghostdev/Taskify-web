@@ -30,9 +30,11 @@ form{
     .login{
     
     background-color:$general-buttonColor ;
+    transition: all 1s ease;
     &.disabledButton{
         background-color:$disabled-buttonColor;
         color: rgba(255, 255, 255, 0.651);
+        cursor: not-allowed;
         
     }
     &.disabledButton:hover{

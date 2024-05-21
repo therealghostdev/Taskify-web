@@ -1,7 +1,7 @@
-// import { useState } from 'react';
-import { useEffect, useState } from 'react';
+
+import { useEffect, useState, FormEvent } from 'react';
 import './auth.scss';
-// import Register from './Register';
+
 import AppleIcon from '@mui/icons-material/Apple'
 interface RegisterProps{
   registerSwap: ()=>void
@@ -9,13 +9,9 @@ interface RegisterProps{
 export default function Login({registerSwap}: RegisterProps) {
   const [userName, setUserName]=useState('')
   const [password, setPassword]=useState('')
-  const [valid, setValid] = useState(false)
+  const [valid, setValid] = useState <boolean>(false)
 
-  // const formValid = ()=>{
-  //   userName &&
-  //   password
-  //   setValid(!valid)
-  // }
+  
   useEffect(()=>{
     userName.trim() !== '' &&
     password.trim() !== '' ? 
@@ -23,7 +19,7 @@ export default function Login({registerSwap}: RegisterProps) {
     
   },[userName, password])
 
-  const login = (e)=>{
+  const login = (e :FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     clearForm()
     
@@ -90,7 +86,7 @@ export default function Login({registerSwap}: RegisterProps) {
               <span className='pr-2 flex  '>
                 <AppleIcon className='appleicon'/>
               </span>
-              <span className='text-xs' >Login with apple</span>
+              <span className='text-xs' >Login with Apple</span>
             </button>
           </div>
           <div className='py-1'>
