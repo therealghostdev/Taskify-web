@@ -96,18 +96,24 @@ export default function Task_progress_timer() {
   return (
     <>
       <div className="w-full h-[500px] flex flex-col justify-center items-center px-6 py-4">
-        <div className="w-[200px] h-[200px] text-2xl font-bold rounded-full border-8 border-[#A5A5A5] flex justify-center items-center">
+        <div className="w-[200px] h-[200px] mb-8 text-2xl font-bold rounded-full border-8 border-[#A5A5A5] flex justify-center items-center">
           <h1>START</h1>
         </div>
 
         <div
-          className={`w-full h-1/4 flex flex-col items-center justify-center gap-y-6 ${
+          className={`w-full h-1/4 flex flex-col items-center justify-center gap-y-2 break-words ${
             darkMode ? "text-white" : "text-black"
           }`}
         >
-          <p className="text-lg text-center">
-            While your focus mode is on, all of your notifications will be off
-          </p>
+          <div className="md:w-2/4 flex flex-col justify-center items-center w-full break-words text-wrap">
+            <p className="text-lg text-center">
+              While your focus mode is on, all of your notifications will be off
+            </p>
+            <small className="mb-2 text-center text-wrap break-words text-[#FF4949]">
+              NOTE: while this feature isn't available on web version, focus
+              mode will be activated on your mobile device automatically if app version installed
+            </small>
+          </div>
 
           <button
             className="rounded-md px-4 py-2 bg-[#8687E7]"
