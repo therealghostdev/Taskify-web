@@ -70,3 +70,27 @@ export interface changePasswordProps {
   newPassword: string;
   oldPassword: string;
 }
+
+export interface focusDetails {
+  name: string[];
+  duration: number;
+}
+
+export interface PopupFocusDetails {
+  name: string[];
+  duration: number;
+}
+
+export interface FocusPopDataType {
+  task_name: string;
+}
+
+export interface FocusPopupProps {
+  screen: string;
+  contents: FocusPopDataType[];
+  changeScreen: (val: string) => void;
+  notify: (val: string) => void;
+  close: () => void;
+  details: focusDetails
+  updateDetails: (focusDetails: PopupFocusDetails) => void;
+}

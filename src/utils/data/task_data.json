@@ -53,5 +53,27 @@
     "task_category": "Movie",
     "task_priority": 10,
     "completed": true
+  },
+  {
+    "id": 6,
+    "task_name": "Watch the new episode of GOT",
+    "task_title": "relax",
+    "created_at": "23/05/2024",
+    "completion_date": "",
+    "completion_time": "02:14",
+    "task_category": "Movie",
+    "task_priority": 10,
+    "completed": true
+  },
+  {
+    "id": 7,
+    "task_name": "Get breakfast",
+    "task_title": "relax",
+    "created_at": "23/05/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Movie",
+    "task_priority": 10,
+    "completed": true
   }
 ]
