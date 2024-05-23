@@ -11,6 +11,7 @@ export default function Task_progress_timer() {
   const [popup, setPopup] = useState<boolean>(false);
   const [popupContents, setPopupContents] = useState<TaskDataType[]>([]);
   const [durationScreen, setDurationScreen] = useState<string>("");
+  const [isFocused, setIsFocused] = useState<boolean>(false);
 
   const [focusDetails, setFocusDetails] = useState<focusDetails>({
     name: [],
@@ -21,23 +22,31 @@ export default function Task_progress_timer() {
   const notify = (message: string) => {
     toast(message, { toastId: customId, theme: darkMode ? "dark" : "light" });
   };
+
   const handleStartFocusClick = () => {
+    const focus = localStorage.getItem("tasks");
     const date = new Date();
-    const popupItems = data.filter((item) => {
-      const createdToday = item.created_at;
+    if (!focus) {
+      const popupItems = data.filter((item) => {
+        const createdToday = item.created_at;
 
-      return (
-        createdToday === date.toLocaleDateString("en-GB").toString() &&
-        item.completed === true
-      );
-    });
+        return (
+          createdToday === date.toLocaleDateString("en-GB").toString() &&
+          item.completed === true
+        );
+      });
 
-    if (!popupItems || popupItems.length === 0) {
-      notify("No task found!");
+      if (!popupItems || popupItems.length === 0) {
+        notify("No task found!");
+      } else {
+        setPopupContents(popupItems);
+        setPopup(true);
+        setDurationScreen("initial");
+      }
     } else {
-      setPopupContents(popupItems);
-      setPopup(true);
-      setDurationScreen("initial");
+      localStorage.removeItem("tasks");
+      setIsFocused(false);
+      notify("Focus mode deactivated!");
     }
   };
 
@@ -57,13 +66,32 @@ export default function Task_progress_timer() {
     return notify(val);
   };
 
-  useEffect(() => {
-    console.log(popupContents);
-  }, [popupContents]);
+  const activateFocusMode = () => {
+    const focus = localStorage.getItem("tasks");
+    if (
+      !focus &&
+      focusDetails.duration !== 0 &&
+      focusDetails.name.length !== 0 &&
+      focusDetails.name
+    ) {
+      localStorage.setItem("tasks", JSON.stringify(focusDetails));
+      notify("Focus mode activated on mobile device!");
+      setIsFocused(true);
+    }
+  };
 
   useEffect(() => {
-    console.log(focusDetails);
-  }, [focusDetails]);
+    activateFocusMode();
+  }, [focusDetails.duration]);
+
+  useEffect(() => {
+    const focus = localStorage.getItem("tasks");
+    if (!focus) {
+      setIsFocused(false);
+    } else {
+      setIsFocused(true);
+    }
+  }, []);
 
   return (
     <>
@@ -85,13 +113,13 @@ export default function Task_progress_timer() {
             className="rounded-md px-4 py-2 bg-[#8687E7]"
             onClick={handleStartFocusClick}
           >
-            Start Focusing
+            {!isFocused ? "Start Focusing" : "Stop Focusing"}
           </button>
         </div>
       </div>
       {popup && durationScreen === "initial" && (
         <div
-          className={`fixed top-0 left-0 flex flex-col justify-center items-center ${
+          className={`fixed top-0 left-0 flex flex-col justify-center items-center z-50 ${
             darkMode ? "dark-overlay" : "light-overlay"
           }`}
         >
@@ -109,7 +137,7 @@ export default function Task_progress_timer() {
 
       {popup && durationScreen === "time" && (
         <div
-          className={`fixed top-0 left-0 flex flex-col justify-center items-center ${
+          className={`fixed top-0 left-0 flex flex-col justify-center items-center z-50 ${
             darkMode ? "dark-overlay" : "light-overlay"
           }`}
         >

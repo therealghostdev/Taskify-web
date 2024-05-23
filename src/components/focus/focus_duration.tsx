@@ -20,7 +20,12 @@ export default function Focus_duration(props: FocusPopupProps) {
   const handleSave = () => {
     const currentTime = moment();
     if (selectedTime) {
-      const duration = moment.duration(selectedTime.diff(currentTime));
+      let selectedDateTime = selectedTime.clone();
+      if (selectedTime.isBefore(currentTime)) {
+        selectedDateTime = selectedDateTime.add(1, "day");
+      }
+
+      const duration = moment.duration(selectedDateTime.diff(currentTime));
       const durationInMinutes = duration.asMinutes();
 
       if (durationInMinutes <= 0) {
@@ -36,6 +41,17 @@ export default function Focus_duration(props: FocusPopupProps) {
         props.changeScreen("");
       }
     }
+  };
+
+  const cancel = () => {
+    props.close();
+    const clearDetails: PopupFocusDetails = {
+      ...props.details,
+      name: [],
+      duration: 0,
+    };
+
+    props.updateDetails(clearDetails);
   };
 
   // Define the value to use based on whether selectedTime is null
@@ -70,7 +86,7 @@ export default function Focus_duration(props: FocusPopupProps) {
 
       <div className="flex justify-center items-center">
         <button
-          // Add cancel functionality if needed
+          onClick={cancel}
           className="z-50 w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4"
         >
           Cancel

@@ -31,6 +31,13 @@ export default function Focus_pop(props: FocusPopupProps) {
 
   const cancel = () => {
     props.close();
+    const clearDetails: PopupFocusDetails = {
+      ...props.details,
+      name: [],
+      duration: 0,
+    };
+
+    props.updateDetails(clearDetails);
   };
 
   return (
