@@ -7,9 +7,9 @@ interface LoginProps{
 }
 
 export default function Register({loginSwap}:LoginProps) {
-  const [userName, setUserName] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const [userName, setUserName] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [confirmPassword, setConfirmPassword] = useState<string>('')
   const [valid, setValid] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState({ password: '', confirmPassword: '' });

@@ -9,8 +9,8 @@ interface RegisterProps{
   registerSwap: ()=>void
 }
 export default function Login({registerSwap}: RegisterProps) {
-  const [userName, setUserName]=useState('')
-  const [password, setPassword]=useState('')
+  const [userName, setUserName]=useState<string>('')
+  const [password, setPassword]=useState<string>('')
   const [valid, setValid] = useState <boolean>(false)
 
   
