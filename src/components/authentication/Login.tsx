@@ -2,7 +2,7 @@
 
 
 import { useEffect, useState, FormEvent } from 'react';
-import './auth.scss';
+import '../../styles/authentication/auth.scss';
 
 import AppleIcon from '@mui/icons-material/Apple'
 interface RegisterProps{
