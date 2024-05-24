@@ -3,11 +3,9 @@
 
 import { useEffect, useState, FormEvent } from 'react';
 import '../../styles/authentication/auth.scss';
-
+import { RegisterProps } from '../../utils/types/todo';
 import AppleIcon from '@mui/icons-material/Apple'
-interface RegisterProps{
-  registerSwap: ()=>void
-}
+
 export default function Login({registerSwap}: RegisterProps) {
   const [userName, setUserName]=useState<string>('')
   const [password, setPassword]=useState<string>('')

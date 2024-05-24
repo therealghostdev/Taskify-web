@@ -2,10 +2,7 @@ import { useState, FormEvent } from 'react';
 import '../../styles/authentication/auth.scss';
 import AppleIcon from '@mui/icons-material/Apple'
 import Index from '../home';
-interface LoginProps{
-  loginSwap: ()=>void
-}
-
+import { LoginProps } from '../../utils/types/todo';
 export default function Register({loginSwap}:LoginProps) {
   const [userName, setUserName] = useState<string>('')
   const [password, setPassword] = useState<string>('')

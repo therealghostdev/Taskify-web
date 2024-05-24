@@ -8,6 +8,12 @@ export interface Todo {
   category: string;
   time: string;
 }
+export interface LoginProps{
+  loginSwap: ()=>void
+}
+export interface RegisterProps{
+  registerSwap: ()=>void
+}
 
 export interface ThemeContextType {
   darkMode: boolean;
