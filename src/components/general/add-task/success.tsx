@@ -3,14 +3,17 @@ import {
   useThemeContext,
   useTrackContext,
   useTodoContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
 import SuccessIcon from "../../../assets/success.svg";
 import CloseIcon from "@mui/icons-material/Close";
+import { motion } from "framer-motion";
 
 export default function Success() {
   const { darkMode } = useThemeContext();
   const { trackScreenFunc } = useTrackContext();
   const { todos, updateTodos } = useTodoContext();
+  const { editTodos, updateEditTodos } = useEditTodoContext();
 
   const closeBtnClick = () => {
     trackScreenFunc("");
@@ -24,12 +27,28 @@ export default function Success() {
       expected_date_of_completion: "",
       time: "",
     }));
-    
+
     updateTodos(reset);
+
+    const reset2 = editTodos.map((item) => ({
+      ...item,
+      task: "",
+      category: "",
+      task_description: "",
+      task_priority: 0,
+      expected_date_of_completion: "",
+      time: "",
+    }));
+
+    updateEditTodos(reset2);
   };
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, type: "tween" }}
       className={`w-full h-full flex justify-center items-center relative bg-transparent ${
         darkMode ? "text-white" : "text-black"
       }`}
@@ -63,6 +82,6 @@ export default function Success() {
         </div>
         <p className="z-50 text-[#8687E7] font-bold text-3xl">Successful</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
