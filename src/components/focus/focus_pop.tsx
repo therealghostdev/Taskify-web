@@ -20,6 +20,7 @@ export default function Focus_pop(props: FocusPopupProps) {
     const focusDetails: PopupFocusDetails = {
       name: selectedItems,
       duration: 0,
+      expired: ""
     };
     if (!selectedItems || selectedItems.length === 0) {
       props.notify("Please select task");
@@ -75,17 +76,17 @@ export default function Focus_pop(props: FocusPopupProps) {
 
         <div className="w-full flex justify-between items-center">
           <button
-            onClick={handleSetFocusDuration}
-            className={`w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4`}
-          >
-            Set focus duration
-          </button>
-
-          <button
             onClick={cancel}
             className={`w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4`}
           >
             Cancel
+          </button>
+
+          <button
+            onClick={handleSetFocusDuration}
+            className={`w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4`}
+          >
+            Set focus duration
           </button>
         </div>
       </div>

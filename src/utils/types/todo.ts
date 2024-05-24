@@ -74,11 +74,13 @@ export interface changePasswordProps {
 export interface focusDetails {
   name: string[];
   duration: number;
+  expired: string;
 }
 
 export interface PopupFocusDetails {
   name: string[];
   duration: number;
+  expired: string;
 }
 
 export interface FocusPopDataType {

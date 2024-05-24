@@ -38,7 +38,7 @@ export default function Index() {
 
   const getTaskByDate = () => {
     const filteredTasks = data.filter((item) => {
-      const completionDate = item.completion_date;
+      const completionDate = item.created_at;
 
       return (
         completionDate === selectedDate.toLocaleDateString("en-GB").toString()
@@ -199,7 +199,7 @@ export default function Index() {
               !activeBtn ? "bg-[#8687E7] text-white" : ""
             } w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4`}
           >
-            Today
+            All
           </button>
 
           <button

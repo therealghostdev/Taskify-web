@@ -59,7 +59,7 @@
     "task_name": "Watch the new episode of GOT",
     "task_title": "relax",
     "created_at": "23/05/2024",
-    "completion_date": "",
+    "completion_date": "23/05/2024",
     "completion_time": "02:14",
     "task_category": "Movie",
     "task_priority": 10,
@@ -74,6 +74,39 @@
     "completion_time": "",
     "task_category": "Movie",
     "task_priority": 10,
+    "completed": false
+  },
+  {
+    "id": 8,
+    "task_name": "Get breakfast",
+    "task_title": "relax",
+    "created_at": "24/05/2024",
+    "completion_date": "24/3/2024",
+    "completion_time": "05:10",
+    "task_category": "Grocery",
+    "task_priority": 10,
     "completed": true
+  },
+  {
+    "id": 9,
+    "task_name": "Readup for mastering bitcoin course",
+    "task_title": "Study",
+    "created_at": "24/05/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "University",
+    "task_priority": 10,
+    "completed": false
+  },
+  {
+    "id": 10,
+    "task_name": "Take out my girlfriend",
+    "task_title": "Outing",
+    "created_at": "24/05/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Social",
+    "task_priority": 10,
+    "completed": false
   }
 ]

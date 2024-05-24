@@ -87,7 +87,7 @@ export default function Nav() {
     <motion.nav
       key="nav"
       ref={navRef}
-      className={`fixed bottom-0 w-screen h-[100px] text-white cursor-pointer z-50 ${
+      className={`fixed bottom-0 w-screen h-[100px] text-white cursor-pointer z-[20] ${
         darkMode ? "bg-[#363636]" : "bg-[#bdbdbd]"
       }`}
       style={{ y: navBarY }}
