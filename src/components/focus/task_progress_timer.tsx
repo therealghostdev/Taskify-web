@@ -39,7 +39,7 @@ export default function Task_progress_timer() {
       });
 
       if (!popupItems || popupItems.length === 0) {
-        notify("No task found!");
+        notify("No task found, kindly add a task to begin focus");
       } else {
         setPopupContents(popupItems);
         setPopup(true);

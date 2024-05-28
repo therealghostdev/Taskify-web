@@ -13,6 +13,7 @@ import {
   useTodoContext,
 } from "../../../utils/app_context/general";
 import { motion, useMotionValue } from "framer-motion";
+import { useLocation } from "react-router-dom";
 
 export default function Nav() {
   const { darkMode } = useThemeContext();
@@ -22,22 +23,30 @@ export default function Nav() {
   const [animate, setAnimate] = useState({ y: 90 });
   const { trackScreenFunc } = useTrackContext();
   const { todos } = useTodoContext();
+  const [pathname, setPathname] = useState<string>("");
 
   const addTask = () => {
     todos.map((item) => {
       if (item.task === "") {
         trackScreenFunc("name");
       } else if (item.expected_date_of_completion === "") {
-          trackScreenFunc("calendar");
+        trackScreenFunc("calendar");
       } else if (item.time === "") {
         trackScreenFunc("time");
       } else if (item.task_priority === 0) {
         trackScreenFunc("priority");
       } else if (item.category === "") {
         trackScreenFunc("category");
-      }else{}
+      } else {
+      }
     });
   };
+
+  const currentPath = useLocation();
+  useEffect(() => {
+    const path = currentPath.pathname;
+    setPathname(path);
+  }, [currentPath.pathname]);
 
   useEffect(() => {
     const handleMouseEnter = () => {
@@ -87,9 +96,9 @@ export default function Nav() {
     <motion.nav
       key="nav"
       ref={navRef}
-      className={`fixed bottom-0 w-screen h-[100px] text-white cursor-pointer z-[20] ${
+      className={`fixed bottom-0 w-screen h-[100px] text-white cursor-pointer ${
         darkMode ? "bg-[#363636]" : "bg-[#bdbdbd]"
-      }`}
+      } ${pathname === "/profile" ? "z-0" : "z-[20]"}`}
       style={{ y: navBarY }}
       transition={{ duration: 0.8, type: "tween" }}
       animate={animate}

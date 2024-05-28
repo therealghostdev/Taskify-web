@@ -23,6 +23,7 @@ export default function Popup(props: PopupPropsTypes) {
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>();
 
   const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -35,13 +36,17 @@ export default function Popup(props: PopupPropsTypes) {
     const clickOutside = (e: MouseEvent) => {
       if (popupBox.current && !popupBox.current.contains(e.target as Node)) {
         props.close();
+        stopCamera();
+        setCameraBox(false);
+        setStream(null);
+        notify("Action terminated!")
       }
     };
 
     document.addEventListener("mousedown", clickOutside);
 
     return () => document.removeEventListener("mousedown", clickOutside);
-  }, []);
+  }, [stream]);
 
   const validateTextInput = () => {
     let error = false;
@@ -160,6 +165,7 @@ export default function Popup(props: PopupPropsTypes) {
         },
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setStream(stream);
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -225,6 +231,12 @@ export default function Popup(props: PopupPropsTypes) {
     }
     return new Blob([ab], { type: mimeString });
   };
+
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+  }
 
   useEffect(() => {
     if (file !== null) {
@@ -381,7 +393,7 @@ export default function Popup(props: PopupPropsTypes) {
                   ></video>
                   <button
                     ref={cameraButtonRef}
-                    className="md:w-20 md:h-20 w-16 h-16 rounded-full bg-[#8687E7] camera-button cursor-pointer flex justify-center items-center"
+                    className="md:w-20 md:h-20 w-16 h-16 rounded-full bg-[#8687E7] z-[999] camera-button cursor-pointer flex justify-center items-center"
                   >
                     <div className="w-2/4 h-2/4 border-8 border-[#bdbdbd] rounded-full"></div>
                   </button>

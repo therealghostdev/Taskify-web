@@ -52,7 +52,7 @@ const renderCustomAxisTick = ({ x, y, payload }: any) => {
   );
 };
 
-const renderCustomBarLabel = ({ x, y, width, height, value }: any) => {
+const renderCustomBarLabel = ({ x, y, width, value }: any) => {
   return (
     <text x={x + width / 2} y={y} fill="#666" textAnchor="middle" dy={-6}>
       {value}
@@ -150,7 +150,7 @@ const BarchartComponent: React.FC = () => {
             <Bar
               dataKey="hours"
               fill="#A5A5A5"
-              onMouseEnter={(data, index) => setHoveredBar(index)}
+              onMouseEnter={(index) => setHoveredBar(index)}
               onMouseLeave={() => setHoveredBar(null)}
               label={renderCustomBarLabel}
               barSize={30}
