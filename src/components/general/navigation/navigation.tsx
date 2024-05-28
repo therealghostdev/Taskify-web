@@ -16,6 +16,7 @@ import { motion, useMotionValue } from "framer-motion";
 import { useLocation } from "react-router-dom";
 
 export default function Nav() {
+  const currentPath = useLocation();
   const { darkMode } = useThemeContext();
   const navBarY = useMotionValue(80); // nav partially hidden by default
   const navRef = useRef<HTMLDivElement>(null);
@@ -23,7 +24,7 @@ export default function Nav() {
   const [animate, setAnimate] = useState({ y: 90 });
   const { trackScreenFunc } = useTrackContext();
   const { todos } = useTodoContext();
-  const [pathname, setPathname] = useState<string>("");
+  const [pathname, setPathname] = useState<string>(currentPath.pathname);
 
   const addTask = () => {
     todos.map((item) => {
@@ -42,10 +43,8 @@ export default function Nav() {
     });
   };
 
-  const currentPath = useLocation();
   useEffect(() => {
-    const path = currentPath.pathname;
-    setPathname(path);
+    setPathname(currentPath.pathname);
   }, [currentPath.pathname]);
 
   useEffect(() => {
@@ -93,28 +92,32 @@ export default function Nav() {
   }, [addTask]);
 
   return (
-    <motion.nav
-      key="nav"
-      ref={navRef}
-      className={`fixed bottom-0 w-screen h-[100px] text-white cursor-pointer ${
-        darkMode ? "bg-[#363636]" : "bg-[#bdbdbd]"
-      } ${pathname === "/profile" ? "z-0" : "z-[20]"}`}
-      style={{ y: navBarY }}
-      transition={{ duration: 0.8, type: "tween" }}
-      animate={animate}
-    >
-      <div className="w-full h-full flex justify-between items-center px-4">
-        {navData.map((item, index) => (
-          <NavItemComponent
-            key={index}
-            item={item}
-            darkMode={darkMode}
-            // addTask={addTask}
-            addButtonRef={addButtonRef} // Pass the ref to NavItemComponent
-          />
-        ))}
-      </div>
-    </motion.nav>
+    <>
+      {pathname !== "/auth" && (
+        <motion.nav
+          key="nav"
+          ref={navRef}
+          className={`fixed bottom-0 w-screen h-[100px] text-white cursor-pointer ${
+            darkMode ? "bg-[#363636]" : "bg-[#bdbdbd]"
+          } ${pathname === "/profile" ? "z-0" : "z-[20]"}`}
+          style={{ y: navBarY }}
+          transition={{ duration: 0.8, type: "tween" }}
+          animate={animate}
+        >
+          <div className="w-full h-full flex justify-between items-center px-4">
+            {navData.map((item, index) => (
+              <NavItemComponent
+                key={index}
+                item={item}
+                darkMode={darkMode}
+                // addTask={addTask}
+                addButtonRef={addButtonRef} // Pass the ref to NavItemComponent
+              />
+            ))}
+          </div>
+        </motion.nav>
+      )}
+    </>
   );
 }
 
