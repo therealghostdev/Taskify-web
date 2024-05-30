@@ -37,7 +37,7 @@ function App() {
       } w-screen min-h-screen`}
     >
       <Router>
-        {authenticated && <Nav />}
+        {authenticated&& <Nav />}
         {authenticated &&
           [
             "name",
