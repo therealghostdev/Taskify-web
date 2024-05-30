@@ -110,7 +110,6 @@ export default function Nav() {
                 key={index}
                 item={item}
                 darkMode={darkMode}
-                // addTask={addTask}
                 addButtonRef={addButtonRef} // Pass the ref to NavItemComponent
               />
             ))}
@@ -151,6 +150,11 @@ function NavItemComponent({
       icon = null;
   }
 
+  const location = useLocation();
+  const path = location.pathname;
+
+  const isActive = path === item.Link;
+
   return (
     <>
       {icon && icon === addIcon ? (
@@ -163,18 +167,32 @@ function NavItemComponent({
       ) : (
         <Link
           to={item.Link}
-          className={`flex flex-col items-center justify-center ${
-            darkMode ? "text-white" : "text-black"
+          className={`flex flex-col items-center justify-center link hover:text-[#8687E7] py-1 ${
+            darkMode && !isActive
+              ? "text-white"
+              : !darkMode && !isActive
+              ? "text-black"
+              : isActive
+              ? "border-b-4 border-[#8687E7] text-[#8687E7]"
+              : ""
           }`}
         >
           <img
             src={icon}
             alt={item.name}
-            className={`w-6 h-6 ${darkMode ? "" : "filter-invert"}`}
+            className={`w-6 h-6 ${
+              darkMode && !isActive
+                ? "img-hover-invert-dark"
+                : !darkMode && !isActive
+                ? "filter-invert img-hover-invert-light"
+                : isActive && darkMode
+                ? "img-path-invert-dark"
+                : isActive && !darkMode
+                ? "img-path-invert-light"
+                : ""
+            }`}
           />
-          <span className={`text-xl ${darkMode ? "text-white" : "text-black"}`}>
-            {item.name}
-          </span>
+          <span className={`text-xl`}>{item.name}</span>
         </Link>
       )}
     </>

@@ -23,10 +23,6 @@ body {
   color: var(--light-theme-text-color);
 }
 
-.filter-invert {
-  filter: invert(100%);
-}
-
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: darkgrey transparent;
@@ -71,6 +67,56 @@ body {
   transform: translate(50%, 50%);
 }
 
+.link {
+  text-align: center;
+  position: relative;
+  // color: #8687e7 !important;
+
+  &:after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    content: "";
+    display: block;
+    width: 0;
+    background: #8687e7;
+    height: 3px;
+    opacity: 0;
+    transition: opacity 0.3s, width 0.3s;
+  }
+
+  &:hover:after {
+    opacity: 1;
+    width: 100%;
+  }
+
+  .img-hover-invert-dark {
+    filter: invert(0%);
+  }
+
+  .img-hover-invert-light {
+    filter: invert(100%);
+  }
+
+  &:hover {
+    .img-hover-invert-dark {
+      filter: invert(60%);
+    }
+
+    .img-hover-invert-light {
+      filter: invert(10%);
+    }
+  }
+}
+
+.img-path-invert-dark {
+  filter: invert(60%);
+}
+
+.img-path-invert-light {
+  filter: invert(10%);
+}
+
 @media screen and (min-width: 1024px) {
   .camera-button {
     left: 44%;
@@ -79,13 +125,13 @@ body {
 }
 
 @media screen and (max-width: 1023px) {
-  .camera-button{
+  .camera-button {
     bottom: 23%;
   }
 }
 
 @media screen and (max-width: 767px) {
-  .camera-button{
+  .camera-button {
     bottom: 32%;
     left: 42%;
   }
