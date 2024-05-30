@@ -12,7 +12,7 @@ export interface Todo {
 
 export interface ThemeContextType {
   darkMode: boolean;
-  toggleDarkMode: () => void;
+  toggleDarkMode: (item: boolean) => void;
 }
 
 export interface ProtectedRouteProps {
