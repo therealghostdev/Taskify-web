@@ -20,6 +20,7 @@ import { ProtectedRouteProps } from "./utils/types/todo";
 import AddTask from "./components/general/add-task";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "react-calendar/dist/Calendar.css";
 
 function App() {
   const { darkMode } = useThemeContext();

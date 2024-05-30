@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Datetime from "react-datetime";
 import moment, { Moment } from "moment";
 import "react-datetime/css/react-datetime.css";
-import "./time.scss";
+import "../../../styles/time.scss";
 import {
   useThemeContext,
   useTodoContext,
   useTrackContext,
+  useEditTodoContext,
 } from "../../../utils/app_context/general";
+import { motion } from "framer-motion";
 
 export default function AddTime() {
   const [selectedTime, setSelectedTime] = useState<Moment | null>(moment());
@@ -15,6 +17,8 @@ export default function AddTime() {
   const { todos, updateTodos } = useTodoContext();
   const { trackScreenFunc } = useTrackContext();
   const [time, setTime] = useState<string>("");
+  const { editTodos, updateEditTodos } = useEditTodoContext();
+  const [editTime, setEditTime] = useState<string>("");
 
   const handleTimeChange = (time: Moment | string) => {
     if (moment.isMoment(time)) {
@@ -24,25 +28,59 @@ export default function AddTime() {
     }
   };
 
+  // checks if edit time state isn't empty
+  const getEditTimeValue = () => {
+    editTodos.map((item) => {
+      if (item.time !== "") {
+        setEditTime(item.time);
+      }
+    });
+  };
+
   // Define the value to use based on whether selectedTime is null
   const value = selectedTime ? selectedTime : moment();
 
   const handleSave = () => {
-    const updatedTodo = todos.map((item) => ({
-      ...item,
-      time,
-    }));
+    if (editTime && editTime !== "") {
+      const updatedTodo = editTodos.map((item) => ({
+        ...item,
+        time: selectedTime ? selectedTime?.format("HH:mm") : "",
+      }));
+      updateEditTodos(updatedTodo);
+      trackScreenFunc("priority");
+    } else {
+      const updatedTodo = todos.map((item) => ({
+        ...item,
+        time,
+      }));
 
-    updateTodos(updatedTodo);
-    trackScreenFunc("priority");
+      updateTodos(updatedTodo);
+      trackScreenFunc("priority");
+    }
   };
 
   const cancel = () => {
     trackScreenFunc("");
   };
 
+  useEffect(() => {
+    getEditTimeValue();
+  }, []);
+
+  // updates time value
+  useEffect(() => {
+    if (editTime && editTime !== "") {
+      const parsedTime = moment(editTime, "HH:mm");
+      setSelectedTime(parsedTime);
+    }
+  }, [editTime]);
+
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, type: "tween" }}
       className={`${
         darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
       }`}
@@ -77,6 +115,6 @@ export default function AddTime() {
           Save
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 export interface Todo {
+  id?: number;
   task: string;
   task_description: string;
   task_priority: number;
@@ -50,4 +51,28 @@ export interface newTaskCategoryType {
   name: string;
   icon: string; // change to file later
   color: string;
+}
+
+export interface TaskDataType {
+  id: number;
+  task_name: string;
+  task_title: string;
+  created_at: string;
+  completion_date: string;
+  completion_time: string;
+  task_category: string;
+  task_priority: number;
+  completed: boolean;
+}
+
+export interface PopupPropsTypes {
+  camera: boolean;
+  text: string;
+  singleInput: boolean;
+  close: () => void;
+}
+
+export interface changePasswordProps {
+  newPassword: string;
+  oldPassword: string;
 }
