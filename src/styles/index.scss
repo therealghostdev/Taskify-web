@@ -49,15 +49,17 @@ body {
 .dark-overlay {
   width: 100vw;
   height: 100vh;
-  background-color: #000000c5;
+  background-color: #000000ee;
   overflow: hidden;
+  z-index: 1000;
 }
 
 .light-overlay {
   width: 100vw;
   height: 100vh;
-  background-color: #999999c5;
+  background-color: #999999ee;
   overflow: hidden;
+  z-index: 1000;
 }
 
 .camera-button {
