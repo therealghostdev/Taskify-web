@@ -15,25 +15,26 @@ body {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent !important;
   scrollbar-gutter: stable;
+  scroll-behavior: smooth;
 }
 
 /* For Webkit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 10px;
-  height: 7px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: transparent !important;
+  background: transparent !important;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--scroll-thumb-bg);
+  background: var(--scroll-thumb-bg);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--scroll-thumb-bg-hover);
+  background: var(--scroll-thumb-bg-hover);
 }
 
 .custom-scrollbar {
