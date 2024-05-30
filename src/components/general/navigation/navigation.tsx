@@ -6,28 +6,27 @@ import calendarIcon from "../../../assets/calendar.svg";
 import addIcon from "../../../assets/add.svg";
 import focusIcon from "../../../assets/clock.svg";
 import userIcon from "../../../assets/user.svg";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   useThemeContext,
   useTrackContext,
   useTodoContext,
 } from "../../../utils/app_context/general";
-import { motion, useMotionValue } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { motion, useAnimation } from "framer-motion";
 
 export default function Nav() {
   const currentPath = useLocation();
   const { darkMode } = useThemeContext();
-  const navBarY = useMotionValue(80); // nav partially hidden by default
-  const navRef = useRef<HTMLDivElement>(null);
-  const addButtonRef = useRef<HTMLButtonElement>(null); // Ref for the button
-  const [animate, setAnimate] = useState({ y: 90 });
-  const { trackScreenFunc } = useTrackContext();
-  const { todos } = useTodoContext();
   const [pathname, setPathname] = useState<string>(currentPath.pathname);
+  const navRef = useRef<HTMLDivElement>(null);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+  const anchorRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const { todos } = useTodoContext();
+  const { trackScreenFunc } = useTrackContext();
+  const controls = useAnimation();
 
   const addTask = () => {
-    todos.map((item) => {
+    todos.forEach((item) => {
       if (item.task === "") {
         trackScreenFunc("name");
       } else if (item.expected_date_of_completion === "") {
@@ -48,32 +47,62 @@ export default function Nav() {
   }, [currentPath.pathname]);
 
   useEffect(() => {
-    const handleMouseEnter = () => {
-      setAnimate({ y: 0 }); // Set nav as visible
+    let startY: number;
+
+    const handleTouchStart = (event: TouchEvent) => {
+      startY = event.touches[0].clientY;
     };
 
-    const handleMouseLeave = () => {
-      setAnimate({ y: 90 }); // Set nav as partially hidden
-    };
-
-    const handleTouchStart = () => {
-      setAnimate({ y: 0 }); // Set nav as visible on touch start
-    };
-
-    if (navRef.current) {
-      navRef.current.addEventListener("mouseenter", handleMouseEnter);
-      navRef.current.addEventListener("mouseleave", handleMouseLeave);
-      navRef.current.addEventListener("touchstart", handleTouchStart);
-    }
-
-    return () => {
-      if (navRef.current) {
-        navRef.current.removeEventListener("mouseenter", handleMouseEnter);
-        navRef.current.removeEventListener("mouseleave", handleMouseLeave);
-        navRef.current.removeEventListener("touchstart", handleTouchStart);
+    const handleTouchMove = (event: TouchEvent) => {
+      const endY = event.touches[0].clientY;
+      if (startY - endY > 50) {
+        showNav();
       }
     };
-  }, [navBarY]);
+
+    const showNav = () => {
+      controls.start({ y: 0 });
+    };
+
+    const hideNav = () => {
+      controls.start({ y: 75 });
+    };
+
+    const handleClick = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        hideNav();
+      }
+    };
+
+    anchorRefs.current.forEach((ref) => {
+      if (ref) {
+        ref.addEventListener("click", showNav);
+      }
+    });
+
+    window.addEventListener("scroll", hideNav);
+    window.addEventListener("click", handleClick);
+    navRef.current?.addEventListener("mouseover", showNav);
+
+    addButtonRef.current?.addEventListener("touchstart", handleTouchStart);
+    addButtonRef.current?.addEventListener("touchmove", handleTouchMove);
+    addButtonRef.current?.addEventListener("click", showNav);
+
+    return () => {
+      anchorRefs.current.forEach((ref) => {
+        if (ref) {
+          ref.removeEventListener("click", showNav);
+        }
+      });
+      window.removeEventListener("scroll", hideNav);
+      window.removeEventListener("click", handleClick);
+      navRef.current?.removeEventListener("mouseover", showNav);
+
+      addButtonRef.current?.removeEventListener("touchstart", handleTouchStart);
+      addButtonRef.current?.removeEventListener("touchmove", handleTouchMove);
+      addButtonRef.current?.removeEventListener("click", showNav);
+    };
+  }, [controls]);
 
   useEffect(() => {
     const handleClick = () => {
@@ -100,9 +129,9 @@ export default function Nav() {
           className={`fixed bottom-0 w-screen h-[100px] text-white cursor-pointer ${
             darkMode ? "bg-[#363636]" : "bg-[#bdbdbd]"
           } ${pathname === "/profile" ? "z-0" : "z-[20]"}`}
-          style={{ y: navBarY }}
+          initial={{ y: 75 }}
+          animate={controls}
           transition={{ duration: 0.8, type: "tween" }}
-          animate={animate}
         >
           <div className="w-full h-full flex justify-between items-center px-4">
             {navData.map((item, index) => (
@@ -110,7 +139,8 @@ export default function Nav() {
                 key={index}
                 item={item}
                 darkMode={darkMode}
-                addButtonRef={addButtonRef} // Pass the ref to NavItemComponent
+                addButtonRef={addButtonRef}
+                setAnchorRef={(el) => (anchorRefs.current[index] = el)}
               />
             ))}
           </div>
@@ -123,11 +153,13 @@ export default function Nav() {
 function NavItemComponent({
   item,
   darkMode,
-  addButtonRef, // Receive the ref as a prop
+  addButtonRef,
+  setAnchorRef,
 }: {
   item: NavItem;
   darkMode: boolean;
-  addButtonRef: React.RefObject<HTMLButtonElement>; // Define the type of the ref
+  addButtonRef: React.RefObject<HTMLButtonElement>;
+  setAnchorRef: (el: HTMLAnchorElement | null) => void;
 }) {
   let icon;
   switch (item.icon) {
@@ -159,7 +191,7 @@ function NavItemComponent({
     <>
       {icon && icon === addIcon ? (
         <button
-          ref={addButtonRef} // Assign the ref to the button
+          ref={addButtonRef}
           className="flex items-center justify-center text-white w-14 h-14 bg-[#8687E7] rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         >
           <img src={icon} alt={item.name} className="w-6 h-6" />
@@ -167,6 +199,7 @@ function NavItemComponent({
       ) : (
         <Link
           to={item.Link}
+          ref={setAnchorRef}
           className={`flex flex-col items-center justify-center link hover:text-[#8687E7] py-1 ${
             darkMode && !isActive
               ? "text-white"
