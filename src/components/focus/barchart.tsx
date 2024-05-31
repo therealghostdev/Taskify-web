@@ -150,13 +150,13 @@ const BarchartComponent: React.FC = () => {
             <Bar
               dataKey="hours"
               fill="#A5A5A5"
-              onMouseEnter={(index) => setHoveredBar(index)}
+              onMouseEnter={(_, index) => setHoveredBar(index)}
               onMouseLeave={() => setHoveredBar(null)}
               label={renderCustomBarLabel}
               barSize={30}
               className="hover:cursor-pointer"
             >
-              {getData().map((entry, index) => (
+              {getData().map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={hoveredBar === index ? "#8687E7" : "#A5A5A5"}

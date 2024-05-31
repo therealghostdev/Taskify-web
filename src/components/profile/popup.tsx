@@ -165,12 +165,6 @@ export default function Popup(props: PopupPropsTypes) {
     }
   };
 
-  const takePictureMobile = () => {
-    if (cameraInputRef.current) {
-      cameraInputRef.current.click();
-    }
-  };
-
   // upload images from desktop devices
   const startCamera = async () => {
     try {
