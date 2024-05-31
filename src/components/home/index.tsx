@@ -36,6 +36,7 @@ export default function Index() {
   const mobileInputRef = useRef<HTMLInputElement | null>(null);
   const [filteredData, setFilteredData] = useState<TaskDataType[] | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [searchTask, setSearchTask] = useState<string>("");
 
   useEffect(() => {
     const updateViewValue = () => {
@@ -126,6 +127,22 @@ export default function Index() {
     return icon;
   };
 
+  useEffect(() => {
+    const searchItem = () => {
+      const today = new Date().toLocaleDateString("en-GB");
+      if (filteredData) {
+        const filtered = data.filter(
+          (item) =>
+            item.task_name.toLowerCase().includes(searchTask.toLowerCase()) &&
+            item.created_at === today
+        );
+        setFilteredData(filtered);
+      }
+    };
+
+    searchItem();
+  }, [searchTask]);
+
   const handleMenuButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
   };
@@ -196,6 +213,9 @@ export default function Index() {
                     <input
                       ref={mobileInputRef}
                       id="search"
+                      name="searchTask"
+                      value={searchTask}
+                      onChange={(e) => setSearchTask(e.target.value || "")}
                       type="text"
                       className={`rounded-md w-full px-12 ${
                         darkMode
@@ -217,6 +237,9 @@ export default function Index() {
                 <input
                   id="search"
                   type="text"
+                  name="searchTask"
+                  value={searchTask}
+                  onChange={(e) => setSearchTask(e.target.value || "")}
                   className={`rounded-sm md:w-3/4 w-full px-12 ${
                     darkMode
                       ? "bg-[#252525] text-[#AFAFAF] focus:outline-[#ffffff]"
@@ -284,7 +307,7 @@ export default function Index() {
           </div>
         )}
 
-        {filteredData && (
+        {filteredData && filteredData.length > 0 && (
           <div className="my-6 overflow-hidden">
             <div className="w-full px-12 py-5 my-8">
               <Button
