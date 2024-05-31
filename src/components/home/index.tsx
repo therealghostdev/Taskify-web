@@ -1,4 +1,17 @@
 import data from "../../utils/data/task_data.json";
+import groceryIcon from "../../assets/grocery.svg";
+import workIcon from "../../assets/briefcase.svg";
+import sportIcon from "../../assets/sport.svg";
+import designIcon from "../../assets/design.svg";
+import universityIcon from "../../assets/education.svg";
+import socialIcon from "../../assets/social.svg";
+import musicIcon from "../../assets/music.svg";
+import healthIcon from "../../assets/heartbeat.svg";
+import movieIcon from "../../assets/video-camera.svg";
+import homeIcon from "../../assets/home.svg";
+import addIcon from "../../assets/add.svg";
+import flagIcon from "../../assets/flag.svg";
+
 import noItem from "../../assets/Checklist-rafiki 1.svg";
 import userData from "../../utils/data/user_data.json";
 import defaultImg from "../../assets/default-profile.png";
@@ -6,6 +19,13 @@ import filterIcon from "../../assets/filter-icon.svg";
 import { useThemeContext } from "../../utils/app_context/general";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState, useRef } from "react";
+import { TaskDataType } from "../../utils/types/todo";
+import {
+  getDefaultBgColor,
+  formatDate,
+} from "../../utils/reusable_functions/functions";
+import { Button, Menu, MenuItem } from "@mui/material";
+import { ArrowDropDown } from "@mui/icons-material";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
@@ -14,6 +34,8 @@ export default function Index() {
   const [displayInput, setDisplayInput] = useState<boolean>(false);
   const inputContainerRef = useRef<HTMLDivElement | null>(null);
   const mobileInputRef = useRef<HTMLInputElement | null>(null);
+  const [filteredData, setFilteredData] = useState<TaskDataType[] | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
     const updateViewValue = () => {
@@ -47,9 +69,94 @@ export default function Index() {
     };
   }, []);
 
+  const getCurrentDayTasks = () => {
+    const today = new Date();
+
+    const filteredTasks = data.filter((item) => {
+      const completionDate = item.created_at;
+
+      return completionDate === today.toLocaleDateString("en-GB").toString();
+    });
+    setFilteredData(filteredTasks);
+  };
+
   useEffect(() => {
-    console.log(isMobileView);
-  }, [isMobileView]);
+    getCurrentDayTasks();
+  }, []);
+
+  const getIconRender = (item: string) => {
+    let icon;
+    switch (item) {
+      case "Grocery":
+        icon = groceryIcon;
+        break;
+      case "Work":
+        icon = workIcon;
+        break;
+      case "Sports":
+        icon = sportIcon;
+        break;
+      case "Design":
+        icon = designIcon;
+        break;
+      case "University":
+        icon = universityIcon;
+        break;
+      case "Social":
+        icon = socialIcon;
+        break;
+      case "Music":
+        icon = musicIcon;
+        break;
+      case "Health":
+        icon = healthIcon;
+        break;
+      case "Movie":
+        icon = movieIcon;
+        break;
+      case "Home":
+        icon = homeIcon;
+        break;
+      default:
+        icon = addIcon;
+        break;
+    }
+    return icon;
+  };
+
+  const handleMenuButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuItemClick = (category: string) => {
+    let filtered;
+    const today = new Date().toLocaleDateString("en-GB");
+
+    if (category === "Completed") {
+      filtered = data.filter(
+        (item) => item.completed === true && item.created_at === today
+      );
+    } else if (category === "Priority less than 5") {
+      filtered = data.filter(
+        (item) => item.task_priority < 5 && item.created_at === today
+      );
+    } else if (category === "Priority greater than 5") {
+      filtered = data.filter(
+        (item) => item.task_priority > 5 && item.created_at === today
+      );
+    } else if (category === "All") {
+      filtered = data.filter((item) => item.created_at === today);
+    } else {
+      filtered = data.filter((item) => item.created_at === today);
+    }
+
+    setFilteredData(filtered);
+    handleMenuClose();
+  };
 
   return (
     <section
@@ -143,6 +250,140 @@ export default function Index() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section>
+        {filteredData && filteredData?.length <= 0 && (
+          <div className="px-4 py-6 flex flex-col justify-center items-center w-full md:h-[400px]">
+            <div className="w-full flex flex-col justify-center items-center">
+              <img
+                src={noItem}
+                alt="no-item"
+                width={100}
+                height={100}
+                className="h-full md:w-1/4 w-full"
+              />
+              <h1
+                className={`text-2xl ${
+                  darkMode ? "text-[#AFAFAF]" : "text-[#808080]"
+                }`}
+              >
+                What do you want to do today
+              </h1>
+
+              <p
+                className={`text-lg mt-4 ${
+                  darkMode ? "text-[#AFAFAF]" : "text-[#808080]"
+                }`}
+              >
+                Tap + to add your tasks
+              </p>
+            </div>
+          </div>
+        )}
+
+        {filteredData && (
+          <div className="my-6 overflow-hidden">
+            <div className="w-full px-12 py-5 my-8">
+              <Button
+                className="flex justify-between items-center"
+                aria-controls="tasks"
+                aria-haspopup="true"
+                onClick={handleMenuButtonClick}
+                style={{
+                  backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                  color: "#FFFFFF",
+                }}
+              >
+                <span>Filter</span>
+                <span className="ml-4">
+                  <ArrowDropDown />
+                </span>
+              </Button>
+
+              <Menu
+                id="tasks"
+                keepMounted
+                open={Boolean(anchorEl)}
+                anchorEl={anchorEl}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={() => handleMenuItemClick("All")}>
+                  All
+                </MenuItem>
+                <MenuItem onClick={() => handleMenuItemClick("Completed")}>
+                  Completed
+                </MenuItem>
+                <MenuItem
+                  onClick={() => handleMenuItemClick("Priority less than 5")}
+                >
+                  Prority less than 5
+                </MenuItem>
+                <MenuItem
+                  onClick={() => handleMenuItemClick("Priority greater than 5")}
+                >
+                  Prority greater than 5
+                </MenuItem>
+              </Menu>
+            </div>
+            <div className="w-full flex flex-col items-center md:h-[500px] h-[800px] overflow-auto">
+              {filteredData.map((item) => (
+                <div
+                  key={item.id}
+                  // onClick={() => getTaskData(item)}
+                  className={`${
+                    darkMode
+                      ? "bg-[#4C4C4C] text-white"
+                      : "bg-[#c7c7c7] text-black"
+                  } lg:w-2/4 w-full flex justify-between items-center py-6 my-4 rounded-md px-2 cursor-pointer`}
+                >
+                  <div className="w-[20px] mr-4">
+                    <input type="radio" disabled />
+                  </div>
+                  <div className="w-2/4 flex flex-col text-wrap">
+                    <span className="my-2">{item.task_name}</span>
+                    <span
+                      className={`my-2 ${
+                        darkMode ? "text-[#AFAFAF]" : "text-[#808080]"
+                      }`}
+                    >
+                      Created: {formatDate(item.created_at)}
+                    </span>
+                  </div>
+                  <div className="w-2/4 flex justify-center items-baseline">
+                    <div
+                      className={`w-full flex items-baseline justify-center`}
+                    >
+                      <div
+                        className={`flex rounded-md items-center justify-center px-4 py-4 mx-4 ${getDefaultBgColor(
+                          item.task_category
+                        )}`}
+                      >
+                        <div className="flex flex-wrap">
+                          <img
+                            src={getIconRender(item.task_category)}
+                            alt="category-icon"
+                            className="mx-2"
+                          />
+                          {item.task_category}
+                        </div>
+                      </div>
+
+                      <div className="w-[40px] h-[20px] flex items-center justify-center border px-2 py-4 border-[#8687E7] rounded-md">
+                        <img
+                          src={flagIcon}
+                          alt="priority-icon"
+                          className={`${darkMode ? "" : "filter-invert"}`}
+                        />
+                        <span>{item.task_priority}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
     </section>
   );
