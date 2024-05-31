@@ -10,6 +10,10 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BoltIcon from "@mui/icons-material/Bolt";
 import LogoutIcon from "@mui/icons-material/Logout";
+import NewReleasesIcon from "@mui/icons-material/NewReleases";
+import NightlightIcon from "@mui/icons-material/Nightlight";
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import { Switch } from "@mui/material";
 import { useState, useRef, useEffect } from "react";
 import Popup from "./popup";
 import userData from "../../utils/data/user_data.json";
@@ -21,7 +25,7 @@ import { toast } from "react-toastify";
 
 export default function Index() {
   const authenticated = useAuthContext();
-  const { darkMode } = useThemeContext();
+  const { darkMode, toggleDarkMode } = useThemeContext();
   const [popup, setPopup] = useState<boolean>(false);
   const [singleInput, setSingleInput] = useState<boolean>(false);
   const [camera, setCamera] = useState<boolean>(false);
@@ -35,6 +39,10 @@ export default function Index() {
   );
 
   const closePopup = () => setPopup(false);
+
+  const toggleTheme = () => {
+    toggleDarkMode(!darkMode);
+  };
 
   const customId = "1";
   const notify = (message: string) =>
@@ -192,6 +200,38 @@ export default function Index() {
               darkMode ? "text-[#bdbdbd]" : "text-[#363636]"
             } text-lg`}
           >
+            General
+          </h1>
+
+          <button
+            onClick={() => notify("coming soon")}
+            className={`text-2xl flex justify-between bg-transparent my-2`}
+          >
+            <span>
+              <NewReleasesIcon className="mr-4" />
+              Change Language
+            </span>
+            <span>&gt;</span>
+          </button>
+
+          <div className={`text-2xl flex justify-between bg-transparent my-2`}>
+            <span>
+              {darkMode ? <NightlightIcon className="mr-4" /> : <WbSunnyIcon className="mr-4" />}
+              Change Theme
+            </span>
+            <Switch checked={darkMode} onChange={toggleTheme} color="primary" />
+            <span>&gt;</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="w-full flex flex-col justify-center items-center">
+        <div className="md:w-2/4 w-full my-4 flex flex-col gap-4">
+          <h1
+            className={`${
+              darkMode ? "text-[#bdbdbd]" : "text-[#363636]"
+            } text-lg`}
+          >
             Account
           </h1>
 
@@ -212,7 +252,7 @@ export default function Index() {
           >
             <span ref={passwordRef}>
               <KeyIcon className="mr-4" />
-              Change account password
+              Change password
             </span>
             <span>&gt;</span>
           </button>
@@ -223,7 +263,7 @@ export default function Index() {
           >
             <span ref={imageRef}>
               <CameraAltIcon className="mr-4" />
-              Change account image
+              Change image
             </span>
             <span>&gt;</span>
           </button>

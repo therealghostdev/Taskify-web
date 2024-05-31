@@ -2,6 +2,7 @@ import {
   useTrackContext,
   useEditTodoContext,
   useThemeContext,
+  useTodoContext,
 } from "../../../utils/app_context/general";
 import AddTaskName from "./AddTaskName";
 import AddDate from "./AddDate";
@@ -13,6 +14,7 @@ import Success from "./success";
 import { AnimatePresence } from "framer-motion";
 
 export default function AddTask() {
+  const { todos, updateTodos } = useTodoContext();
   const { editTodos, updateEditTodos } = useEditTodoContext();
   const { trackScreen, trackScreenFunc } = useTrackContext();
   const flowContainerRef = useRef<HTMLDivElement>(null);
@@ -24,8 +26,7 @@ export default function AddTask() {
         flowContainerRef.current &&
         !flowContainerRef.current.contains(e.target as Node)
       ) {
-        trackScreenFunc("");
-        const reset = editTodos.map((item) => ({
+        const resetEditTodos = editTodos.map((item) => ({
           ...item,
           task: "",
           category: "",
@@ -35,14 +36,30 @@ export default function AddTask() {
           time: "",
         }));
 
-        updateEditTodos(reset);
+        updateEditTodos(resetEditTodos);
+
+        if (trackScreen === "success") {
+          const resetTodos = todos.map((item) => ({
+            ...item,
+            task: "",
+            category: "",
+            task_description: "",
+            task_priority: 0,
+            expected_date_of_completion: "",
+            time: "",
+          }));
+
+          updateTodos(resetTodos);
+        }
+
+        trackScreenFunc("");
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [editTodos, todos, trackScreen, trackScreenFunc]);
 
   return (
     ["name", "calendar", "time", "priority", "category", "success"].includes(

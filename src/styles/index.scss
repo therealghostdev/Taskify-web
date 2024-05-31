@@ -11,8 +11,57 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  // --------------------------------> Scrollbar styles <---------------------------------------------------
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent !important;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
 }
 
+/* For Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb-bg);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-bg-hover);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb-bg) transparent !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--scroll-thumb-bg);
+  border-radius: 10px;
+  border: 2px solid transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scroll-thumb-bg-hover);
+}
+// --------------------------------> End of scrollbar styles <---------------------------------------------------
+
+// --------------------------------> Theme styles <---------------------------------------------------
 .dark-theme {
   background-color: var(--dark-theme-bg-color);
   color: var(--dark-theme-text-color);
@@ -23,46 +72,22 @@ body {
   color: var(--light-theme-text-color);
 }
 
-.filter-invert {
-  filter: invert(100%);
-}
-
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: darkgrey transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
-  border-radius: 10px;
-  border: 2px solid transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #999;
-}
-
 .dark-overlay {
   width: 100vw;
   height: 100vh;
-  background-color: #000000c5;
+  background-color: var(--dark_overlay);
   overflow: hidden;
+  z-index: 1000;
 }
 
 .light-overlay {
   width: 100vw;
   height: 100vh;
-  background-color: #999999c5;
+  background-color: var(--light_overlay);
   overflow: hidden;
+  z-index: 1000;
 }
+// --------------------------------> End of theme styles <---------------------------------------------------
 
 .camera-button {
   position: absolute;
@@ -71,22 +96,78 @@ body {
   transform: translate(50%, 50%);
 }
 
+.link {
+  text-align: center;
+  position: relative;
+  // color: #8687e7 !important;
+
+  &:after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    content: "";
+    display: block;
+    width: 0;
+    background: #8687e7;
+    height: 3px;
+    opacity: 0;
+    transition: opacity 0.3s, width 0.3s;
+  }
+
+  &:hover:after {
+    opacity: 1;
+    width: 100%;
+  }
+
+  .img-hover-invert-dark {
+    filter: invert(0%);
+  }
+
+  .img-hover-invert-light {
+    filter: invert(100%);
+  }
+
+  &:hover {
+    .img-hover-invert-dark {
+      filter: invert(60%);
+    }
+
+    .img-hover-invert-light {
+      filter: invert(10%);
+    }
+  }
+}
+
+.img-path-invert-dark {
+  filter: invert(60%);
+}
+
+.img-path-invert-light {
+  filter: invert(10%);
+}
+
+// --------------------------------> Responsiveness <---------------------------------------------------
+
+// --------------------------------> Large screens sizes<---------------------------------------------------
 @media screen and (min-width: 1024px) {
   .camera-button {
-    left: 44%;
-    bottom: 0%;
+    left: 40%;
+    bottom: 5%;
   }
 }
 
+// --------------------------------> Medium screen sizes <---------------------------------------------------
 @media screen and (max-width: 1023px) {
-  .camera-button{
-    bottom: 23%;
+  .camera-button {
+    left: 40%;
+    bottom: 5%;
   }
 }
 
+// --------------------------------> small screen sizes <---------------------------------------------------
 @media screen and (max-width: 767px) {
-  .camera-button{
-    bottom: 32%;
-    left: 42%;
+  .camera-button {
+    bottom: 5%;
+    left: 40%;
   }
 }
