@@ -22,7 +22,9 @@ export default function Popup(props: PopupPropsTypes) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRefContainer = useRef<HTMLDivElement>(null);
   const cameraButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>();
 
   const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -41,8 +43,28 @@ export default function Popup(props: PopupPropsTypes) {
     document.addEventListener("mousedown", clickOutside);
 
     return () => document.removeEventListener("mousedown", clickOutside);
-  }, []);
+  }, [stream]);
 
+  useEffect(() => {
+    const terminateCameraAction = (e: MouseEvent) => {
+      if (
+        videoRefContainer.current &&
+        !videoRefContainer.current.contains(e.target as Node)
+      ) {
+        props.close();
+        stopCamera();
+        setCameraBox(false);
+        setStream(null);
+        notify("Action terminated!");
+      }
+    };
+
+    document.addEventListener("mousedown", terminateCameraAction);
+
+    return () => {
+      document.removeEventListener("mousedown", terminateCameraAction);
+    };
+  }, [stream]);
   const validateTextInput = () => {
     let error = false;
 
@@ -143,12 +165,6 @@ export default function Popup(props: PopupPropsTypes) {
     }
   };
 
-  const takePictureMobile = () => {
-    if (cameraInputRef.current) {
-      cameraInputRef.current.click();
-    }
-  };
-
   // upload images from desktop devices
   const startCamera = async () => {
     try {
@@ -160,6 +176,7 @@ export default function Popup(props: PopupPropsTypes) {
         },
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setStream(stream);
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -190,7 +207,7 @@ export default function Popup(props: PopupPropsTypes) {
     } catch (err) {
       if (err) {
         setCameraBox(false);
-        notify("Camera permission is denied");
+        notify(err.toString());
       }
     }
   };
@@ -225,6 +242,12 @@ export default function Popup(props: PopupPropsTypes) {
     }
     return new Blob([ab], { type: mimeString });
   };
+
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+  }
 
   useEffect(() => {
     if (file !== null) {
@@ -361,30 +384,33 @@ export default function Popup(props: PopupPropsTypes) {
                 className="bg-transparent py-4 px-2 flex w-full my-2"
                 onClick={() => {
                   window.innerWidth < 1024
-                    ? takePictureMobile()
+                    ? notify("This feature is included for larger devices")
                     : startCamera();
                 }}
+                disabled={isMobile}
               >
                 Take picture (Desktop)
               </button>
               {cameraBox && !isMobile && (
                 <div
-                  className={`w-full md:h-screen h-[50px] fixed top-0 lg:left-0 left-0 ${
+                  className={`w-screen md:h-screen flex justify-center items-center h-[50px] fixed top-0 lg:left-0 left-0 z-[9999] ${
                     darkMode ? "dark-overlay" : "light-overlay"
                   }`}
                 >
-                  <video
-                    ref={videoRef}
-                    className="w-full h-full"
-                    autoPlay
-                    playsInline
-                  ></video>
-                  <button
-                    ref={cameraButtonRef}
-                    className="md:w-20 md:h-20 w-16 h-16 rounded-full bg-[#8687E7] z-50 camera-button cursor-pointer flex justify-center items-center"
-                  >
-                    <div className="w-2/4 h-2/4 border-8 border-[#bdbdbd] rounded-full"></div>
-                  </button>
+                  <div className="relative" ref={videoRefContainer}>
+                    <video
+                      ref={videoRef}
+                      className="w-full h-full"
+                      autoPlay
+                      playsInline
+                    ></video>
+                    <button
+                      ref={cameraButtonRef}
+                      className="md:w-20 md:h-20 w-16 h-16 rounded-full bg-[#8687E7] z-[999] camera-button cursor-pointer flex justify-center items-center"
+                    >
+                      <div className="w-2/4 h-2/4 border-8 border-[#bdbdbd] rounded-full"></div>
+                    </button>
+                  </div>
                 </div>
               )}
 

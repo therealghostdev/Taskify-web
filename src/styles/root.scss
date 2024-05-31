@@ -5,6 +5,10 @@ $dark_text: #000000;
 $light_bg: #ffffff;
 $color_general1: #0069a3;
 $color_general2: #80ffa3;
+// $scrollbar_thumb: #888;
+$scrollbar_thumb1: #555;
+$overlay_light: #999999ee;
+$overlay_dark: #000000ee;
 
 :root {
   --light-theme-bg-color: #{$light_bg};
@@ -13,4 +17,8 @@ $color_general2: #80ffa3;
   --dark-theme-text-color: #{$light_text};
   --button-general-bg-color: #{$color_general1};
   --button-general-text-color: #{$light_text};
+  --scroll-thumb-bg: #{$overlay_light};
+  --scroll-thumb-bg-hover: #{$scrollbar_thumb1};
+  --light_overlay: #{$overlay_light};
+  --dark_overlay: #{$overlay_dark};
 }

@@ -210,12 +210,8 @@ export default function AddTaskName() {
               />
             </button>
 
-            <button className="mr-12">
-              <img
-                src={flag}
-                alt="priority"
-                className={darkMode ? "" : "filter-invert"}
-              />
+            <button className="mr-12" aria-label="send">
+              <img src={flag} alt="priority" />
             </button>
           </div>
 
