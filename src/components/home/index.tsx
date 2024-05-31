@@ -72,11 +72,13 @@ export default function Index() {
   const getCurrentDayTasks = () => {
     const today = new Date();
 
-    const filteredTasks = data.filter((item) => {
-      const completionDate = item.created_at;
+    const filteredTasks = data
+      .filter((item) => {
+        const completionDate = item.created_at;
 
-      return completionDate === today.toLocaleDateString("en-GB").toString();
-    });
+        return completionDate === today.toLocaleDateString("en-GB").toString();
+      })
+      .sort((a, b) => a.task_priority - b.task_priority);
     setFilteredData(filteredTasks);
   };
 
