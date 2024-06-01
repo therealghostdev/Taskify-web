@@ -16,7 +16,11 @@ import noItem from "../../assets/Checklist-rafiki 1.svg";
 import userData from "../../utils/data/user_data.json";
 import defaultImg from "../../assets/default-profile.png";
 import filterIcon from "../../assets/filter-icon.svg";
-import { useThemeContext } from "../../utils/app_context/general";
+import {
+  useThemeContext,
+  useTrackContext,
+  useEditTodoContext,
+} from "../../utils/app_context/general";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState, useRef } from "react";
 import { TaskDataType } from "../../utils/types/todo";
@@ -26,6 +30,8 @@ import {
 } from "../../utils/reusable_functions/functions";
 import { Button, Menu, MenuItem } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
+import { AnimatePresence, motion } from "framer-motion";
+import Popup from "./popup";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
@@ -37,6 +43,12 @@ export default function Index() {
   const [filteredData, setFilteredData] = useState<TaskDataType[] | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchTask, setSearchTask] = useState<string>("");
+  const [taskScreen, setTaskScreen] = useState<boolean>(false);
+  const [taskScreenData, setTaskScreenData] = useState<TaskDataType[] | null>(
+    null
+  );
+  const { trackScreen } = useTrackContext();
+  const { editTodos } = useEditTodoContext();
 
   useEffect(() => {
     const updateViewValue = () => {
@@ -177,12 +189,54 @@ export default function Index() {
     handleMenuClose();
   };
 
+  // Popup functions
+  const closePopup = () => {
+    setTaskScreen(false);
+    setTaskScreenData(null);
+  };
+
+  const getTaskData = (item: TaskDataType[]) => {
+    setTaskScreenData(item);
+    setTaskScreen(true);
+  };
+  // End of popup functions
+
+  useEffect(() => {
+    console.log(editTodos, trackScreen);
+  });
+
   return (
     <section
       className={`flex flex-col px-6 py-3 ${
         darkMode ? "text-white" : "text-black"
       }`}
     >
+      {taskScreen && (
+        <div
+          className={`flex items-center justify-center ${
+            taskScreen
+              ? darkMode
+                ? "dark-overlay fixed top-0 left-0"
+                : "light-overlay fixed top-0 left-0"
+              : ""
+          }`}
+        >
+          <AnimatePresence>
+            {taskScreen && (
+              <motion.div
+                className="flex justify-center items-center w-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8, type: "tween" }}
+              >
+                <Popup data={taskScreenData} close={closePopup} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
       <section
         className={`w-full flex justify-center items-center md:px-4 py-2 bg-transparent`}
       >
@@ -355,7 +409,7 @@ export default function Index() {
               {filteredData.map((item) => (
                 <div
                   key={item.id}
-                  // onClick={() => getTaskData(item)}
+                  onClick={() => getTaskData(Array(item))}
                   className={`${
                     darkMode
                       ? "bg-[#4C4C4C] text-white"

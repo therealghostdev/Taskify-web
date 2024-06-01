@@ -180,5 +180,17 @@
     "task_category": "Health",
     "task_priority": 3,
     "completed": false
+  },
+
+  {
+    "id": 17,
+    "task_name": "Get breakfast",
+    "task_title": "Work",
+    "created_at": "01/06/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Grocery",
+    "task_priority": 3,
+    "completed": false
   }
 ]

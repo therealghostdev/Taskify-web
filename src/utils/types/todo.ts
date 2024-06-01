@@ -93,6 +93,10 @@ export interface FocusPopupProps {
   changeScreen: (val: string) => void;
   notify: (val: string) => void;
   close: () => void;
-  details: focusDetails
+  details: focusDetails;
   updateDetails: (focusDetails: PopupFocusDetails) => void;
+}
+export interface TaskScreenPropType {
+  data: TaskDataType[] | null;
+  close: () => void;
 }
