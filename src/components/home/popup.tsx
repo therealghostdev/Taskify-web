@@ -24,12 +24,13 @@ import homeIcon from "../../assets/home.svg";
 import addIcon from "../../assets/add.svg";
 import flag from "../../assets/flag.svg";
 import { formatDate } from "../../utils/reusable_functions/functions";
-import React, { useEffect } from "react";
+import React from "react";
+import { toast } from "react-toastify";
 
 export default function Popup(props: TaskScreenPropType) {
   const { editTodos, updateEditTodos } = useEditTodoContext();
   const { darkMode } = useThemeContext();
-  const { trackScreenFunc, trackScreen } = useTrackContext();
+  const { trackScreenFunc } = useTrackContext();
 
   const getIconRender = (item: string) => {
     let icon;
@@ -71,23 +72,24 @@ export default function Popup(props: TaskScreenPropType) {
     return icon;
   };
 
-  const editTask = (item: TaskDataType) => {
-    if (props.data) {
-      const updatedTodos = props.data.map((content) => ({
-        ...content,
-        id: item.id,
-        task: item.task_name,
-        task_priority: item.task_priority,
-        category: item.task_category,
-        task_description: item.task_title,
-        time: item.completion_time,
-        expected_date_of_completion: item.completion_date,
-      }));
-      updateEditTodos(updatedTodos);
+  const customId = "1";
+  const notify = (message: string) =>
+    toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
-      trackScreenFunc("name");
-      props.close();
-    }
+  const editTask = (item: TaskDataType) => {
+    const updatedTodos = editTodos.map((content) => ({
+      ...content,
+      id: item.id,
+      task: item.task_name,
+      task_priority: item.task_priority,
+      category: item.task_category,
+      task_description: item.task_title,
+      time: item.completion_time,
+      expected_date_of_completion: item.completion_date,
+    }));
+    updateEditTodos(updatedTodos);
+    trackScreenFunc("name");
+    props.close();
   };
 
   const jumpToScreen = (item: string, item2: TaskDataType) => {
@@ -97,7 +99,7 @@ export default function Popup(props: TaskScreenPropType) {
   };
 
   return (
-    <section className="flex flex-col justify-center items-center lg:w-2/4 md:w-3/4 w-full h-full overflow-auto px-8 py-4">
+    <section className="flex flex-col justify-center items-center background-shadow rounded-lg lg:w-2/4 md:w-3/4 w-[98%] h-full overflow-auto px-8 py-4">
       <section className="w-full flex justify-between">
         <div>
           <Button onClick={props.close}>
@@ -112,7 +114,7 @@ export default function Popup(props: TaskScreenPropType) {
         </div>
       </section>
 
-      <section className="w-full flex flex-col justify-between relative px-6">
+      <section className="w-full flex flex-col justify-between relative md:px-6">
         {props.data?.map((item, index) => (
           <React.Fragment key={index}>
             <div className="flex justify-between items-center w-full">
@@ -122,7 +124,16 @@ export default function Popup(props: TaskScreenPropType) {
               </div>
 
               <div className="">
-                <img src={editIcon} alt="edit" />
+                <Button
+                  onClick={() => jumpToScreen("name", item)}
+                  className="flex justify-between items-center"
+                  style={{
+                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                    color: "#FFFFFF",
+                  }}
+                >
+                  <img src={editIcon} alt="edit" />
+                </Button>
               </div>
             </div>
 
@@ -210,6 +221,7 @@ export default function Popup(props: TaskScreenPropType) {
 
             <div>
               <Button
+                onClick={() => notify("coming soon")}
                 className="flex justify-between items-center"
                 style={{
                   backgroundColor: darkMode ? "#363636" : "#bdbdbd",
@@ -221,7 +233,7 @@ export default function Popup(props: TaskScreenPropType) {
               </Button>
             </div>
 
-            <div className="w-full absolute -bottom-28 px-4">
+            <div className="w-full absolute -bottom-28 px-4 py-6">
               <Button
                 onClick={() => editTask(item)}
                 className="flex justify-center items-center w-full"

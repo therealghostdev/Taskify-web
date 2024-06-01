@@ -203,7 +203,7 @@ export default function Index() {
 
   useEffect(() => {
     console.log(editTodos, trackScreen);
-  });
+  }, [editTodos, trackScreen]);
 
   return (
     <section
