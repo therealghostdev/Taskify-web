@@ -53,7 +53,7 @@ function App() {
           <Route
             path="/"
             element={
-              <ProtectedRoute authenticated={authenticated} redirectTo="/auth">
+              <ProtectedRoute authenticated={!authenticated} redirectTo="/auth">
                 <Homepage />
               </ProtectedRoute>
             }

@@ -15,7 +15,9 @@ export interface LoginProps{
 export interface RegisterProps{
   registerSwap: ()=>void
 }
-
+export interface CarouselProps {
+  slides:React.ReactNode[]
+}
 export interface ThemeContextType {
   darkMode: boolean;
   toggleDarkMode: () => void;
