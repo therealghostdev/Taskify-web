@@ -270,7 +270,7 @@ export default function Index() {
                       value={searchTask}
                       onChange={(e) => setSearchTask(e.target.value || "")}
                       type="text"
-                      className={`rounded-md w-full px-14 ${
+                      className={`rounded-md w-full px-16 ${
                         darkMode
                           ? "bg-[#252525] text-[#AFAFAF] focus:outline-[#ffffff]"
                           : "bg-[#a5a5a5] text-[#000000] focus:outline-[#000000]"
@@ -293,7 +293,7 @@ export default function Index() {
                   name="searchTask"
                   value={searchTask}
                   onChange={(e) => setSearchTask(e.target.value || "")}
-                  className={`rounded-sm md:w-3/4 w-full px-14 ${
+                  className={`rounded-sm md:w-3/4 w-full px-16 ${
                     darkMode
                       ? "bg-[#252525] text-[#AFAFAF] focus:outline-[#ffffff]"
                       : "bg-[#a5a5a5] text-[#000000] focus:outline-[#000000]"
