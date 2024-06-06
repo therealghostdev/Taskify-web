@@ -402,7 +402,7 @@ export default function Index() {
                 <MenuItem
                   onClick={() => handleMenuItemClick("Priority greater than 5")}
                 >
-                  Prority greater than 5
+                  Priority greater than 5
                 </MenuItem>
               </Menu>
             </div>
