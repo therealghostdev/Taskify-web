@@ -111,7 +111,7 @@ const BarchartComponent: React.FC = () => {
       <div className="w-full flex justify-between items-center md:px-12 px-6">
         <h1 className="text-[#A5A5A5] text-2xl">Overview</h1>
         <Button
-          aria-controls="simple-menu"
+          aria-controls="time-range"
           aria-haspopup="true"
           onClick={handleClick}
           style={{ backgroundColor: "#A5A5A5", color: "#FFFFFF" }}
@@ -120,7 +120,7 @@ const BarchartComponent: React.FC = () => {
         </Button>
 
         <Menu
-          id="simple-menu"
+          id="time-range"
           anchorEl={anchorEl}
           keepMounted
           open={Boolean(anchorEl)}
