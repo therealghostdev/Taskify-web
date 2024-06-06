@@ -156,8 +156,7 @@
     "task_category": "Grocery",
     "task_priority": 1,
     "completed": true
-  }
-  ,
+  },
   {
     "id": 15,
     "task_name": "Write documentation",
@@ -190,6 +189,30 @@
     "completion_date": "",
     "completion_time": "",
     "task_category": "Grocery",
+    "task_priority": 3,
+    "completed": false
+  },
+
+  {
+    "id": 18,
+    "task_name": "Get breakfast",
+    "task_title": "Eat Shawarma",
+    "created_at": "06/06/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Grocery",
+    "task_priority": 3,
+    "completed": false
+  },
+
+  {
+    "id": 19,
+    "task_name": "Attend meeting",
+    "task_title": "Clarify client request",
+    "created_at": "06/06/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Work",
     "task_priority": 3,
     "completed": false
   }

@@ -16,11 +16,7 @@ import noItem from "../../assets/Checklist-rafiki 1.svg";
 import userData from "../../utils/data/user_data.json";
 import defaultImg from "../../assets/default-profile.png";
 import filterIcon from "../../assets/filter-icon.svg";
-import {
-  useThemeContext,
-  useTrackContext,
-  useEditTodoContext,
-} from "../../utils/app_context/general";
+import { useThemeContext } from "../../utils/app_context/general";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState, useRef } from "react";
 import { TaskDataType } from "../../utils/types/todo";
@@ -29,6 +25,7 @@ import {
   formatDate,
 } from "../../utils/reusable_functions/functions";
 import { Button, Menu, MenuItem } from "@mui/material";
+import { CleaningServicesTwoTone } from "@mui/icons-material";
 import { ArrowDropDown } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
 import Popup from "./popup";
@@ -40,15 +37,15 @@ export default function Index() {
   const [displayInput, setDisplayInput] = useState<boolean>(false);
   const inputContainerRef = useRef<HTMLDivElement | null>(null);
   const mobileInputRef = useRef<HTMLInputElement | null>(null);
+
   const [filteredData, setFilteredData] = useState<TaskDataType[] | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchTask, setSearchTask] = useState<string>("");
   const [taskScreen, setTaskScreen] = useState<boolean>(false);
+  const [isFiltered, setIsFiltered] = useState<boolean>(false);
   const [taskScreenData, setTaskScreenData] = useState<TaskDataType[] | null>(
     null
   );
-  const { trackScreen } = useTrackContext();
-  const { editTodos } = useEditTodoContext();
 
   useEffect(() => {
     const updateViewValue = () => {
@@ -93,6 +90,7 @@ export default function Index() {
       })
       .sort((a, b) => a.task_priority - b.task_priority);
     setFilteredData(filteredTasks);
+    setIsFiltered(false);
   };
 
   useEffect(() => {
@@ -171,18 +169,23 @@ export default function Index() {
       filtered = data.filter(
         (item) => item.completed === true && item.created_at === today
       );
+      setIsFiltered(true);
     } else if (category === "Priority less than 5") {
       filtered = data.filter(
         (item) => item.task_priority < 5 && item.created_at === today
       );
+      setIsFiltered(true);
     } else if (category === "Priority greater than 5") {
       filtered = data.filter(
         (item) => item.task_priority > 5 && item.created_at === today
       );
+      setIsFiltered(true);
     } else if (category === "All") {
       filtered = data.filter((item) => item.created_at === today);
+      setIsFiltered(false);
     } else {
       filtered = data.filter((item) => item.created_at === today);
+      setIsFiltered(false);
     }
 
     setFilteredData(filtered);
@@ -200,10 +203,6 @@ export default function Index() {
     setTaskScreen(true);
   };
   // End of popup functions
-
-  useEffect(() => {
-    console.log(editTodos, trackScreen);
-  }, [editTodos, trackScreen]);
 
   return (
     <section
@@ -271,7 +270,7 @@ export default function Index() {
                       value={searchTask}
                       onChange={(e) => setSearchTask(e.target.value || "")}
                       type="text"
-                      className={`rounded-md w-full px-12 ${
+                      className={`rounded-md w-full px-14 ${
                         darkMode
                           ? "bg-[#252525] text-[#AFAFAF] focus:outline-[#ffffff]"
                           : "bg-[#a5a5a5] text-[#000000] focus:outline-[#000000]"
@@ -294,7 +293,7 @@ export default function Index() {
                   name="searchTask"
                   value={searchTask}
                   onChange={(e) => setSearchTask(e.target.value || "")}
-                  className={`rounded-sm md:w-3/4 w-full px-12 ${
+                  className={`rounded-sm md:w-3/4 w-full px-14 ${
                     darkMode
                       ? "bg-[#252525] text-[#AFAFAF] focus:outline-[#ffffff]"
                       : "bg-[#a5a5a5] text-[#000000] focus:outline-[#000000]"
@@ -347,7 +346,9 @@ export default function Index() {
                   darkMode ? "text-[#AFAFAF]" : "text-[#808080]"
                 }`}
               >
-                What do you want to do today
+                {filteredData.length < 0
+                  ? "What do you want to do today"
+                  : "No task found"}
               </h1>
 
               <p
@@ -462,6 +463,17 @@ export default function Index() {
               ))}
             </div>
           </div>
+        )}
+
+        {isFiltered && (
+          <button
+            className="fixed lg:bottom-32 md:right-24 md:bottom-72 bottom-28 right-12 rounded-md py-4 px-2"
+            onClick={getCurrentDayTasks}
+          >
+            <CleaningServicesTwoTone
+              style={{ width: "50px", height: "50px" }}
+            />
+          </button>
         )}
       </section>
     </section>

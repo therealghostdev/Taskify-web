@@ -24,13 +24,14 @@ import homeIcon from "../../assets/home.svg";
 import addIcon from "../../assets/add.svg";
 import flag from "../../assets/flag.svg";
 import { formatDate } from "../../utils/reusable_functions/functions";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 
 export default function Popup(props: TaskScreenPropType) {
   const { editTodos, updateEditTodos } = useEditTodoContext();
   const { darkMode } = useThemeContext();
   const { trackScreenFunc } = useTrackContext();
+  const popupRef = useRef<HTMLSelectElement | null>(null);
 
   const getIconRender = (item: string) => {
     let icon;
@@ -98,8 +99,25 @@ export default function Popup(props: TaskScreenPropType) {
     props.close();
   };
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (popupRef && !popupRef.current?.contains(e.target as Node)) {
+        props.close();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <section className="flex flex-col justify-center items-center background-shadow rounded-lg lg:w-2/4 md:w-3/4 w-[98%] h-full overflow-auto px-8 py-4">
+    <section
+      ref={popupRef}
+      className="flex flex-col justify-center items-center rounded-lg lg:w-2/4 md:w-3/4 w-[98%] h-full overflow-auto px-8 py-4"
+    >
       <section className="w-full flex justify-between">
         <div>
           <Button onClick={props.close}>
