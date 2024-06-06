@@ -25,9 +25,10 @@ export default function AddPriority() {
 
   // check if edit priority value isn't empty
   const getEditPriorityValue = () => {
-    editTodos.map((item) => {
+    editTodos.forEach((item) => {
       if (item.task_priority !== 0) {
         setPriority(item.task_priority);
+        setActiveBtn(item.task_priority - 1);
       }
     });
   };
@@ -47,9 +48,9 @@ export default function AddPriority() {
       }));
 
       updateTodos(updatedTodo);
-      todos.map(() => {
+      todos.forEach(() => {
         if (priority === 0) {
-          return notify("Add task priority");
+          notify("Add task priority");
         } else {
           trackScreenFunc("category");
         }
@@ -68,16 +69,13 @@ export default function AddPriority() {
 
   useEffect(() => {
     getEditPriorityValue();
-    priorityBtnClick(priority);
   }, []);
 
   useEffect(() => {
-    editTodos.map((item) => {
-      if (item.task_priority !== 0) {
-        setEditPriority(priority);
-      }
-    });
-  }, [priority]);
+    if (editTodos.some(item => item.task_priority !== 0)) {
+      setEditPriority(priority);
+    }
+  }, [priority, editTodos]);
 
   return (
     <motion.div
@@ -103,7 +101,7 @@ export default function AddPriority() {
             } bg-[#272727] hover:bg-[#8687E7] text-white flex flex-col items-center m-2 px-4 py-2 md:w-[100px] w-[60px] cursor-pointer`}
           >
             <span>
-              <img src={(item.icon = flagIcon)} alt="priority-icon" />
+              <img src={flagIcon} alt="priority-icon" />
             </span>
             <span ref={valueRef}>{item.priority_value}</span>
           </button>

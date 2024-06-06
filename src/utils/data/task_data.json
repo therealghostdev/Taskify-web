@@ -108,5 +108,112 @@
     "task_category": "Social",
     "task_priority": 10,
     "completed": false
+  },
+
+  {
+    "id": 11,
+    "task_name": "Take out my girlfriend",
+    "task_title": "Outing",
+    "created_at": "31/05/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Social",
+    "task_priority": 10,
+    "completed": false
+  },
+
+  {
+    "id": 12,
+    "task_name": "Get Lunch",
+    "task_title": "Outing",
+    "created_at": "31/05/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Grocery",
+    "task_priority": 5,
+    "completed": false
+  },
+
+  {
+    "id": 13,
+    "task_name": "Read some programming blogs",
+    "task_title": "Outing",
+    "created_at": "31/05/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Work",
+    "task_priority": 3,
+    "completed": false
+  },
+
+  {
+    "id": 14,
+    "task_name": "Get Breakfast",
+    "task_title": "Grocery",
+    "created_at": "31/05/2024",
+    "completion_date": "31/05/2024",
+    "completion_time": "09:15",
+    "task_category": "Grocery",
+    "task_priority": 1,
+    "completed": true
+  },
+  {
+    "id": 15,
+    "task_name": "Write documentation",
+    "task_title": "Work",
+    "created_at": "31/05/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Social",
+    "task_priority": 1,
+    "completed": false
+  },
+
+  {
+    "id": 16,
+    "task_name": "Workout",
+    "task_title": "Work",
+    "created_at": "31/05/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Health",
+    "task_priority": 3,
+    "completed": false
+  },
+
+  {
+    "id": 17,
+    "task_name": "Get breakfast",
+    "task_title": "Work",
+    "created_at": "01/06/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Grocery",
+    "task_priority": 3,
+    "completed": false
+  },
+
+  {
+    "id": 18,
+    "task_name": "Get breakfast",
+    "task_title": "Eat Shawarma",
+    "created_at": "06/06/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Grocery",
+    "task_priority": 3,
+    "completed": false
+  },
+
+  {
+    "id": 19,
+    "task_name": "Attend meeting",
+    "task_title": "Clarify client request",
+    "created_at": "06/06/2024",
+    "completion_date": "",
+    "completion_time": "",
+    "task_category": "Work",
+    "task_priority": 3,
+    "completed": false
   }
 ]
