@@ -397,7 +397,7 @@ export default function Index() {
                 <MenuItem
                   onClick={() => handleMenuItemClick("Priority less than 5")}
                 >
-                  Prority less than 5
+                  Priority less than 5
                 </MenuItem>
                 <MenuItem
                   onClick={() => handleMenuItemClick("Priority greater than 5")}
