@@ -35,6 +35,19 @@ const TrackTaskScreenContext = createContext<{
   trackScreenFunc: () => {},
 });
 
+// notepad context
+const ToolsContext = createContext<{
+  tools: boolean;
+  showNotepad: boolean;
+  displayAllTools: () => void;
+  displayNotepad: () => void;
+}>({
+  showNotepad: false,
+  displayNotepad: () => {},
+  tools: false,
+  displayAllTools: () => {},
+});
+
 // Custom hook to access the todo list context
 export const useTodoContext = () => useContext(TodoContext);
 
@@ -50,8 +63,11 @@ export const useAuthContext = () => useContext(AuthContext);
 // Custom hook to access popup
 // export const usePopupContext = () => useContext(AddTaskPopupContext);
 
-// custom hoom to track task screen
+// custom hook to track task screen
 export const useTrackContext = () => useContext(TrackTaskScreenContext);
+
+// custom hook for notepad
+export const useToolsContext = () => useContext(ToolsContext);
 
 // Component to wrap the entire application and provide context
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
@@ -114,6 +130,20 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setDarkMode(item);
   };
 
+  // state for managing all tools
+  const [tools, setTools] = useState<boolean>(false);
+
+  // state for managing notepad
+  const [showNotepad, setShowNotepad] = useState<boolean>(true);
+
+  const displayNotepad = () => {
+    setShowNotepad(!showNotepad);
+  };
+
+  const displayAllTools = () => {
+    setTools(!tools);
+  };
+
   useEffect(() => {
     // Update authentication state based on token availability
     const token = localStorage.getItem("token");
@@ -127,15 +157,17 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <TodoContext.Provider value={{ todos, updateTodos }}>
-      <EditTodoContext.Provider
-        value={{ editTodos, updateEditTodos }}
-      >
+      <EditTodoContext.Provider value={{ editTodos, updateEditTodos }}>
         <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
           <AuthContext.Provider value={authenticated}>
             <TrackTaskScreenContext.Provider
               value={{ trackScreen, trackScreenFunc }}
             >
-              {children}
+              <ToolsContext.Provider
+                value={{ showNotepad, displayNotepad, tools, displayAllTools }}
+              >
+                {children}
+              </ToolsContext.Provider>
             </TrackTaskScreenContext.Provider>
           </AuthContext.Provider>
         </ThemeContext.Provider>

@@ -100,3 +100,9 @@ export interface TaskScreenPropType {
   data: TaskDataType[] | null;
   close: () => void;
 }
+export interface NotepadTextStyleType {
+  bold: boolean;
+  italic: boolean;
+  fontIncrease: number | null;
+  fontDecrease: number | null;
+}
