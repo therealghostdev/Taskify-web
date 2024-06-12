@@ -23,13 +23,24 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
 
 function App() {
-  const { darkMode } = useThemeContext();
+  const { darkMode, toggleDarkMode } = useThemeContext();
   const authenticated = useAuthContext();
   const { trackScreen } = useTrackContext();
 
   useEffect(() => {
     localStorage.setItem("token", "hello");
   }, [authenticated]);
+
+  useEffect(() => {
+    const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
+    const listener = (event: MediaQueryListEvent) => {
+      toggleDarkMode(event.matches);
+    };
+    prefersDarkMode.addEventListener("change", listener);
+    return () => {
+      prefersDarkMode.removeEventListener("change", listener);
+    };
+  }, [toggleDarkMode]);
 
   return (
     <main
