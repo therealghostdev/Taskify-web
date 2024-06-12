@@ -3,24 +3,13 @@
 
 import { useEffect, useState, FormEvent } from 'react';
 
-import Slider from 'react-slick'
+
 import '../../styles/authentication/auth.scss';
 import { RegisterProps } from '../../utils/types/todo';
 import AppleIcon from '@mui/icons-material/Apple'
 
 export default function Login({registerSwap}: RegisterProps) {
-  let settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: false,
-    autoplay:true,
-    autoplaySpeed:3000,
-    pauseOnHover: false,
-    
-  };
+  
 
   const [userName, setUserName]=useState<string>('')
   const [password, setPassword]=useState<string>('')
@@ -53,7 +42,7 @@ export default function Login({registerSwap}: RegisterProps) {
     <div className='flex '>
       <div className='logo xsm:hidden lg:flex'>
       <div className='flex item relative  h-screen w-full'>
-      <Slider {...settings} className='text-white  flex w-full h-full absolute left-[0] top-[0] items-center'>
+      <div className='text-white  flex w-full h-full absolute left-[0] top-[0] items-center'>
       
      
      
@@ -469,7 +458,7 @@ export default function Login({registerSwap}: RegisterProps) {
       </div>
       </div>
       
-      </Slider>
+      </div>
       </div>
       </div>
       <div className=" formContainer h-screen flex justify-center items-center" >
