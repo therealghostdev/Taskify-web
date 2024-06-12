@@ -12,8 +12,8 @@ export default function Register({loginSwap}:LoginProps) {
   const [userName, setUserName] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')
-  const [valid, setValid] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  
+  
   const [errors, setErrors] = useState({ password: '', confirmPassword: '' });
 
   const clearForm =()=>{
@@ -35,12 +35,11 @@ export default function Register({loginSwap}:LoginProps) {
     }
 
     if (!newErrors.password && !newErrors.confirmPassword) {
-      setValid(true);
-      setIsLoading(true);
+     
       console.log('successful');
       clearForm();
     } else {
-      setValid(false);
+      
       setErrors(newErrors);
     }
     
