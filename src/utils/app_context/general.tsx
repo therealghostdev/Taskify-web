@@ -110,8 +110,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   // Toggle dark mode
-  const toggleDarkMode = () => {
-    setDarkMode((prevMode) => !prevMode);
+  const toggleDarkMode = (item: boolean) => {
+    setDarkMode(item);
   };
 
   useEffect(() => {

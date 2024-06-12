@@ -7,6 +7,7 @@ import { TaskDataType } from "../../utils/types/todo";
 import groceryIcon from "../../assets/grocery.svg";
 import workIcon from "../../assets/briefcase.svg";
 import sportIcon from "../../assets/sport.svg";
+
 import designIcon from "../../assets/design.svg";
 import universityIcon from "../../assets/education.svg";
 import socialIcon from "../../assets/social.svg";
@@ -21,6 +22,7 @@ import {
   useEditTodoContext,
   useTrackContext,
 } from "../../utils/app_context/general";
+import { getDefaultBgColor, formatDate } from "../../utils/reusable_functions/functions";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
@@ -38,7 +40,7 @@ export default function Index() {
 
   const getTaskByDate = () => {
     const filteredTasks = data.filter((item) => {
-      const completionDate = item.completion_date;
+      const completionDate = item.created_at;
 
       return (
         completionDate === selectedDate.toLocaleDateString("en-GB").toString()
@@ -63,54 +65,6 @@ export default function Index() {
 
   const currentYear = new Date().getFullYear();
   const lastDateOfYear = new Date(currentYear, 11, 31);
-
-  const formatDate = (date: string) => {
-    const currentDate = new Date();
-    const [day, month, year] = date.split("/");
-    const formattedDate = new Date(
-      parseInt(year),
-      parseInt(month) - 1,
-      parseInt(day)
-    );
-
-    if (formattedDate.toDateString() === currentDate.toDateString()) {
-      return "Today";
-    } else if (formattedDate.getDate() === currentDate.getDate() + 1) {
-      return "Tomorrow";
-    } else if (formattedDate.getDate() === currentDate.getDate() - 1) {
-      return "Yesterday";
-    } else {
-      // Format date as "dd/mm/yyyy"
-      return `${day}/${month}/${year}`;
-    }
-  };
-
-  const getDefaultBgColor = (itemName: string) => {
-    switch (itemName) {
-      case "Grocery":
-        return "bg-[#CCFF80]";
-      case "Work":
-        return "bg-[#FF9680]";
-      case "Sports":
-        return "bg-[#FF9680]";
-      case "Design":
-        return "bg-[#80FFD9]";
-      case "University":
-        return "bg-[#809CFF]";
-      case "Social":
-        return "bg-[#FF80EB]";
-      case "Music":
-        return "bg-[#FC80FF]";
-      case "Health":
-        return "bg-[#80FFA3]";
-      case "Movie":
-        return "bg-[#80D1FF]";
-      case "Home":
-        return "bg-[#FFCC80]";
-      default:
-        return "bg-[#80FFD1]";
-    }
-  };
 
   const getIconRender = (item: string) => {
     let icon;
@@ -170,8 +124,6 @@ export default function Index() {
 
   useEffect(() => {
     getTaskByDate();
-
-    // return () => getTaskByDate();
   }, [selectedDate]);
 
   return (
@@ -199,7 +151,7 @@ export default function Index() {
               !activeBtn ? "bg-[#8687E7] text-white" : ""
             } w-2/4 rounded-sm hover:text-white text-[#8687E7] hover:bg-[#8687E7] px-4 py-4 my-6 mx-4`}
           >
-            Today
+            All
           </button>
 
           <button
@@ -213,7 +165,7 @@ export default function Index() {
         </div>
 
         {filteredData && (
-          <div className="w-full flex flex-col justify-center items-center">
+          <div className="w-full flex flex-col items-center md:h-[500px] h-[800px] overflow-auto my-8">
             {filteredData.map((item) => (
               <div
                 key={item.id}
