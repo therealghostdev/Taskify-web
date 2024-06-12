@@ -1,24 +1,13 @@
 import { useState, FormEvent } from 'react';
 import '../../styles/authentication/auth.scss';
 import AppleIcon from '@mui/icons-material/Apple'
-import Index from '../home';
-import Slider from 'react-slick'
+
+
 
 import { LoginProps } from '../../utils/types/todo';
 export default function Register({loginSwap}:LoginProps) {
 
-  let settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: false,
-    autoplay:true,
-    autoplaySpeed:3000,
-    pauseOnHover: false,
-    
-  };
+ 
 
   const [userName, setUserName] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -56,16 +45,12 @@ export default function Register({loginSwap}:LoginProps) {
     }
     
   }
-  //will finish with this when the backend is available
-  const handleRegisterClick= ()=>{
-    const loader = "Signing up..."
-    valid? <Index /> :''
-  }
+  
  
   return (
     <div className='flex '>
     <div className='logo xsm:hidden lg:flex'>
-    <Slider {...settings} className='text-white  flex w-full h-full absolute left-[0] top-[0] items-center'>
+    <div className='text-white  flex w-full h-full absolute left-[0] top-[0] items-center'>
       
      
      
@@ -481,7 +466,7 @@ export default function Register({loginSwap}:LoginProps) {
       </div>
       </div>
       
-      </Slider>
+      </div>
     </div>
     <div className="formContainer h-screen flex justify-center items-center" >
       <form onSubmit={register} className=' rounded-lg dark:bg-slate-900 bg-slate-300 px-3  sm:w-80 xsm:w-11/12 h-auto flex flex-col  justify-center'>
@@ -513,7 +498,7 @@ export default function Register({loginSwap}:LoginProps) {
           )}
         </label>
         <div className='register pt-7 pb-3 w-full flex justify-center'>
-          <button onClick={handleRegisterClick} className='login text-sm w-full py-2 rounded-lg' type='submit'>
+          <button  className='login text-sm w-full py-2 rounded-lg' type='submit'>
             Register
           </button>
         </div>
