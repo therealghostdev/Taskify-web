@@ -21,7 +21,7 @@ import AddTask from "./components/general/add-task";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
-import All from "./components/app_tools/all";
+import Apptool from "./components/app_tools";
 
 function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
@@ -60,7 +60,7 @@ function App() {
             "success",
           ].includes(trackScreen) && <AddTask />}
 
-        {authenticated && <All />}
+        {authenticated && <Apptool />}
 
         <Routes>
           <Route
