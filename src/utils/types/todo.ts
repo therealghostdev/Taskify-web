@@ -103,6 +103,5 @@ export interface TaskScreenPropType {
 export interface NotepadTextStyleType {
   bold: boolean;
   italic: boolean;
-  fontIncrease: number | null;
-  fontDecrease: number | null;
+  fontSize: number | null;
 }

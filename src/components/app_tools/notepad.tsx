@@ -1,50 +1,53 @@
 import {
+  usePopperContext,
   useThemeContext,
-  useToolsContext,
 } from "../../utils/app_context/general";
 import { Button } from "@mui/material";
-import Close from "@mui/icons-material/Close";
-import { FormatBold, FormatItalic, FormatSize } from "@mui/icons-material";
-import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import {
+  FormatBold,
+  FormatItalic,
+  FormatSize,
+  Close,
+  ArrowUpward,
+  ArrowDownward,
+} from "@mui/icons-material";
 import { useState } from "react";
 import { NotepadTextStyleType } from "../../utils/types/todo";
 import { toast } from "react-toastify";
 
 export default function Notepad() {
   const { darkMode } = useThemeContext();
-  const { displayNotepad, displayAllTools } = useToolsContext();
+  const { toggleActionState: toggleNotepad } = usePopperContext();
   const [noteField, setNoteField] = useState<string>("");
   const [noteTextStyle, setNoteTextStyle] = useState<NotepadTextStyleType>({
     bold: false,
     italic: false,
-    fontIncrease: 1,
-    fontDecrease: 1,
+    fontSize: 16,
   });
 
   const closeAll = () => {
-    displayNotepad();
-    displayAllTools();
+    toggleNotepad("notepad");
   };
 
-  const addBoldText = () => {
+  const toggleBoldText = () => {
     setNoteTextStyle((prev) => ({ ...prev, bold: !prev.bold }));
   };
 
-  const addItalicText = () => {
+  const toggleItalicText = () => {
     setNoteTextStyle((prev) => ({ ...prev, italic: !prev.italic }));
   };
 
   const increaseTextSize = () => {
     setNoteTextStyle((prev) => ({
       ...prev,
-      fontIncrease: prev.fontIncrease ? prev.fontIncrease * 2 : 1,
+      fontSize: prev.fontSize ? prev.fontSize + 2 : 1,
     }));
   };
 
   const decreaseTextSize = () => {
     setNoteTextStyle((prev) => ({
       ...prev,
-      fontIncrease: prev.fontIncrease ? prev.fontIncrease - 2 : 1,
+      fontSize: prev.fontSize ? Math.max(16, prev.fontSize - 2) : 1,
     }));
   };
 
@@ -86,9 +89,17 @@ export default function Notepad() {
       <div className="flex flex-col items-center w-full px-4">
         <div className="w-full flex justify-around">
           <Button
-            onClick={addBoldText}
-            className="mx-2"
-            style={{ background: noteTextStyle.bold ? "#8687E7" : "" }}
+            onClick={toggleBoldText}
+            sx={{
+              mx: 2,
+              color: "#8687E7",
+              background: noteTextStyle.bold ? "#8687E7" : "",
+              "&:hover": {
+                backgroundColor: noteTextStyle.bold
+                  ? "#8687E7"
+                  : "rgba(134, 135, 231, 0.1)",
+              },
+            }}
           >
             <FormatBold
               className={`${darkMode ? "text-white" : "text-black"}`}
@@ -96,9 +107,17 @@ export default function Notepad() {
           </Button>
 
           <Button
-            onClick={addItalicText}
-            className="mx-2"
-            style={{ background: noteTextStyle.italic ? "#8687E7" : "" }}
+            onClick={toggleItalicText}
+            sx={{
+              mx: 2,
+              color: "#8687E7",
+              background: noteTextStyle.italic ? "#8687E7" : "",
+              "&:hover": {
+                backgroundColor: noteTextStyle.italic
+                  ? "#8687E7"
+                  : "rgba(134, 135, 231, 0.1)",
+              },
+            }}
           >
             <FormatItalic
               className={`${darkMode ? "text-white" : "text-black"}`}
@@ -107,34 +126,35 @@ export default function Notepad() {
 
           <Button
             onClick={increaseTextSize}
-            className="mx-2"
-            style={{
-              background:
-                noteTextStyle.fontIncrease && noteTextStyle.fontIncrease > 1
-                  ? "#8687E7"
-                  : "",
+            sx={{
+              mx: 2,
+              color: "#8687E7",
+              "&:hover": {
+                backgroundColor: "rgba(134, 135, 231, 0.1)",
+              },
             }}
           >
             <FormatSize
               className={`${darkMode ? "text-white" : "text-black"}`}
             />
-            <ArrowUpward style={{ marginLeft: -10 }} />
+            <ArrowUpward style={{ marginLeft: -10 }} color="primary" />
           </Button>
 
           <Button
             onClick={decreaseTextSize}
             className="mx-2"
-            style={{
-              background:
-                noteTextStyle.fontIncrease && noteTextStyle.fontIncrease > 1
-                  ? "#8687E7"
-                  : "",
+            sx={{
+              mx: 2,
+              color: "#8687E7",
+              "&:hover": {
+                backgroundColor: "rgba(134, 135, 231, 0.1)",
+              },
             }}
           >
             <FormatSize
               className={`${darkMode ? "text-white" : "text-black"}`}
             />
-            <ArrowDownward style={{ marginLeft: -10 }} />
+            <ArrowDownward style={{ marginLeft: -10 }} color="primary" />
           </Button>
         </div>
 
@@ -143,18 +163,20 @@ export default function Notepad() {
         >
           <label htmlFor="add-note" hidden></label>
           <textarea
-            rows={6}
             cols={24}
             name="noteField"
             id="add-note"
             onChange={(e) => setNoteField(e.target.value)}
             value={noteField}
             placeholder="Write Something here...."
-            className={`w-full py-2 px-6 rounded-md resize-none ${
+            className={`w-full py-2 px-6 rounded-md resize-none h-48  ${
               darkMode
                 ? "bg-[#252525] text-[#AFAFAF] focus:outline-[#ffffff]"
                 : "bg-[#b9b9b9] text-[#000000] focus:outline-[#000000]"
+            } ${noteTextStyle.bold ? "font-bold" : ""} ${
+              noteTextStyle.italic ? "italic" : ""
             }`}
+            style={{ fontSize: `${noteTextStyle.fontSize}px` }}
           ></textarea>
           <Button
             onClick={handleSave}
