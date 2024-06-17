@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Todo, ThemeContextType } from "../types/todo";
+import actions from "../../components/app_tools/actions";
+import { type ActionsState } from "../../components/app_tools/actions";
+
+// Create the initial state based on actions
+const initialActionsState: ActionsState = actions.reduce((state, action) => {
+  state[action.name.toLowerCase()] = false;
+  return state;
+}, {} as ActionsState);
 
 // Create a context for managing the todo list
 const TodoContext = createContext<{
@@ -35,17 +43,13 @@ const TrackTaskScreenContext = createContext<{
   trackScreenFunc: () => {},
 });
 
-// notepad context
-const ToolsContext = createContext<{
-  tools: boolean;
-  showNotepad: boolean;
-  displayAllTools: () => void;
-  displayNotepad: () => void;
+// popper context
+const PopperContext = createContext<{
+  actionsState: ActionsState;
+  toggleActionState: (actionName: string) => void;
 }>({
-  showNotepad: false,
-  displayNotepad: () => {},
-  tools: false,
-  displayAllTools: () => {},
+  actionsState: initialActionsState,
+  toggleActionState: () => {},
 });
 
 // Custom hook to access the todo list context
@@ -66,8 +70,8 @@ export const useAuthContext = () => useContext(AuthContext);
 // custom hook to track task screen
 export const useTrackContext = () => useContext(TrackTaskScreenContext);
 
-// custom hook for notepad
-export const useToolsContext = () => useContext(ToolsContext);
+// custom hook for popper
+export const usePopperContext = () => useContext(PopperContext);
 
 // Component to wrap the entire application and provide context
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
@@ -130,18 +134,15 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setDarkMode(item);
   };
 
-  // state for managing all tools
-  const [tools, setTools] = useState<boolean>(false);
+  // state for managing popper actions
+  const [actionsState, setActionsState] =
+    useState<ActionsState>(initialActionsState);
 
-  // state for managing notepad
-  const [showNotepad, setShowNotepad] = useState<boolean>(true);
-
-  const displayNotepad = () => {
-    setShowNotepad(!showNotepad);
-  };
-
-  const displayAllTools = () => {
-    setTools(!tools);
+  const toggleActionState = (actionName: string) => {
+    setActionsState((prevState) => ({
+      ...prevState,
+      [actionName]: !prevState[actionName],
+    }));
   };
 
   useEffect(() => {
@@ -163,11 +164,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             <TrackTaskScreenContext.Provider
               value={{ trackScreen, trackScreenFunc }}
             >
-              <ToolsContext.Provider
-                value={{ showNotepad, displayNotepad, tools, displayAllTools }}
+              <PopperContext.Provider
+                value={{ actionsState, toggleActionState }}
               >
                 {children}
-              </ToolsContext.Provider>
+              </PopperContext.Provider>
             </TrackTaskScreenContext.Provider>
           </AuthContext.Provider>
         </ThemeContext.Provider>
