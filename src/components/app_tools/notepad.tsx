@@ -1,8 +1,16 @@
 import {
   usePopperContext,
   useThemeContext,
+  useNotesContext,
 } from "../../utils/app_context/general";
-import { Button } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Grid,
+  IconButton,
+} from "@mui/material";
 import {
   FormatBold,
   FormatItalic,
@@ -18,7 +26,9 @@ import { toast } from "react-toastify";
 export default function Notepad() {
   const { darkMode } = useThemeContext();
   const { toggleActionState: toggleNotepad } = usePopperContext();
+  const { addNote, notes, deleteNote } = useNotesContext();
   const [noteField, setNoteField] = useState<string>("");
+  const [noteTitle, setNoteTitle] = useState<string>("");
   const [noteTextStyle, setNoteTextStyle] = useState<NotepadTextStyleType>({
     bold: false,
     italic: false,
@@ -56,8 +66,14 @@ export default function Notepad() {
     toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
   const handleSave = () => {
-    if (noteField !== "") {
-      console.log(noteField, noteTextStyle);
+    if (noteTitle.trim() !== "" || noteField.trim() !== "") {
+      addNote({
+        title: noteTitle,
+        content: noteField,
+      });
+      notify("Note added");
+      setNoteField("");
+      setNoteTitle("");
     } else {
       notify("No text detected");
     }
@@ -161,26 +177,38 @@ export default function Notepad() {
         <div
           className={`w-full mt-6 ${darkMode ? "text-white" : "text-black"}`}
         >
-          <label htmlFor="add-note" hidden></label>
-          <textarea
-            cols={24}
-            name="noteField"
-            id="add-note"
-            onChange={(e) => setNoteField(e.target.value)}
-            value={noteField}
-            placeholder="Write Something here...."
-            className={`w-full py-2 px-6 rounded-md resize-none h-48  ${
+          <div
+            className={`flex flex-col w-full py-2 px-6 mb-2 rounded-md resize-none h-48  focus-within:outline focus-within:outline-2 ${
               darkMode
-                ? "bg-[#252525] text-[#AFAFAF] focus:outline-[#ffffff]"
-                : "bg-[#b9b9b9] text-[#000000] focus:outline-[#000000]"
-            } ${noteTextStyle.bold ? "font-bold" : ""} ${
-              noteTextStyle.italic ? "italic" : ""
+                ? "bg-[#252525] text-[#AFAFAF] focus-within:outline-[#fff]"
+                : "bg-[#b9b9b9] text-[#000000] focus-within:outline-[#000]"
             }`}
-            style={{ fontSize: `${noteTextStyle.fontSize}px` }}
-          ></textarea>
+          >
+            <label htmlFor="note-title" hidden />
+            <input
+              className={`w-full pt-1 pb-2 text-xlg ${
+                darkMode ? "bg-[#252525]" : "bg-[#b9b9b9]"
+              } outline-none`}
+              type="text"
+              placeholder="Title..."
+              value={noteTitle}
+              onChange={(e) => setNoteTitle(e.target.value)}
+            />
+            <label htmlFor="note" hidden />
+            <textarea
+              name="noteField"
+              id="add-note"
+              onChange={(e) => setNoteField(e.target.value)}
+              value={noteField}
+              placeholder="Write Something here...."
+              className={`w-full h-full ${
+                darkMode ? "bg-[#252525]" : "bg-[#b9b9b9]"
+              } outline-none`}
+            />
+          </div>
           <Button
             onClick={handleSave}
-            className="w-full rounded-md"
+            className="w-full rounded-md mt-4"
             style={{
               backgroundColor: "#8687E7",
               color: "#ffffff",
@@ -189,6 +217,33 @@ export default function Notepad() {
           >
             Add
           </Button>
+          <Grid
+            container
+            rowSpacing={1}
+            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+            sx={{ mt: 1 }}
+          >
+            {notes.map((note, index) => (
+              <Grid item xs={6} key={index}>
+                <Card className="flex justify-between h-full max-h-28">
+                  <CardContent className=" overflow-hidden h-full max-h-28">
+                    <div className=" text-lg font-medium">{note.title}</div>
+                    <div className=" line-clamp-2 text-ellipsis whitespace-normal">
+                      {note.content}
+                    </div>
+                  </CardContent>
+                  <CardActions className=" items-start">
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => deleteNote(index)}
+                    >
+                      <Close />
+                    </IconButton>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </div>
       </div>
     </div>

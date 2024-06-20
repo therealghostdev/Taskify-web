@@ -52,6 +52,24 @@ const PopperContext = createContext<{
   toggleActionState: () => {},
 });
 
+//Notes context
+
+// Note type
+interface Note {
+  title: string;
+  content: string;
+}
+
+const NotesContext = createContext<{
+  notes: Note[];
+  addNote: (note: Note) => void;
+  deleteNote: (index: number) => void;
+}>({
+  notes: [],
+  addNote: () => {},
+  deleteNote: () => {},
+});
+
 // Custom hook to access the todo list context
 export const useTodoContext = () => useContext(TodoContext);
 
@@ -72,6 +90,9 @@ export const useTrackContext = () => useContext(TrackTaskScreenContext);
 
 // custom hook for popper
 export const usePopperContext = () => useContext(PopperContext);
+
+// custom hook for notes
+export const useNotesContext = () => useContext(NotesContext);
 
 // Component to wrap the entire application and provide context
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
@@ -145,6 +166,24 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }));
   };
 
+  // state for managing Notes
+  const [notes, setNotes] = useState<Note[]>(() => {
+    const savedNotes = localStorage.getItem("notes");
+    return savedNotes ? JSON.parse(savedNotes) : [];
+  });
+
+  const addNote = (note: Note) => {
+    const newNotes = [...notes, note];
+    setNotes(newNotes);
+    localStorage.setItem("notes", JSON.stringify(newNotes));
+  };
+
+  const deleteNote = (index: number) => {
+    const newNotes = notes.filter((_, i) => i !== index);
+    setNotes(newNotes);
+    localStorage.setItem("notes", JSON.stringify(newNotes));
+  };
+
   useEffect(() => {
     // Update authentication state based on token availability
     const token = localStorage.getItem("token");
@@ -167,7 +206,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
               <PopperContext.Provider
                 value={{ actionsState, toggleActionState }}
               >
-                {children}
+                <NotesContext.Provider value={{ notes, addNote, deleteNote }}>
+                  {children}
+                </NotesContext.Provider>
               </PopperContext.Provider>
             </TrackTaskScreenContext.Provider>
           </AuthContext.Provider>
