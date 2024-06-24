@@ -49,7 +49,7 @@ function App() {
       } w-screen min-h-screen`}
     >
       <Router>
-        {authenticated && <Nav />}
+        {authenticated&& <Nav />}
         {authenticated &&
           [
             "name",
@@ -64,11 +64,12 @@ function App() {
           <Route
             path="/"
             element={
-              <ProtectedRoute authenticated={authenticated} redirectTo="/auth">
+              <ProtectedRoute authenticated={!authenticated} redirectTo="/auth">
                 <Homepage />
               </ProtectedRoute>
             }
           />
+         
           <Route
             path="/calendar"
             element={

@@ -9,7 +9,19 @@ export interface Todo {
   category: string;
   time: string;
 }
-
+export interface LoginProps{
+  loginSwap: ()=>void
+}
+export interface RegisterProps{
+  registerSwap: ()=>void
+}
+export interface ErrorsState {
+  password: string;
+  confirmPassword: string;
+}
+export interface CarouselProps {
+  slides:React.ReactNode[]
+}
 export interface ThemeContextType {
   darkMode: boolean;
   toggleDarkMode: (item: boolean) => void;
