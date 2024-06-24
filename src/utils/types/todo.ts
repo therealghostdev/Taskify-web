@@ -15,6 +15,10 @@ export interface LoginProps{
 export interface RegisterProps{
   registerSwap: ()=>void
 }
+export interface ErrorsState {
+  password: string;
+  confirmPassword: string;
+}
 export interface CarouselProps {
   slides:React.ReactNode[]
 }
