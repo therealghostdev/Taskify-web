@@ -55,7 +55,8 @@ const PopperContext = createContext<{
 //Notes context
 
 // Note type
-interface Note {
+export interface Note {
+  id: string;
   title: string;
   content: string;
 }
@@ -63,11 +64,19 @@ interface Note {
 const NotesContext = createContext<{
   notes: Note[];
   addNote: (note: Note) => void;
-  deleteNote: (index: number) => void;
+  deleteNote: (id: string) => void;
+  selectedNote: Note | null;
+  selectNote: (note: Note | null) => void;
+  displayNote: boolean;
+  toggleDisplay: (state?: boolean) => void;
 }>({
   notes: [],
   addNote: () => {},
   deleteNote: () => {},
+  selectedNote: null,
+  selectNote: () => {},
+  displayNote: false,
+  toggleDisplay: () => {},
 });
 
 // Custom hook to access the todo list context
@@ -172,16 +181,53 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return savedNotes ? JSON.parse(savedNotes) : [];
   });
 
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [displayNote, setDisplayNote] = useState<boolean>(false);
+
   const addNote = (note: Note) => {
-    const newNotes = [...notes, note];
+    const existingNote = notes.findIndex((n) => n.id === note.id);
+
+    if (existingNote > -1) {
+      // Update existing note
+      const updatedNotes = notes.map((n) => (n.id === note.id ? note : n));
+      setNotes(updatedNotes);
+      localStorage.setItem("notes", JSON.stringify(updatedNotes));
+    } else {
+      // Add new note
+      const newNotes = [note, ...notes];
+      setNotes(newNotes);
+      localStorage.setItem("notes", JSON.stringify(newNotes));
+    }
+  };
+
+  const deleteNote = (id: string) => {
+    const newNotes = notes.filter((note) => note.id !== id);
     setNotes(newNotes);
+
+    // Clear selected note if it's the one being deleted
+    if (selectedNote && selectedNote.id === id) {
+      setSelectedNote(null);
+      setDisplayNote(false);
+    }
+
     localStorage.setItem("notes", JSON.stringify(newNotes));
   };
 
-  const deleteNote = (index: number) => {
-    const newNotes = notes.filter((_, i) => i !== index);
-    setNotes(newNotes);
-    localStorage.setItem("notes", JSON.stringify(newNotes));
+  const selectNote = (note: Note | null) => {
+    setSelectedNote(note);
+    if (note) {
+      setDisplayNote(true);
+    } else {
+      setDisplayNote(false);
+    }
+  };
+
+  const toggleDisplay = (state?: boolean) => {
+    if (state) {
+      setDisplayNote(state);
+    } else {
+      setDisplayNote((prev) => !prev);
+    }
   };
 
   useEffect(() => {
@@ -206,7 +252,17 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
               <PopperContext.Provider
                 value={{ actionsState, toggleActionState }}
               >
-                <NotesContext.Provider value={{ notes, addNote, deleteNote }}>
+                <NotesContext.Provider
+                  value={{
+                    notes,
+                    addNote,
+                    deleteNote,
+                    selectNote,
+                    selectedNote,
+                    displayNote,
+                    toggleDisplay,
+                  }}
+                >
                   {children}
                 </NotesContext.Provider>
               </PopperContext.Provider>
