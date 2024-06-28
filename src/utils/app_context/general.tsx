@@ -192,6 +192,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       const updatedNotes = notes.map((n) => (n.id === note.id ? note : n));
       setNotes(updatedNotes);
       localStorage.setItem("notes", JSON.stringify(updatedNotes));
+      setSelectedNote(null);
     } else {
       // Add new note
       const newNotes = [note, ...notes];

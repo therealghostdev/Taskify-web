@@ -74,24 +74,25 @@ export default function NotepadForm() {
       const noteField = editor.getHTML();
       const isNoteFieldEmpty =
         noteField.trim() === "" || noteField.trim() === "<p></p>";
-      if (noteTitle.trim() === "" || isNoteFieldEmpty) {
+      if (noteTitle.trim() === "" && isNoteFieldEmpty) {
         toast("No text detected", {
           theme: darkMode ? "dark" : "light",
           toastId: "2",
         });
-      } else {
-        addNote({
-          id: selectedNote ? selectedNote.id : crypto.randomUUID(),
-          title: noteTitle,
-          content: noteField,
-        });
-        toast("Note added", {
-          theme: darkMode ? "dark" : "light",
-          toastId: "2",
-        });
-        setNoteTitle("");
-        editor.commands.clearContent();
+        return;
       }
+
+      addNote({
+        id: selectedNote ? selectedNote.id : crypto.randomUUID(),
+        title: noteTitle,
+        content: noteField,
+      });
+      toast("Note added", {
+        theme: darkMode ? "dark" : "light",
+        toastId: "2",
+      });
+      setNoteTitle("");
+      editor.commands.clearContent();
     }
   };
 
@@ -185,9 +186,9 @@ export default function NotepadForm() {
             editor={editor}
             className={`w-full ${
               darkMode ? "text-white" : "text-black"
-            } min-h-[200px] p-2 ${
+            } h-full p-2 ${
               darkMode ? "border-[#616161]" : "border-[#bdbdbd]"
-            }  flex flex-col`}
+            }  flex flex-col overflow-auto overflow-y-auto`}
             style={{ fontSize: `${fontSize}px` }}
           />
         </div>
