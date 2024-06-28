@@ -34,7 +34,9 @@ const NoteCard = ({
           onClick={() => selectNote(note)}
         >
           <CardContent className="overflow-hidden h-full max-h-28">
-            <div className="text-lg font-medium">{note.title}</div>
+            <div className="text-lg font-medium line-clamp-1 text-ellipsis whitespace-normal">
+              {note.title}
+            </div>
             <div className="line-clamp-2 text-ellipsis whitespace-normal">
               <div dangerouslySetInnerHTML={{ __html: note.content }} />
             </div>

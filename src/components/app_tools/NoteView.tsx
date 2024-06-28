@@ -21,9 +21,9 @@ const NoteView = () => {
   return (
     <>
       {note && (
-        <Card className="flex justify-between flex-col h-48 w-full cursor-pointer">
+        <Card className="flex justify-between flex-col min-h-48 w-full cursor-pointer">
           <CardHeader sx={{ pb: 0 }} title={note.title} />
-          <CardContent className="overflow-hidden h-full max-h-28">
+          <CardContent className="overflow-hidden h-full">
             <div>
               <div dangerouslySetInnerHTML={{ __html: note.content }} />
             </div>

@@ -201,7 +201,7 @@ export default function NotepadForm() {
             padding: ".8rem .6rem",
           }}
         >
-          Add
+          {selectedNote ? "update" : "Add"}
         </Button>
       </div>
     </div>
