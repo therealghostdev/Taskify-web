@@ -87,7 +87,7 @@ export default function NotepadForm() {
         title: noteTitle,
         content: noteField,
       });
-      toast("Note added", {
+      toast(`${selectedNote ? "Note Updated" : "Note Added"}`, {
         theme: darkMode ? "dark" : "light",
         toastId: "2",
       });
