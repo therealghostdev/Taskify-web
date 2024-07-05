@@ -2,6 +2,7 @@ import { useState, FormEvent, ChangeEvent } from "react";
 import AppleIcon from "@mui/icons-material/Apple";
 import { useThemeContext } from "../../utils/app_context/general";
 import { RegisterProps, LoginErrorsState } from "../../utils/types/todo";
+import { toast } from "react-toastify";
 
 export default function Login({ registerSwap }: RegisterProps) {
   const [formState, setFormState] = useState({
@@ -10,6 +11,10 @@ export default function Login({ registerSwap }: RegisterProps) {
   });
   const { userName, password } = formState;
   const { darkMode } = useThemeContext();
+
+  const customId = "1";
+  const notify = (message: string) =>
+    toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
   const [errors, setErrors] = useState<LoginErrorsState>({
     username: "",
@@ -172,11 +177,17 @@ export default function Login({ registerSwap }: RegisterProps) {
                     />
                   </svg>
                 </span>
-                <span className="text-lg">Login with Google</span>
+                <span
+                  className="text-lg"
+                  onClick={() => notify("Coming soon!")}
+                >
+                  Login with Google
+                </span>
               </button>
             </div>
             <div className="appleLogin w-full flex justify-center">
               <button
+                onClick={() => notify("coming soon!")}
                 className="w-full justify-center items-center py-2 flex border border-[#8875FF] rounded-md"
                 type="button"
               >

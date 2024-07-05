@@ -2,6 +2,7 @@ import { useState, FormEvent, ChangeEvent } from "react";
 import AppleIcon from "@mui/icons-material/Apple";
 import { useThemeContext } from "../../utils/app_context/general";
 import { ErrorsState, LoginProps } from "../../utils/types/todo";
+import { toast } from "react-toastify";
 
 export default function Register({ loginSwap }: LoginProps) {
   const [formState, setFormState] = useState({
@@ -11,6 +12,10 @@ export default function Register({ loginSwap }: LoginProps) {
   });
   const { userName, password, confirmPassword } = formState;
   const { darkMode } = useThemeContext();
+
+  const customId = "1";
+  const notify = (message: string) =>
+    toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
   const [errors, setErrors] = useState<ErrorsState>({
     username: "",
@@ -199,6 +204,7 @@ export default function Register({ loginSwap }: LoginProps) {
             </div>
             <div className="googleLogin pb-3 w-full flex justify-center">
               <button
+                onClick={() => notify("coming soon!")}
                 className="w-full justify-center items-center py-2 flex border border-[#8875FF] rounded-md"
                 type="button"
               >
@@ -231,7 +237,10 @@ export default function Register({ loginSwap }: LoginProps) {
               </button>
             </div>
 
-            <button className="w-full justify-center items-center py-2 flex border border-[#8875FF] rounded-md">
+            <button
+              onClick={() => notify("coming soon!")}
+              className="w-full justify-center items-center py-2 flex border border-[#8875FF] rounded-md"
+            >
               <span className="pr-2 flex">
                 <AppleIcon className="" />
               </span>
