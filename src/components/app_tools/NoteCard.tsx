@@ -7,14 +7,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
-import { Note } from "../../utils/app_context/general";
-
-interface NoteCardProps {
-  note: Note;
-  selectedNoteId: string | null | undefined;
-  selectNote: (note: Note) => void;
-  handleDeleteNote: (event: React.MouseEvent, id: string) => void;
-}
+import { NoteCardProps } from "../../utils/types/todo";
 
 const NoteCard = ({
   note,
@@ -28,7 +21,7 @@ const NoteCard = ({
 
   return (
     <Grid item xs={6} key={note.id}>
-      <CardActionArea className="h-full">
+      <CardActionArea className="h-full bg-black">
         <Card
           className="flex justify-between h-full max-h-28 cursor-pointer"
           onClick={() => selectNote(note)}

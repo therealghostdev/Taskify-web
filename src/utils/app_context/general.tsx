@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Todo, ThemeContextType } from "../types/todo";
+import { Todo, ThemeContextType, Note } from "../types/todo";
 import actions from "../../components/app_tools/actions";
 import { type ActionsState } from "../../components/app_tools/actions";
 
@@ -53,14 +53,6 @@ const PopperContext = createContext<{
 });
 
 //Notes context
-
-// Note type
-export interface Note {
-  id: string;
-  title: string;
-  content: string;
-}
-
 const NotesContext = createContext<{
   notes: Note[];
   addNote: (note: Note) => void;

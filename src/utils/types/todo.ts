@@ -105,3 +105,17 @@ export interface NotepadTextStyleType {
   italic: boolean;
   fontSize: number;
 }
+
+// Note type
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+}
+
+export interface NoteCardProps {
+  note: Note;
+  selectedNoteId: string | null | undefined;
+  selectNote: (note: Note) => void;
+  handleDeleteNote: (event: React.MouseEvent, id: string) => void;
+}
