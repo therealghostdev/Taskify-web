@@ -2,6 +2,7 @@ import { Fab } from "@mui/material";
 import { Build, Clear } from "@mui/icons-material";
 import React, { useEffect } from "react";
 import { motion, useMotionValue } from "framer-motion";
+import "../../styles/notepadbutton.scss";
 
 interface ButtonProps {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
@@ -89,11 +90,7 @@ const Button: React.FC<ButtonProps> = ({ onClick, display }) => {
       }}
       onClick={onClick}
     >
-      <Fab
-        color="primary"
-        aria-label="tools"
-        sx={{ transition: "ease-in-out" }}
-      >
+      <Fab aria-label="tools" sx={{ transition: "ease-in-out" }}>
         {displayIcon}
       </Fab>
     </motion.div>
