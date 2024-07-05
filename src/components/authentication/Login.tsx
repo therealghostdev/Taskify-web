@@ -199,7 +199,7 @@ export default function Login({ registerSwap }: RegisterProps) {
             </div>
             <div className="py-1 text-[#979797] my-2">
               <span className="text-lg mr-2">Don't have an account?</span>
-              <button onClick={registerSwap} className="text-lg text-white">
+              <button onClick={registerSwap} className="text-lg text-white link">
                 Register
               </button>
             </div>
