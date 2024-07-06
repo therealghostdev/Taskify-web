@@ -113,7 +113,7 @@ export default function Register({ loginSwap }: LoginProps) {
       <div className="w-full flex justify-center items-center m-auto">
         <form
           onSubmit={register}
-          className={`py-2 my-5 rounded-lg px-3 w-3/4 ${
+          className={`py-2 my-5 rounded-lg px-3 md:w-3/4 w-full ${
             darkMode ? "text-[#ffffff]" : "text-[#000000]"
           }`}
         >
