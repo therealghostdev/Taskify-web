@@ -12,7 +12,7 @@ import BoltIcon from "@mui/icons-material/Bolt";
 import LogoutIcon from "@mui/icons-material/Logout";
 import NewReleasesIcon from "@mui/icons-material/NewReleases";
 import NightlightIcon from "@mui/icons-material/Nightlight";
-import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import { Switch } from "@mui/material";
 import { useState, useRef, useEffect } from "react";
 import Popup from "./popup";
@@ -24,7 +24,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 
 export default function Index() {
-  const authenticated = useAuthContext();
+  const { authenticated, setAuthenticated } = useAuthContext();
   const { darkMode, toggleDarkMode } = useThemeContext();
   const [popup, setPopup] = useState<boolean>(false);
   const [singleInput, setSingleInput] = useState<boolean>(false);
@@ -100,6 +100,12 @@ export default function Index() {
     setPopup(true);
     setSingleInput(false);
     setCamera(true);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setAuthenticated(false);
+    notify("logout success");
   };
 
   useEffect(() => {
@@ -216,7 +222,11 @@ export default function Index() {
 
           <div className={`text-2xl flex justify-between bg-transparent my-2`}>
             <span>
-              {darkMode ? <NightlightIcon className="mr-4" /> : <WbSunnyIcon className="mr-4" />}
+              {darkMode ? (
+                <NightlightIcon className="mr-4" />
+              ) : (
+                <WbSunnyIcon className="mr-4" />
+              )}
               Change Theme
             </span>
             <Switch checked={darkMode} onChange={toggleTheme} color="primary" />
@@ -325,7 +335,7 @@ export default function Index() {
           </button>
 
           <button
-            onClick={() => notify("coming soon")}
+            onClick={() => logout()}
             className={`text-2xl flex justify-between text-[#FF4949] my-2`}
           >
             <span>

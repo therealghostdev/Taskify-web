@@ -24,12 +24,8 @@ import "react-calendar/dist/Calendar.css";
 
 function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
-  const authenticated = useAuthContext();
+  const { authenticated } = useAuthContext();
   const { trackScreen } = useTrackContext();
-
-  useEffect(() => {
-    localStorage.setItem("token", "hello");
-  }, [authenticated]);
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
@@ -49,7 +45,7 @@ function App() {
       } w-screen min-h-screen`}
     >
       <Router>
-        {authenticated&& <Nav />}
+        {authenticated && <Nav />}
         {authenticated &&
           [
             "name",
@@ -64,12 +60,11 @@ function App() {
           <Route
             path="/"
             element={
-              <ProtectedRoute authenticated={!authenticated} redirectTo="/auth">
+              <ProtectedRoute authenticated={authenticated} redirectTo="/auth">
                 <Homepage />
               </ProtectedRoute>
             }
           />
-         
           <Route
             path="/calendar"
             element={

@@ -1,8 +1,12 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import AppleIcon from "@mui/icons-material/Apple";
-import { useThemeContext } from "../../utils/app_context/general";
+import {
+  useThemeContext,
+  useAuthContext,
+} from "../../utils/app_context/general";
 import { RegisterProps, LoginErrorsState } from "../../utils/types/todo";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Login({ registerSwap }: RegisterProps) {
   const [formState, setFormState] = useState({
@@ -11,6 +15,8 @@ export default function Login({ registerSwap }: RegisterProps) {
   });
   const { userName, password } = formState;
   const { darkMode } = useThemeContext();
+
+  const { setAuthenticated } = useAuthContext();
 
   const customId = "1";
   const notify = (message: string) =>
@@ -56,11 +62,19 @@ export default function Login({ registerSwap }: RegisterProps) {
     }, 0);
   };
 
+  const navigate = useNavigate();
   const login = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!errors.disabledBtn) {
-      console.log("Login successful");
       clearForm();
+      setAuthenticated(true);
+      localStorage.setItem("token", "hello");
+      navigate("/");
+
+      setTimeout(() => {
+        window.location.reload; // must fix having to reload page so nav works properly
+      }, 3000);
+      notify("This app is in dev mode");
     }
   };
 
@@ -199,7 +213,10 @@ export default function Login({ registerSwap }: RegisterProps) {
             </div>
             <div className="py-1 text-[#979797] my-2">
               <span className="text-lg mr-2">Don't have an account?</span>
-              <button onClick={registerSwap} className="text-lg text-white link">
+              <button
+                onClick={registerSwap}
+                className="text-lg text-white link"
+              >
                 Register
               </button>
             </div>

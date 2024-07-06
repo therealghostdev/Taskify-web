@@ -1,8 +1,12 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import AppleIcon from "@mui/icons-material/Apple";
-import { useThemeContext } from "../../utils/app_context/general";
+import {
+  useThemeContext,
+  useAuthContext,
+} from "../../utils/app_context/general";
 import { ErrorsState, LoginProps } from "../../utils/types/todo";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Register({ loginSwap }: LoginProps) {
   const [formState, setFormState] = useState({
@@ -12,6 +16,8 @@ export default function Register({ loginSwap }: LoginProps) {
   });
   const { userName, password, confirmPassword } = formState;
   const { darkMode } = useThemeContext();
+
+  const { setAuthenticated } = useAuthContext();
 
   const customId = "1";
   const notify = (message: string) =>
@@ -41,6 +47,7 @@ export default function Register({ loginSwap }: LoginProps) {
     }, 0);
   };
 
+  const navigate = useNavigate();
   const register = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newErrors = {
@@ -67,8 +74,15 @@ export default function Register({ loginSwap }: LoginProps) {
       !newErrors.confirmPassword &&
       !newErrors.username
     ) {
-      console.log("successful");
       clearForm();
+      setAuthenticated(true);
+      localStorage.setItem("token", "hello");
+      navigate("/");
+
+      setTimeout(() => {
+        window.location.reload; // must fix having to reload page so nav works properly
+      }, 3000);
+      notify("This app is in dev mode");
     } else {
       newErrors.disabledBtn = true;
       setErrors(newErrors);
