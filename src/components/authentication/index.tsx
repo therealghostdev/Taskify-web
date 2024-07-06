@@ -15,11 +15,16 @@ export default function Index() {
     x: 20,
     y: window.innerHeight - 80,
   });
+  const [isDragging, setIsDragging] = useState(false);
   const { darkMode } = useThemeContext();
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 767);
+      setPosition(prev => ({
+        x: Math.min(prev.x, window.innerWidth - 150),
+        y: Math.min(prev.y, window.innerHeight - 50),
+      }));
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -38,12 +43,22 @@ export default function Index() {
     setIsOpen(false);
   };
 
+  const handleTouchStart = () => {
+    setIsDragging(true);
+  };
+
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    const touch = e.touches[0];
-    setPosition({
-      x: touch.clientX,
-      y: touch.clientY,
-    });
+    if (isDragging) {
+      const touch = e.touches[0];
+      setPosition({
+        x: Math.max(0, Math.min(touch.clientX, window.innerWidth - 150)),
+        y: Math.max(0, Math.min(touch.clientY, window.innerHeight - 50)),
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
   };
 
   return (
@@ -61,7 +76,9 @@ export default function Index() {
         <>
           <div
             ref={draggableRef}
+            onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             style={{
               position: "fixed",
               left: `${position.x}px`,
@@ -69,6 +86,7 @@ export default function Index() {
               touchAction: "none",
               cursor: "move",
               zIndex: 1000,
+              transition: isDragging ? 'none' : 'all 0.3s ease',
             }}
           >
             <Button
