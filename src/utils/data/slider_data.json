@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "image": "../../assets/app-slider-1.jpg",
+    "description": "Manage your tasks",
+    "highlight": "You can easily manage all of your daily tasks in Taskify for free."
+  },
+  {
+    "id": 2,
+    "image": "../../assets/app-slider-2.jpg",
+    "description": "Create daily routine",
+    "highlight": "In Taskify, you can create your personalized routine to stay productive."
+  },
+  {
+    "id": 3,
+    "image": "../../assets/app-slider-3.jpg",
+    "description": "Organize your tasks",
+    "highlight": "You can organize your daily tasks by adding them into separate categories."
+  },
+  {
+    "id": 4,
+    "image": "../../assets/app-slider-4.jpg",
+    "description": "Schedule your alone time",
+    "highlight": "Plan your personal time effectively to maintain a balanced lifestyle."
+  },
+  {
+    "id": 5,
+    "image": "../../assets/app-slider-5.jpg",
+    "description": "Manage your team meetings",
+    "highlight": "Coordinate and manage team meetings efficiently with Taskify's scheduling tools."
+  },
+  {
+    "id": 6,
+    "image": "../../assets/app-slider-6.jpg",
+    "description": "Set your schedule",
+    "highlight": "Plan your day by setting up a comprehensive schedule in Taskify."
+  },
+  {
+    "id": 7,
+    "image": "../../assets/app-slider-7.jpg",
+    "description": "Track your progress",
+    "highlight": "Monitor your task completion and progress to stay on top of your goals."
+  },
+  {
+    "id": 8,
+    "image": "../../assets/app-slider-8.jpg",
+    "description": "Collaborate with your team",
+    "highlight": "Easily collaborate on tasks and projects with your team members in real-time."
+  },
+  {
+    "id": 9,
+    "image": "../../assets/app-slider-9.jpg",
+    "description": "Set reminders",
+    "highlight": "Never miss a task deadline by setting reminders for your important tasks."
+  }
+]

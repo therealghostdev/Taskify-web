@@ -119,3 +119,9 @@ export interface TaskScreenPropType {
   data: TaskDataType[] | null;
   close: () => void;
 }
+
+export interface SliderItem {
+  image: string;
+  description: string;
+  highlight: string;
+}
