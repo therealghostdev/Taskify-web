@@ -1,10 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Login from "./Login";
 import Register from "./Register";
 import Slider from "./slider";
 
 export default function Index() {
   const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [screenSize] = useState(window.innerWidth);
+  const [isMobile, setIsMobile] = useState<number | boolean>(false);
+
+  useEffect(() => {
+    if (screenSize <= 767) {
+      setIsMobile(window.innerWidth);
+    } else {
+      setIsMobile(false);
+    }
+  }, [screenSize]);
+
+  useEffect(() => {
+    console.log(isMobile);
+  }, [isMobile]);
 
   const loginSwap = () => {
     setIsLogin(!isLogin);

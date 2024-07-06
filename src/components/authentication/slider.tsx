@@ -36,7 +36,7 @@ export default function Slider() {
 
   return (
     <div
-      className="w-full px-8 py-6 flex flex-col h-full justify-around items-center gap-6 bg-cover bg-center transition-all duration-500 relative"
+      className="w-full px-8 py-6 flex flex-col h-full lg:justify-around justify-center items-center gap-6 bg-cover bg-center transition-all duration-500 relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -48,7 +48,7 @@ export default function Slider() {
           })`,
         }}
       />
-      <div className="relative z-10 w-full h-full flex flex-col justify-around items-center">
+      <div className="relative z-10 w-full h-full flex flex-col lg:justify-around justify-center items-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
