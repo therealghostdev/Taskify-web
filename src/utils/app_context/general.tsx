@@ -25,7 +25,13 @@ const ThemeContext = createContext<ThemeContextType>({
 });
 
 // authentication context
-const AuthContext = createContext<boolean>(false);
+const AuthContext = createContext<{
+  authenticated: boolean;
+  setAuthenticated: (value: boolean) => void;
+}>({
+  authenticated: false,
+  setAuthenticated: () => {},
+});
 
 const TrackTaskScreenContext = createContext<{
   trackScreen: string;
@@ -104,6 +110,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return !!localStorage.getItem("token");
   });
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setAuthenticated(!!token);
+  }, []);
+
   // state for tracking task screen
   const [trackScreen, setTrackScreen] = useState<string>(() => {
     return "";
@@ -127,11 +138,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <TodoContext.Provider value={{ todos, updateTodos }}>
-      <EditTodoContext.Provider
-        value={{ editTodos, updateEditTodos }}
-      >
+      <EditTodoContext.Provider value={{ editTodos, updateEditTodos }}>
         <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
-          <AuthContext.Provider value={authenticated}>
+          <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
             <TrackTaskScreenContext.Provider
               value={{ trackScreen, trackScreenFunc }}
             >

@@ -1,4 +1,5 @@
-import Index from "../components/authentication";
+import Index from "../components/authentication/index";
+
 
 export default function Auth() {
   return (

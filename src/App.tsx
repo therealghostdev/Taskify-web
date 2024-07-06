@@ -24,12 +24,8 @@ import "react-calendar/dist/Calendar.css";
 
 function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
-  const authenticated = useAuthContext();
+  const { authenticated } = useAuthContext();
   const { trackScreen } = useTrackContext();
-
-  useEffect(() => {
-    localStorage.setItem("token", "hello");
-  }, [authenticated]);
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");

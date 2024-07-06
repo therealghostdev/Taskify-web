@@ -111,12 +111,18 @@ body {
     background: #8687e7;
     height: 3px;
     opacity: 0;
-    transition: opacity 0.3s, width 0.3s;
+    transition: opacity .8s, width .8s, left .8s;
   }
 
   &:hover:after {
     opacity: 1;
     width: 100%;
+  }
+
+  &:not(:hover)::after {
+    left: auto;
+    right: 0;
+    width: 0;
   }
 
   .img-hover-invert-dark {
