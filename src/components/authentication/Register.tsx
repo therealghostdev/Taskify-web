@@ -7,6 +7,7 @@ import {
 import { ErrorsState, LoginProps } from "../../utils/types/todo";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function Register({ loginSwap }: LoginProps) {
   const [formState, setFormState] = useState({
@@ -123,7 +124,17 @@ export default function Register({ loginSwap }: LoginProps) {
   };
 
   return (
-    <div className="md:w-2/4 w-full lg:h-full flex justify-center items-center lg:block overflow-y-auto m-auto">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.5 }}
+      transition={{
+        duration: 0.8,
+        delay: 0.5,
+        ease: [0, 0.71, 0.2, 1.01],
+      }}
+      className="md:w-2/4 w-full lg:h-full flex justify-center items-center lg:block overflow-y-auto m-auto"
+    >
       <div className="w-full flex justify-center items-center m-auto">
         <form
           onSubmit={register}
@@ -270,6 +281,6 @@ export default function Register({ loginSwap }: LoginProps) {
           </div>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 }

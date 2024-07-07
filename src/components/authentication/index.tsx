@@ -5,6 +5,8 @@ import Slider from "./slider";
 import { Button } from "@mui/material";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import { useThemeContext } from "../../utils/app_context/general";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Index() {
   const [isLogin, setIsLogin] = useState<boolean>(true);
@@ -21,7 +23,7 @@ export default function Index() {
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 767);
-      setPosition(prev => ({
+      setPosition((prev) => ({
         x: Math.min(prev.x, window.innerWidth - 150),
         y: Math.min(prev.y, window.innerHeight - 50),
       }));
@@ -74,8 +76,10 @@ export default function Index() {
         )
       ) : (
         <>
-          <div
+          <motion.div
             ref={draggableRef}
+            drag
+            dragConstraints={draggableRef}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -86,33 +90,52 @@ export default function Index() {
               touchAction: "none",
               cursor: "move",
               zIndex: 1000,
-              transition: isDragging ? 'none' : 'all 0.3s ease',
+              transition: isDragging ? "none" : "all 0.3s ease",
             }}
           >
             <Button
+              style={{ backgroundColor: "#8687e7", color: "#ffffff" }}
               variant="contained"
               onClick={handleClick}
               startIcon={<DragIndicatorIcon />}
             >
               Login/Register
             </Button>
-          </div>
-          {isOpen && (
-            <div
-              className={`fixed inset-0 z-50 flex items-center justify-center w-full ${
-                darkMode ? "dark-theme" : "light-theme"
-              }`}
-            >
-              <div className="p-4 rounded-lg">
-                {isLogin ? (
-                  <Login registerSwap={loginSwap} />
-                ) : (
-                  <Register loginSwap={loginSwap} />
-                )}
-                <Button onClick={handleClose}>Close</Button>
-              </div>
-            </div>
-          )}
+          </motion.div>
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+                className={`fixed inset-0 z-50 flex items-center justify-center w-full ${
+                  darkMode ? "dark-theme" : "light-theme"
+                }`}
+              >
+                <div className="p-4 rounded-lg">
+                  <Button onClick={handleClose}>
+                    <ArrowBackIosIcon
+                      style={{ color: darkMode ? "#fff" : "#000" }}
+                    />
+                  </Button>
+                  {isLogin ? (
+                    <AnimatePresence>
+                      {isLogin && <Login registerSwap={loginSwap} />}
+                    </AnimatePresence>
+                  ) : (
+                    <AnimatePresence>
+                      {!isLogin && <Register loginSwap={loginSwap} />}
+                    </AnimatePresence>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
     </div>
