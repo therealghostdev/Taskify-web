@@ -45,27 +45,16 @@ export default function Print() {
     setSelectedSave(false);
   };
 
-  const confirmPrint = () => {
-    notify(`Attempting to print ${saveItem.title}`);
-    printContent(saveItem)
-      .then((success) => {
-        if (success) {
-          notify(`${saveItem.title} printed successfully.`);
-        } else {
-          notify(`Printing ${saveItem.title} failed or was canceled.`);
-        }
-      })
-      .catch(() => {
-        notify(`An error occurred while printing ${saveItem.title}.`);
-      });
-    setSelectedSave(false);
-  };
-
-  const printContent = (item: Note): Promise<boolean> => {
+  const printContent = (
+    item: Note
+  ): Promise<{ success: boolean; message: string }> => {
     return new Promise((resolve) => {
       const printWindow = window.open("", "", "width=600,height=400");
       if (!printWindow) {
-        resolve(false);
+        resolve({
+          success: false,
+          message: `Failed to open print window for ${item.title}.`,
+        });
         return;
       }
 
@@ -82,36 +71,61 @@ export default function Print() {
       `);
       printWindow.document.close();
 
-      const printAndCheck = () => {
-        try {
-          printWindow.print();
-          printWindow.onafterprint = () => {
-            resolve(true); // Assume successful print if no errors
-            printWindow.close();
-            notify(`${saveItem.title} print successful`);
-          };
-        } catch (e) {
-          resolve(false); // Assume failure if error in printing
-          printWindow.close();
-          notify(`${saveItem.title} print failed`);
+      let printInitiated = false;
+
+      const checkAndClosePrintWindow = () => {
+        if (printWindow.closed) {
+          if (printInitiated) {
+            resolve({
+              success: true,
+              message: `${item.title} printed successfully.`,
+            });
+          } else {
+            resolve({
+              success: false,
+              message: `Printing ${item.title} was canceled.`,
+            });
+          }
+        } else {
+          setTimeout(checkAndClosePrintWindow, 500);
         }
       };
 
-      // Add a delay before checking the print status
-      setTimeout(() => {
-        if (printWindow.closed) {
-          resolve(false); // Print dialog was likely canceled
-          notify(`${saveItem.title} print failed`);
-        } else {
-          printAndCheck();
-        }
-      }, 1000); // Adjust the timeout duration as necessary
+      printWindow.onbeforeprint = () => {
+        printInitiated = true;
+      };
+
+      printWindow.onafterprint = () => {
+        printWindow.close();
+      };
+
+      try {
+        printWindow.print();
+        checkAndClosePrintWindow();
+        setSelectedSave(false);
+      } catch (e) {
+        printWindow.close();
+        setSelectedSave(false);
+        notify(`${saveItem.title} print failed`);
+        resolve({
+          success: false,
+          message: `An error occurred while printing ${item.title}.`,
+        });
+      }
     });
   };
 
   useEffect(() => {
     getAllNotes();
   }, []);
+
+  const confirmPrint = async () => {
+    try {
+      await printContent(saveItem);
+    } catch (err) {
+      notify("something went wron");
+    }
+  };
 
   return (
     <>
