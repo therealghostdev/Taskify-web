@@ -10,9 +10,8 @@ import { toast } from "react-toastify";
 import CheckIcon from "@mui/icons-material/Check";
 import { AnimatePresence, motion } from "framer-motion";
 import { Note } from "../../utils/types/todo";
-import SaveAsIcon from '@mui/icons-material/SaveAs';
 
-export default function Save() {
+export default function Print() {
   const { darkMode } = useThemeContext();
   const { toggleActionState: toggleNotepad } = usePopperContext();
   const { notes: locallySavedNotes } = useNotesContext();
@@ -24,7 +23,7 @@ export default function Save() {
   });
 
   const closeAll = () => {
-    toggleNotepad("save");
+    toggleNotepad("print");
   };
 
   const customId = "1";
@@ -37,18 +36,77 @@ export default function Save() {
     }
   };
 
-  const saveItemtoServer = (item: number) => {
+  const printSavedItem = (itemIndex: number) => {
     setSelectedSave(true);
-    setSaveItem(locallySavedNotes[item]);
+    setSaveItem(locallySavedNotes[itemIndex]);
   };
 
   const closeConfirmModal = () => {
     setSelectedSave(false);
   };
 
-  const confirmSave = () => {
-    notify(`${saveItem.title} saved`);
+  const confirmPrint = () => {
+    notify(`Attempting to print ${saveItem.title}`);
+    printContent(saveItem)
+      .then((success) => {
+        if (success) {
+          notify(`${saveItem.title} printed successfully.`);
+        } else {
+          notify(`Printing ${saveItem.title} failed or was canceled.`);
+        }
+      })
+      .catch(() => {
+        notify(`An error occurred while printing ${saveItem.title}.`);
+      });
     setSelectedSave(false);
+  };
+
+  const printContent = (item: Note): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const printWindow = window.open("", "", "width=600,height=400");
+      if (!printWindow) {
+        resolve(false);
+        return;
+      }
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print Note</title>
+          </head>
+          <body>
+            <h1>${item.title}</h1>
+            <div>${item.content}</div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+
+      const printAndCheck = () => {
+        try {
+          printWindow.print();
+          printWindow.onafterprint = () => {
+            resolve(true); // Assume successful print if no errors
+            printWindow.close();
+            notify(`${saveItem.title} print successful`);
+          };
+        } catch (e) {
+          resolve(false); // Assume failure if error in printing
+          printWindow.close();
+          notify(`${saveItem.title} print failed`);
+        }
+      };
+
+      // Add a delay before checking the print status
+      setTimeout(() => {
+        if (printWindow.closed) {
+          resolve(false); // Print dialog was likely canceled
+          notify(`${saveItem.title} print failed`);
+        } else {
+          printAndCheck();
+        }
+      }, 1000); // Adjust the timeout duration as necessary
+    });
   };
 
   useEffect(() => {
@@ -77,7 +135,7 @@ export default function Save() {
 
         {locallySavedNotes.length >= 1 && (
           <div className="text-2xl font-bold">
-            <h1>Select an item and save <SaveAsIcon /></h1>
+            <h1>Select an item and print 🖨️ </h1>
           </div>
         )}
         <div
@@ -88,7 +146,7 @@ export default function Save() {
           {locallySavedNotes.map((item, index) => (
             <div
               key={index}
-              onClick={() => saveItemtoServer(index)}
+              onClick={() => printSavedItem(index)}
               className={`flex lg:w-[40%] md:h-[200px] h-[150px] w-2/4 shadow-custom-1 ${
                 darkMode ? "shadow-[#bdbdbd]" : "shadow-[#363636]"
               } hover:shadow-[#8687e7] cursor-pointer md:my-2 my-1 overflow-auto text-white rounded-md mx-2 bg-transparent backdrop-blur-lg`}
@@ -137,7 +195,7 @@ export default function Save() {
 
               <Button
                 className="w-2/4"
-                onClick={confirmSave}
+                onClick={confirmPrint}
                 style={{
                   backgroundColor: "#8687E7",
                   padding: "2% 2%",
