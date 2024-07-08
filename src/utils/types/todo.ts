@@ -119,3 +119,7 @@ export interface NoteCardProps {
   selectNote: (note: Note) => void;
   handleDeleteNote: (event: React.MouseEvent, id: string) => void;
 }
+
+export type ActionsState = {
+  [key: string]: boolean;
+};

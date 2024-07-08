@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Todo, ThemeContextType, Note } from "../types/todo";
 import actions from "../../components/app_tools/actions";
-import { type ActionsState } from "../../components/app_tools/actions";
+import { type ActionsState } from "../types/todo";
 
 // Create the initial state based on actions
 const initialActionsState: ActionsState = actions.reduce((state, action) => {

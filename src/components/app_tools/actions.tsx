@@ -8,7 +8,3 @@ const actions = [
 ];
 
 export default actions;
-
-export type ActionsState = {
-  [key: string]: boolean;
-};

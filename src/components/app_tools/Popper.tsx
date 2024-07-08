@@ -1,13 +1,18 @@
 import React from "react";
 import Button from "./Button";
 import { Fab, Popper, Tooltip } from "@mui/material";
-import { usePopperContext } from "../../utils/app_context/general";
+import {
+  usePopperContext,
+  useThemeContext,
+} from "../../utils/app_context/general";
 import actions from "./actions";
+import { toast } from "react-toastify";
 
 export default function SimplePopper() {
-  const { toggleActionState } = usePopperContext();
+  const { toggleActionState, actionsState } = usePopperContext();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [display, setDisplay] = React.useState<boolean>(true);
+  const { darkMode } = useThemeContext();
 
   const toggleBtnIcon = () => {
     setDisplay((prev) => !prev);
@@ -18,7 +23,20 @@ export default function SimplePopper() {
     toggleBtnIcon();
   };
 
+  const customId = "1";
+  const notify = (message: string) => {
+    toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
+  };
+
   const handleActionClick = (actionName: string) => {
+    const actions = ["notepad", "save", "print", "share"];
+
+    const isAnyModalOpen = actions.some((action) => actionsState[action]);
+
+    if (isAnyModalOpen) {
+      return notify(`A tool modal is opened, close to continue!`);
+    }
+
     toggleActionState(actionName);
     setAnchorEl(null);
     toggleBtnIcon();
