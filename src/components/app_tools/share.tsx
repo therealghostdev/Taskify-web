@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 import { saveAs } from "file-saver";
-import html2canvas from "html2canvas";
 import {
   useThemeContext,
   usePopperContext,
@@ -50,31 +49,43 @@ export default function Share() {
 
   const generatePdf = async (note: Note) => {
     const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 10; // Margin around the edges
+    let yOffset = 20; // Initial y-offset for text
 
-    // Temporary element to render the HTML content
+    // Set font and size for title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text(note.title, margin, yOffset);
+
+    // Set font and size for content
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+
+    // Create a temporary div for HTML content rendering
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = note.content;
     document.body.appendChild(tempDiv);
 
-    // Use html2canvas to capture the content
-    const canvas = await html2canvas(tempDiv, {
-      scale: 2,
-      logging: false,
-      useCORS: true,
+    // Get all paragraph elements
+    const paragraphs = tempDiv.querySelectorAll("p");
+
+    // Add each paragraph to the PDF with proper spacing
+    paragraphs.forEach((para) => {
+      const text = para.innerText; // Get text content from paragraph
+      const lines = doc.splitTextToSize(text, pageWidth - 2 * margin);
+      lines.forEach((line: string) => {
+        if (yOffset + 10 > doc.internal.pageSize.height - margin) {
+          doc.addPage(); // Add a new page if necessary
+          yOffset = margin; // Reset yOffset for the new page
+        }
+        doc.text(line, margin, yOffset);
+        yOffset += 10; // Line height or spacing between lines
+      });
+      yOffset += 10; // Extra spacing between paragraphs
     });
 
-    // Get the image data from the canvas
-    const imgData = canvas.toDataURL("image/png");
-
-    // Set the font to bold for the title
-    doc.setFont("helvetica", "bold");
-    doc.text(note.title, 10, 10);
-
-    // Reset the font to normal for the content
-    doc.setFont("helvetica", "normal");
-    doc.addImage(imgData, "PNG", 10, 20, canvas.width / 4, canvas.height / 4); // Adjust the size as needed
-
-    // Remove the temporary element
+    // Remove the temporary div
     document.body.removeChild(tempDiv);
 
     return doc.output("blob");
