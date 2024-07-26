@@ -9,7 +9,26 @@ export interface Todo {
   category: string;
   time: string;
 }
-
+export interface LoginProps {
+  loginSwap: () => void;
+}
+export interface RegisterProps {
+  registerSwap: () => void;
+}
+export interface ErrorsState {
+  username: string;
+  password: string;
+  confirmPassword: string;
+  disabledBtn: boolean;
+}
+export interface LoginErrorsState {
+  username: string;
+  password: string;
+  disabledBtn: boolean;
+}
+export interface CarouselProps {
+  slides: React.ReactNode[];
+}
 export interface ThemeContextType {
   darkMode: boolean;
   toggleDarkMode: (item: boolean) => void;
@@ -100,6 +119,7 @@ export interface TaskScreenPropType {
   data: TaskDataType[] | null;
   close: () => void;
 }
+
 export interface NotepadTextStyleType {
   bold: boolean;
   italic: boolean;
@@ -123,3 +143,9 @@ export interface NoteCardProps {
 export type ActionsState = {
   [key: string]: boolean;
 };
+
+export interface SliderItem {
+  image: string;
+  description: string;
+  highlight: string;
+}

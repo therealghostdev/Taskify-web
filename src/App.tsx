@@ -25,12 +25,8 @@ import Apptool from "./components/app_tools";
 
 function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
-  const authenticated = useAuthContext();
+  const { authenticated } = useAuthContext();
   const { trackScreen } = useTrackContext();
-  useEffect(() => {
-    localStorage.setItem("token", "hello");
-  }, [authenticated]);
-
   useEffect(() => {
     const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
     const listener = (event: MediaQueryListEvent) => {
