@@ -57,6 +57,7 @@ export default function Share() {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
     doc.text(note.title, margin, yOffset);
+    yOffset += 10; // Add space below the title
 
     // Set font and size for content
     doc.setFont("helvetica", "normal");
@@ -74,15 +75,17 @@ export default function Share() {
     paragraphs.forEach((para) => {
       const text = para.innerText; // Get text content from paragraph
       const lines = doc.splitTextToSize(text, pageWidth - 2 * margin);
+
       lines.forEach((line: string) => {
         if (yOffset + 10 > doc.internal.pageSize.height - margin) {
           doc.addPage(); // Add a new page if necessary
           yOffset = margin; // Reset yOffset for the new page
         }
         doc.text(line, margin, yOffset);
-        yOffset += 10; // Line height or spacing between lines
+        yOffset += 8; // Line height or spacing between lines
       });
-      yOffset += 10; // Extra spacing between paragraphs
+
+      yOffset += 8; // Extra spacing between paragraphs
     });
 
     // Remove the temporary div
