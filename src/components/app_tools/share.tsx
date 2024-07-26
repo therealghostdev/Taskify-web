@@ -82,10 +82,10 @@ export default function Share() {
           yOffset = margin; // Reset yOffset for the new page
         }
         doc.text(line, margin, yOffset);
-        yOffset += 8; // Line height or spacing between lines
+        yOffset += 4; // Line height or spacing between lines
       });
 
-      yOffset += 8; // Extra spacing between paragraphs
+      yOffset += 2; // Extra spacing between paragraphs
     });
 
     // Remove the temporary div
