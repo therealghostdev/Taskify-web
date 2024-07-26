@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 import { saveAs } from "file-saver";
+import html2canvas from "html2canvas";
 import {
   useThemeContext,
   usePopperContext,
@@ -47,39 +48,67 @@ export default function Share() {
     setSelectedShare(false);
   };
 
-  const generatePdf = (note: Note) => {
+  const generatePdf = async (note: Note) => {
     const doc = new jsPDF();
+
+    // Temporary element to render the HTML content
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = note.content;
+    document.body.appendChild(tempDiv);
+
+    // Use html2canvas to capture the content
+    const canvas = await html2canvas(tempDiv, {
+      scale: 2,
+      logging: false,
+      useCORS: true,
+    });
+
+    // Get the image data from the canvas
+    const imgData = canvas.toDataURL("image/png");
+
+    // Add the title and the rendered image to the PDF
     doc.text(note.title, 10, 10);
-    doc.text(note.content, 10, 20);
+    doc.addImage(imgData, "PNG", 10, 20, canvas.width / 4, canvas.height / 4); // Adjust the size as needed
+
+    // Remove the temporary element
+    document.body.removeChild(tempDiv);
+
     return doc.output("blob");
   };
 
   const confirmShare = async () => {
     notify(`Generating PDF for ${shareItem.title}`);
-    const pdfBlob = generatePdf(shareItem);
 
-    // File sharing data
-    const filesArray = [
-      new File([pdfBlob], `${shareItem.title}.pdf`, {
-        type: "application/pdf",
-      }),
-    ];
-    const shareData = {
-      title: shareItem.title,
-      files: filesArray,
-    };
+    try {
+      const pdfBlob = await generatePdf(shareItem);
 
-    // Using Web Share API with files support
-    if (navigator.canShare && navigator.canShare({ files: filesArray })) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        notify(`An error occurred while sharing ${shareItem.title}.`);
+      // File sharing data
+      const filesArray = [
+        new File([pdfBlob], `${shareItem.title}.pdf`, {
+          type: "application/pdf",
+        }),
+      ];
+      const shareData = {
+        title: shareItem.title,
+        files: filesArray,
+      };
+
+      // Using Web Share API with files support
+      if (navigator.canShare && navigator.canShare({ files: filesArray })) {
+        try {
+          await navigator.share(shareData);
+        } catch (error) {
+          notify(`An error occurred while sharing ${shareItem.title}.`);
+        }
+      } else {
+        // Fallback to file download if sharing is not supported
+        saveAs(pdfBlob, `${shareItem.title}.pdf`);
+        notify("Sharing not supported, file downloaded instead.");
       }
-    } else {
-      // Fallback to file download if sharing is not supported
-      saveAs(pdfBlob, `${shareItem.title}.pdf`);
-      notify("Sharing not supported, file downloaded instead.");
+    } catch (error) {
+      notify(
+        `An error occurred while generating the PDF for ${shareItem.title}.`
+      );
     }
 
     setSelectedShare(false);
