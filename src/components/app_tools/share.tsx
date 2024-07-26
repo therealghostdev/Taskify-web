@@ -51,29 +51,28 @@ export default function Share() {
   const generatePdf = async (note: Note) => {
     const doc = new jsPDF();
 
-    // Create a temporary element to render the HTML content
+    // Temporary element to render the HTML content
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = note.content;
     document.body.appendChild(tempDiv);
 
     // Use html2canvas to capture the content
     const canvas = await html2canvas(tempDiv, {
-      scale: 2, // Increase the scale for better resolution
-      logging: false, // Disable logging for cleaner console
-      useCORS: true, // Enable CORS if your content includes external resources
+      scale: 2,
+      logging: false,
+      useCORS: true,
     });
 
     // Get the image data from the canvas
     const imgData = canvas.toDataURL("image/png");
 
-    // Calculate the height and width of the image in PDF units (inches)
-    const imgProps = doc.getImageProperties(imgData);
-    const pdfWidth = doc.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    // Add the title and the rendered image to the PDF
+    // Set the font to bold for the title
+    doc.setFont("helvetica", "bold");
     doc.text(note.title, 10, 10);
-    doc.addImage(imgData, "PNG", 10, 20, pdfWidth - 20, pdfHeight - 20);
+
+    // Reset the font to normal for the content
+    doc.setFont("helvetica", "normal");
+    doc.addImage(imgData, "PNG", 10, 20, canvas.width / 4, canvas.height / 4); // Adjust the size as needed
 
     // Remove the temporary element
     document.body.removeChild(tempDiv);
