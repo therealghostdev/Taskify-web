@@ -123,7 +123,7 @@ export default function Print() {
     try {
       await printContent(saveItem);
     } catch (err) {
-      notify("something went wron");
+      notify("something went wrong");
     }
   };
 
