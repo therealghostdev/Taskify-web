@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { jsPDF } from "jspdf";
+import { saveAs } from "file-saver";
 import {
   useThemeContext,
   usePopperContext,
@@ -10,26 +12,25 @@ import { toast } from "react-toastify";
 import CheckIcon from "@mui/icons-material/Check";
 import { AnimatePresence, motion } from "framer-motion";
 import { Note } from "../../utils/types/todo";
-import SaveAsIcon from "@mui/icons-material/SaveAs";
+import ShareIcon from "@mui/icons-material/Share";
 
-export default function Save() {
+export default function Share() {
   const { darkMode } = useThemeContext();
   const { toggleActionState: toggleNotepad } = usePopperContext();
   const { notes: locallySavedNotes } = useNotesContext();
-  const [selectedSave, setSelectedSave] = useState<boolean>(false);
-  const [saveItem, setSaveItem] = useState<Note>({
+  const [selectedShare, setSelectedShare] = useState<boolean>(false);
+  const [shareItem, setShareItem] = useState<Note>({
     id: "",
     title: "",
     content: "",
   });
 
   const closeAll = () => {
-    toggleNotepad("save");
+    toggleNotepad("share");
   };
 
-  const customId = "1";
   const notify = (message: string) =>
-    toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
+    toast(message, { theme: darkMode ? "dark" : "light" });
 
   const getAllNotes = () => {
     if (locallySavedNotes.length < 1) {
@@ -37,18 +38,51 @@ export default function Save() {
     }
   };
 
-  const saveItemtoServer = (item: number) => {
-    setSelectedSave(true);
-    setSaveItem(locallySavedNotes[item]);
+  const shareNote = (itemIndex: number) => {
+    setSelectedShare(true);
+    setShareItem(locallySavedNotes[itemIndex]);
   };
 
   const closeConfirmModal = () => {
-    setSelectedSave(false);
+    setSelectedShare(false);
   };
 
-  const confirmSave = () => {
-    notify(`${saveItem.title} saved`);
-    setSelectedSave(false);
+  const generatePdf = (note: Note) => {
+    const doc = new jsPDF();
+    doc.text(note.title, 10, 10);
+    doc.text(note.content, 10, 20);
+    return doc.output("blob");
+  };
+
+  const confirmShare = async () => {
+    notify(`Generating PDF for ${shareItem.title}`);
+    const pdfBlob = generatePdf(shareItem);
+
+    // File sharing data
+    const filesArray = [
+      new File([pdfBlob], `${shareItem.title}.pdf`, {
+        type: "application/pdf",
+      }),
+    ];
+    const shareData = {
+      title: shareItem.title,
+      files: filesArray,
+    };
+
+    // Using Web Share API with files support
+    if (navigator.canShare && navigator.canShare({ files: filesArray })) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        notify(`An error occurred while sharing ${shareItem.title}.`);
+      }
+    } else {
+      // Fallback to file download if sharing is not supported
+      saveAs(pdfBlob, `${shareItem.title}.pdf`);
+      notify("Sharing not supported, file downloaded instead.");
+    }
+
+    setSelectedShare(false);
   };
 
   useEffect(() => {
@@ -86,50 +120,38 @@ export default function Save() {
         {locallySavedNotes.length >= 1 && (
           <div className="text-2xl font-bold">
             <h1>
-              Select an item and save <SaveAsIcon />
+              Select an item and share <ShareIcon className="text-yellow-300" />
             </h1>
           </div>
         )}
-        {locallySavedNotes && locallySavedNotes.length >= 1 ? (
-          <div
-            className={`flex flex-col border ${
-              darkMode ? "border-[#bdbdbd]" : "border-[#363636]"
-            } py-4 px-2 rounded-md flex-wrap justify-around items-center w-full h-full my-2 gap-x-3 gap-y-3 overflow-auto bg-transparent`}
-          >
-            {locallySavedNotes.map((item, index) => (
-              <div
-                key={index}
-                onClick={() => saveItemtoServer(index)}
-                className={`flex lg:w-[40%] md:h-[200px] h-[150px] w-2/4 shadow-custom-1 ${
-                  darkMode ? "shadow-[#bdbdbd]" : "shadow-[#363636]"
-                } hover:shadow-[#8687e7] cursor-pointer md:my-2 my-1 overflow-auto text-white rounded-md mx-2 bg-transparent backdrop-blur-lg`}
-              >
-                <div className="w-full flex flex-col gap-y-4 px-2 py-2">
-                  <h1 className="font-bold text-2xl">{item.title}</h1>
+        <div
+          className={`flex flex-col border ${
+            darkMode ? "border-[#bdbdbd]" : "border-[#363636]"
+          } py-4 px-2 rounded-md flex-wrap justify-around items-center w-full h-full my-2 gap-x-3 gap-y-3 overflow-auto bg-transparent`}
+        >
+          {locallySavedNotes.map((item, index) => (
+            <div
+              key={index}
+              onClick={() => shareNote(index)}
+              className={`flex lg:w-[40%] md:h-[200px] h-[150px] w-2/4 shadow-custom-1 ${
+                darkMode ? "shadow-[#bdbdbd]" : "shadow-[#363636]"
+              } hover:shadow-[#8687e7] cursor-pointer md:my-2 my-1 overflow-auto text-white rounded-md mx-2 bg-transparent backdrop-blur-lg`}
+            >
+              <div className="w-full flex flex-col gap-y-4 px-2 py-2">
+                <h1 className="font-bold text-2xl">{item.title}</h1>
 
-                  <div
-                    className="text-lg text-wrap break-words"
-                    dangerouslySetInnerHTML={{ __html: item.content }}
-                  />
-                </div>
+                <div
+                  className="text-lg text-wrap break-words"
+                  dangerouslySetInnerHTML={{ __html: item.content }}
+                />
               </div>
-            ))}
-          </div>
-        ) : (
-          <div
-            className={`flex flex-col border ${
-              darkMode ? "border-[#bdbdbd]" : "border-[#363636]"
-            } py-4 px-2 rounded-md flex-wrap justify-around items-center w-full h-full my-2 gap-x-3 gap-y-3 overflow-auto bg-transparent`}
-          >
-            <h1 className="text-2xl font-bold text-center">
-              No Items to Save! ☹️
-            </h1>
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </motion.div>
 
       <AnimatePresence>
-        {selectedSave && (
+        {selectedShare && (
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -159,7 +181,7 @@ export default function Save() {
 
               <Button
                 className="w-2/4"
-                onClick={confirmSave}
+                onClick={confirmShare}
                 style={{
                   backgroundColor: "#8687E7",
                   padding: "2% 2%",

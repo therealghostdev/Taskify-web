@@ -4,6 +4,8 @@ import Notepad from "./notepad";
 import { useEffect } from "react";
 import Save from "./save";
 import Print from "./print";
+import Share from "./share";
+import { AnimatePresence } from "framer-motion";
 
 export default function Index() {
   const { actionsState } = usePopperContext();
@@ -11,6 +13,7 @@ export default function Index() {
   const displayNotepad = actionsState.notepad;
   const displaySaveUi = actionsState.save;
   const displayPrintUI = actionsState.print;
+  const shareui = actionsState.share;
 
   const openTool = () => {
     if (actionsState.notepad) {
@@ -39,9 +42,10 @@ export default function Index() {
   return (
     <>
       <Popper />
-      {displayNotepad && <Notepad />}
-      {displaySaveUi && <Save />}
-      {displayPrintUI && <Print />}
+      {<AnimatePresence>{displayNotepad && <Notepad />}</AnimatePresence>}
+      {<AnimatePresence>{displaySaveUi && <Save />}</AnimatePresence>}
+      {<AnimatePresence>{displayPrintUI && <Print />}</AnimatePresence>}
+      {<AnimatePresence>{shareui && <Share />}</AnimatePresence>}
     </>
   );
 }

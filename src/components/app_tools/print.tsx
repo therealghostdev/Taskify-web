@@ -129,7 +129,15 @@ export default function Print() {
 
   return (
     <>
-      <div
+      <motion.div
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.5 }}
+        transition={{
+          duration: 0.8,
+          delay: 0.5,
+          ease: [0, 0.71, 0.2, 1.01],
+        }}
         className={`fixed inset-0 m-auto flex lg:w-[60%] md:w-[90%] w-full lg:h-[60%] h-[50%] z-20 rounded-md flex-col gap-y-6 ${
           darkMode ? "bg-[#363636] text-white" : "bg-[#bdbdbd] text-black"
         } overflow-auto px-6`}
@@ -152,31 +160,43 @@ export default function Print() {
             <h1>Select an item and print 🖨️ </h1>
           </div>
         )}
-        <div
-          className={`flex flex-col border ${
-            darkMode ? "border-[#bdbdbd]" : "border-[#363636]"
-          } py-4 px-2 rounded-md flex-wrap justify-around items-center w-full h-full my-2 gap-x-3 gap-y-3 overflow-auto bg-transparent`}
-        >
-          {locallySavedNotes.map((item, index) => (
-            <div
-              key={index}
-              onClick={() => printSavedItem(index)}
-              className={`flex lg:w-[40%] md:h-[200px] h-[150px] w-2/4 shadow-custom-1 ${
-                darkMode ? "shadow-[#bdbdbd]" : "shadow-[#363636]"
-              } hover:shadow-[#8687e7] cursor-pointer md:my-2 my-1 overflow-auto text-white rounded-md mx-2 bg-transparent backdrop-blur-lg`}
-            >
-              <div className="w-full flex flex-col gap-y-4 px-2 py-2">
-                <h1 className="font-bold text-2xl">{item.title}</h1>
+        {locallySavedNotes && locallySavedNotes.length >= 1 ? (
+          <div
+            className={`flex flex-col border ${
+              darkMode ? "border-[#bdbdbd]" : "border-[#363636]"
+            } py-4 px-2 rounded-md flex-wrap justify-around items-center w-full h-full my-2 gap-x-3 gap-y-3 overflow-auto bg-transparent`}
+          >
+            {locallySavedNotes.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => printSavedItem(index)}
+                className={`flex lg:w-[40%] md:h-[200px] h-[150px] w-2/4 shadow-custom-1 ${
+                  darkMode ? "shadow-[#bdbdbd]" : "shadow-[#363636]"
+                } hover:shadow-[#8687e7] cursor-pointer md:my-2 my-1 overflow-auto text-white rounded-md mx-2 bg-transparent backdrop-blur-lg`}
+              >
+                <div className="w-full flex flex-col gap-y-4 px-2 py-2">
+                  <h1 className="font-bold text-2xl">{item.title}</h1>
 
-                <div
-                  className="text-lg text-wrap break-words"
-                  dangerouslySetInnerHTML={{ __html: item.content }}
-                />
+                  <div
+                    className="text-lg text-wrap break-words"
+                    dangerouslySetInnerHTML={{ __html: item.content }}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            ))}
+          </div>
+        ) : (
+          <div
+            className={`flex flex-col border ${
+              darkMode ? "border-[#bdbdbd]" : "border-[#363636]"
+            } py-4 px-2 rounded-md flex-wrap justify-around items-center w-full h-full my-2 gap-x-3 gap-y-3 overflow-auto bg-transparent`}
+          >
+            <h1 className="text-2xl font-bold text-center">
+              No Items to print! ☹️
+            </h1>
+          </div>
+        )}
+      </motion.div>
 
       <AnimatePresence>
         {selectedSave && (
