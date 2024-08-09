@@ -120,6 +120,30 @@ export interface TaskScreenPropType {
   close: () => void;
 }
 
+export interface NotepadTextStyleType {
+  bold: boolean;
+  italic: boolean;
+  fontSize: number;
+}
+
+// Note type
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+}
+
+export interface NoteCardProps {
+  note: Note;
+  selectedNoteId: string | null | undefined;
+  selectNote: (note: Note) => void;
+  handleDeleteNote: (event: React.MouseEvent, id: string) => void;
+}
+
+export type ActionsState = {
+  [key: string]: boolean;
+};
+
 export interface SliderItem {
   image: string;
   description: string;
