@@ -274,7 +274,7 @@ export default function Index() {
                         darkMode
                           ? "bg-[#252525] text-[#AFAFAF] focus:outline-[#ffffff]"
                           : "bg-[#a5a5a5] text-[#000000] focus:outline-[#000000]"
-                      } border-none outline-none px-4 py-3`}
+                      } border-none outline-none py-3`}
                     />
                   </div>
                 )}
@@ -297,7 +297,7 @@ export default function Index() {
                     darkMode
                       ? "bg-[#252525] text-[#AFAFAF] focus:outline-[#ffffff]"
                       : "bg-[#a5a5a5] text-[#000000] focus:outline-[#000000]"
-                  } border-none outline-none px-4 py-2`}
+                  } border-none outline-none py-2`}
                 />
               </>
             )}
@@ -467,7 +467,7 @@ export default function Index() {
 
         {isFiltered && (
           <button
-            className="fixed lg:bottom-32 md:right-24 md:bottom-72 bottom-28 right-12 rounded-md py-4 px-2"
+            className="fixed lg:bottom-40 md:right-24 md:bottom-72 bottom-52 right-12 rounded-md py-4 px-2 z-10"
             onClick={getCurrentDayTasks}
           >
             <CleaningServicesTwoTone

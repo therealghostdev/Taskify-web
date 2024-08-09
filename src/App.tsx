@@ -21,12 +21,12 @@ import AddTask from "./components/general/add-task";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
+import Apptool from "./components/app_tools";
 
 function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
   const { authenticated } = useAuthContext();
   const { trackScreen } = useTrackContext();
-
   useEffect(() => {
     const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
     const listener = (event: MediaQueryListEvent) => {
@@ -55,6 +55,8 @@ function App() {
             "category",
             "success",
           ].includes(trackScreen) && <AddTask />}
+
+        {authenticated && <Apptool />}
 
         <Routes>
           <Route
