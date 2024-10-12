@@ -17,6 +17,8 @@ export interface RegisterProps {
 }
 export interface ErrorsState {
   username: string;
+  firstname: string;
+  lastname: string;
   password: string;
   confirmPassword: string;
   disabledBtn: boolean;
@@ -148,4 +150,16 @@ export interface SliderItem {
   image: string;
   description: string;
   highlight: string;
+}
+
+export interface RegisterBody {
+  firstname: string;
+  lastname: string;
+  username: string;
+  password: string;
+}
+
+export interface LoginBody {
+  username: string;
+  password: string;
 }

@@ -2,23 +2,31 @@ import { useState, FormEvent, ChangeEvent } from "react";
 import AppleIcon from "@mui/icons-material/Apple";
 import {
   useThemeContext,
-  useAuthContext,
+  // useAuthContext,
 } from "../../utils/app_context/general";
-import { ErrorsState, LoginProps } from "../../utils/types/todo";
+import { ErrorsState, LoginProps, RegisterBody } from "../../utils/types/todo";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+// import useQuery from "../../../lib/tanstackQuery";
+import { useMutation } from "@tanstack/react-query";
+import { userRegister } from "../../api";
+import { auth_reg, base_url } from "../../api/route";
+import { AxiosError } from "axios";
 
 export default function Register({ loginSwap }: LoginProps) {
   const [formState, setFormState] = useState({
     userName: "",
+    firstName: "",
+    lastName: "",
     password: "",
     confirmPassword: "",
   });
-  const { userName, password, confirmPassword } = formState;
+  const { userName, password, confirmPassword, firstName, lastName } =
+    formState;
   const { darkMode } = useThemeContext();
 
-  const { setAuthenticated } = useAuthContext();
+  // const { setAuthenticated } = useAuthContext();
 
   const customId = "1";
   const notify = (message: string) =>
@@ -26,6 +34,8 @@ export default function Register({ loginSwap }: LoginProps) {
 
   const [errors, setErrors] = useState<ErrorsState>({
     username: "",
+    firstname: "",
+    lastname: "",
     password: "",
     confirmPassword: "",
     disabledBtn: true,
@@ -34,6 +44,8 @@ export default function Register({ loginSwap }: LoginProps) {
   const clearForm = () => {
     setFormState({
       userName: "",
+      firstName: "",
+      lastName: "",
       password: "",
       confirmPassword: "",
     });
@@ -41,6 +53,8 @@ export default function Register({ loginSwap }: LoginProps) {
     setTimeout(() => {
       setErrors({
         username: "",
+        lastname: "",
+        firstname: "",
         password: "",
         confirmPassword: "",
         disabledBtn: true,
@@ -48,22 +62,56 @@ export default function Register({ loginSwap }: LoginProps) {
     }, 0);
   };
 
-  const navigate = useNavigate();
-  const register = (e: FormEvent<HTMLFormElement>) => {
+  const url = base_url + auth_reg;
+  const { mutate, isPending, isError, error, isSuccess } = useMutation({
+    mutationFn: async (userData: RegisterBody) =>
+      await userRegister(url, userData),
+    onSuccess: () => {
+      clearForm();
+      loginSwap();
+    },
+    onError: (err: AxiosError) => {
+      console.error(err);
+      if (err.response && err.response.data) {
+        const data = err.response.data as { message?: string };
+
+        notify(data.message || "An unexpected error occurred");
+      } else {
+        notify("Network error or no response from the server.");
+      }
+    },
+  });
+
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])(?=.*[0-9a-zA-Z]).{8,}$/;
+
+  // const navigate = useNavigate();
+  const register = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newErrors = {
       password: "",
       confirmPassword: "",
       disabledBtn: false,
       username: "",
+      firstname: "",
+      lastname: "",
     };
 
     if (userName.length < 1) {
       newErrors.username = "Username cannot be empty";
     }
 
-    if (password.length < 6) {
-      newErrors.password = "Password should have more than 6 characters";
+    if (firstName.length < 3) {
+      newErrors.firstname = "Firstname must contain minimum of 3 characters";
+    }
+
+    if (lastName.length < 3) {
+      newErrors.lastname = "Lastname must contain minimum of 3 characters";
+    }
+
+    if (!passwordRegex.test(password)) {
+      newErrors.password =
+        "Password must be at least 8 characters long and contain at least one uppercase letter and one special character";
     }
 
     if (confirmPassword !== password) {
@@ -73,17 +121,18 @@ export default function Register({ loginSwap }: LoginProps) {
     if (
       !newErrors.password &&
       !newErrors.confirmPassword &&
-      !newErrors.username
+      !newErrors.username &&
+      !newErrors.firstname &&
+      !newErrors.lastname
     ) {
-      clearForm();
-      setAuthenticated(true);
-      localStorage.setItem("token", "hello");
-      navigate("/");
+      const body = {
+        username: userName,
+        firstname: firstName,
+        lastname: lastName,
+        password,
+      };
 
-      setTimeout(() => {
-        window.location.reload; // must fix having to reload page so nav works properly
-      }, 3000);
-      notify("This app is in dev mode");
+      mutate(body);
     } else {
       newErrors.disabledBtn = true;
       setErrors(newErrors);
@@ -106,15 +155,17 @@ export default function Register({ loginSwap }: LoginProps) {
       newErrors.username = value.length < 1 ? "Username cannot be empty" : "";
     }
     if (name === "password") {
-      newErrors.password =
-        value.length < 6 ? "Password should have more than 6 characters" : "";
+      newErrors.password = !passwordRegex.test(value)
+        ? "Password must be at least 8 characters long and contain at least one uppercase letter and one special character"
+        : "";
     }
+
     if (name === "confirmPassword") {
       newErrors.confirmPassword =
         value !== formState.password ? "Passwords do not match" : "";
     }
 
-    // Update the state based on errors
+    // Disable button if there are any errors
     newErrors.disabledBtn =
       newErrors.username !== "" ||
       newErrors.password !== "" ||
@@ -164,6 +215,52 @@ export default function Register({ loginSwap }: LoginProps) {
             </div>
             {errors.username && (
               <div className="text-red-500 text-sm my-2">{errors.username}</div>
+            )}
+
+            <div className="flex flex-col gap-2 w-full my-2">
+              <label className="w-full pb-3" htmlFor="firstname">
+                Firstname
+              </label>
+              <input
+                id="firstname"
+                name="firstName"
+                value={firstName}
+                onChange={handleChange}
+                className={`px-4 py-3 rounded-md w-full transition-all duration-700 border-2 border-[#535353] ${
+                  darkMode
+                    ? "bg-[#363636] text-[#AFAFAF] focus:outline-none"
+                    : "bg-[#bdbdbd] text-[#000000] focus:outline-none"
+                } ${errors.firstname ? "border-red-500" : ""}`}
+                type="text"
+                placeholder="Enter your Firstname"
+              />
+            </div>
+            {errors.firstname && (
+              <div className="text-red-500 text-sm my-2">
+                {errors.firstname}
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2 w-full my-2">
+              <label className="w-full pb-3" htmlFor="lastname">
+                Lastname
+              </label>
+              <input
+                id="lastname"
+                name="lastName"
+                value={lastName}
+                onChange={handleChange}
+                className={`px-4 py-3 rounded-md w-full transition-all duration-700 border-2 border-[#535353] ${
+                  darkMode
+                    ? "bg-[#363636] text-[#AFAFAF] focus:outline-none"
+                    : "bg-[#bdbdbd] text-[#000000] focus:outline-none"
+                } ${errors.lastname ? "border-red-500" : ""}`}
+                type="text"
+                placeholder="Enter your Firstname"
+              />
+            </div>
+            {errors.lastname && (
+              <div className="text-red-500 text-sm my-2">{errors.lastname}</div>
             )}
 
             <div className="flex flex-col gap-2 w-full my-2">
