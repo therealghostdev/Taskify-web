@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 // import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 // import useQuery from "../../../lib/tanstackQuery";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "../../../lib/tanstackQuery";
 import { userRegister } from "../../api";
 import { auth_reg, base_url } from "../../api/route";
 import { AxiosError } from "axios";

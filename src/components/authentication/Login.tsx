@@ -4,10 +4,19 @@ import {
   useThemeContext,
   useAuthContext,
 } from "../../utils/app_context/general";
-import { RegisterProps, LoginErrorsState } from "../../utils/types/todo";
+import {
+  RegisterProps,
+  LoginErrorsState,
+  LoginBody,
+} from "../../utils/types/todo";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useMutation } from "../../../lib/tanstackQuery";
+import { userLogin } from "../../api";
+import { auth_login, base_url } from "../../api/route";
+import { AxiosError } from "axios";
+import Cookies from "js-cookie";
 
 export default function Login({ registerSwap }: RegisterProps) {
   const [formState, setFormState] = useState({
@@ -18,6 +27,9 @@ export default function Login({ registerSwap }: RegisterProps) {
   const { darkMode } = useThemeContext();
 
   const { setAuthenticated } = useAuthContext();
+
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])(?=.*[0-9a-zA-Z]).{8,}$/;
 
   const customId = "1";
   const notify = (message: string) =>
@@ -37,13 +49,14 @@ export default function Login({ registerSwap }: RegisterProps) {
       newErrors.username = value.length < 1 ? "Username cannot be empty" : "";
     }
     if (name === "password") {
-      newErrors.password =
-        value.length < 6 ? "Password should have more than 6 characters" : "";
+      newErrors.password = !passwordRegex.test(value)
+        ? "Password must be at least 8 characters long and contain at least one uppercase letter and one special character"
+        : "";
     }
 
     // Update the state based on errors
     newErrors.disabledBtn =
-      newErrors.username !== "" || newErrors.password !== "";
+      newErrors.username !== "" || !passwordRegex.test(password);
 
     setErrors(newErrors);
   };
@@ -63,19 +76,72 @@ export default function Login({ registerSwap }: RegisterProps) {
     }, 0);
   };
 
+  const url = base_url + auth_login;
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (userData: LoginBody) => await userLogin(url, userData),
+    onSuccess: (authVal) => {
+      const { data } = authVal;
+      console.log(data);
+      const token = data.userSession.auth_data.token.split(" ")[1];
+      console.log(token);
+      Cookies.set("jwtToken", token, {
+        expires: 1,
+        sameSite: "Strict",
+        secure: true,
+      });
+
+      Cookies.set("csrf", data.userSession.auth_data.csrf, {
+        expires: 1,
+        sameSite: "Strict",
+        secure: true,
+      });
+
+      Cookies.set("refresh", data.userSession.auth_data.refreshToken.value, {
+        expires: 7,
+        sameSite: "Strict",
+        secure: true,
+      });
+
+      setAuthenticated(true);
+
+      const csrf = Cookies.get("csrf");
+      const jwt = Cookies.get("jwtToken");
+      const refresh = Cookies.get("refresh");
+
+      if (csrf && jwt && refresh) {
+        localStorage.setItem("message", "user_is_signed");
+        navigate("/");
+      }
+
+      // setTimeout(() => {
+      //   window.location.reload; // must fix having to reload page so nav works properly
+      // }, 3000);
+    },
+    onError: (err: AxiosError) => {
+      console.error(err);
+      if (err.status === 404) {
+        notify("username or password invalid");
+      } else if (err.status === 429) {
+        notify("Too many login attempts, Try again in 15 minutes");
+      } else if (err.response && err.response.data) {
+        const data = err.response.data as { message?: string };
+
+        notify(data.message || "An unexpected error occurred");
+      } else {
+        notify("Network error or no response from the server.");
+      }
+    },
+  });
+
   const navigate = useNavigate();
   const login = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!errors.disabledBtn) {
-      clearForm();
-      setAuthenticated(true);
-      localStorage.setItem("token", "hello");
-      navigate("/");
+      // clearForm();
+      // setAuthenticated(true);
+      // notify("This app is in dev mode");
 
-      setTimeout(() => {
-        window.location.reload; // must fix having to reload page so nav works properly
-      }, 3000);
-      notify("This app is in dev mode");
+      mutate({ username: userName, password });
     }
   };
 

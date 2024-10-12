@@ -149,11 +149,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   // State for managing authentication
   const [authenticated, setAuthenticated] = useState<boolean>(() => {
     // Check if token is available in local storage
-    return !!localStorage.getItem("token");
+    return !!localStorage.getItem("message");
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("message");
     setAuthenticated(!!token);
   }, []);
 
