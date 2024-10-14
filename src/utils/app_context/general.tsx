@@ -87,7 +87,18 @@ export const useEditTodoContext = () => useContext(EditTodoContext);
 export const useThemeContext = () => useContext(ThemeContext);
 
 // Custom hook to access the authentication context
-export const useAuthContext = () => useContext(AuthContext);
+export const useAuthContext = () => {
+  const [authenticated, setAuthenticated] = useState<boolean>(() => {
+    const storedAuthState = localStorage.getItem("authenticated");
+    return storedAuthState === "true";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("authenticated", authenticated.toString());
+  }, [authenticated]);
+
+  return { authenticated, setAuthenticated };
+};
 
 // Custom hook to access popup
 // export const usePopupContext = () => useContext(AddTaskPopupContext);
@@ -149,11 +160,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   // State for managing authentication
   const [authenticated, setAuthenticated] = useState<boolean>(() => {
     // Check if token is available in local storage
-    return !!localStorage.getItem("message");
+    return !!localStorage.getItem("authenticated");
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("message");
+    const token = localStorage.getItem("authenticated");
     setAuthenticated(!!token);
   }, []);
 

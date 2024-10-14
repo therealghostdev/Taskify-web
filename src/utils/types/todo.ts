@@ -79,6 +79,23 @@ export interface TaskDataType {
   task_priority: number;
   completed: boolean;
 }
+export interface TaskDataType1 {
+  _id: string; // Task ID
+  category: string; // Task category, e.g., "Health"
+  completed: boolean; // Whether the task is completed
+  createdAt: string; // Creation timestamp
+  description: string; // Description of the task
+  duration: number; // Duration in minutes or another unit
+  expected_completion_time: string; // Expected completion time as a timestamp
+  isCounted: boolean; // Whether this task is counted in some way
+  isRoutine: boolean; // Whether the task is a routine task
+  name: string; // Name of the task, e.g., "Eat Sharwama"
+  onFocus: boolean; // Whether the task is currently being focused on
+  priority: number; // Priority level of the task
+  recurrence: string; // Recurrence pattern, e.g., "daily"
+  user: string; // Associated user ID
+  __v: number; // Version key (used internally by Mongoose)
+}
 
 export interface PopupPropsTypes {
   camera: boolean;
@@ -118,7 +135,7 @@ export interface FocusPopupProps {
   updateDetails: (focusDetails: PopupFocusDetails) => void;
 }
 export interface TaskScreenPropType {
-  data: TaskDataType[] | null;
+  data: TaskDataType1[] | null;
   close: () => void;
 }
 

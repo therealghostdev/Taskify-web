@@ -1,4 +1,4 @@
-import { TaskDataType, TaskScreenPropType } from "../../utils/types/todo";
+import { TaskDataType, TaskDataType1, TaskScreenPropType } from "../../utils/types/todo";
 import {
   useEditTodoContext,
   useThemeContext,
@@ -77,23 +77,23 @@ export default function Popup(props: TaskScreenPropType) {
   const notify = (message: string) =>
     toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
-  const editTask = (item: TaskDataType) => {
+  const editTask = (item: TaskDataType1) => {
     const updatedTodos = editTodos.map((content) => ({
       ...content,
-      id: item.id,
-      task: item.task_name,
-      task_priority: item.task_priority,
-      category: item.task_category,
-      task_description: item.task_title,
-      time: item.completion_time,
-      expected_date_of_completion: item.completion_date,
+      id: item._id,
+      task: item.name,
+      task_priority: item.priority,
+      category: item.category,
+      task_description: item.description,
+      time: item.createdAt,
+      expected_date_of_completion: item.expected_completion_time,
     }));
     updateEditTodos(updatedTodos);
     trackScreenFunc("name");
     props.close();
   };
 
-  const jumpToScreen = (item: string, item2: TaskDataType) => {
+  const jumpToScreen = (item: string, item2: TaskDataType1) => {
     editTask(item2);
     trackScreenFunc(item);
     props.close();
@@ -137,8 +137,8 @@ export default function Popup(props: TaskScreenPropType) {
           <React.Fragment key={index}>
             <div className="flex justify-between items-center w-full">
               <div className="">
-                <h1 className="text-3xl my-4">{item.task_name}</h1>
-                <p>{item.task_title}</p>
+                <h1 className="text-3xl my-4">{item.name}</h1>
+                <p>{item.description}</p>
               </div>
 
               <div className="">
@@ -174,7 +174,7 @@ export default function Popup(props: TaskScreenPropType) {
                     color: "#FFFFFF",
                   }}
                 >
-                  <span>{formatDate(item.created_at)}</span>
+                  <span>{formatDate(item.createdAt)}</span>
                 </Button>
               </div>
             </div>
@@ -200,10 +200,10 @@ export default function Popup(props: TaskScreenPropType) {
                   }}
                 >
                   <span className="mx-2">
-                    <img src={getIconRender(item.task_category)} alt="" />
+                    <img src={getIconRender(item.category)} alt="" />
                   </span>
 
-                  <span>{item.task_category}</span>
+                  <span>{item.category}</span>
                 </Button>
               </div>
             </div>
@@ -229,10 +229,10 @@ export default function Popup(props: TaskScreenPropType) {
                   }}
                 >
                   <span className="mx-2">
-                    <img src={flag} alt={item.task_priority.toString()} />
+                    <img src={flag} alt={item.category.toString()} />
                   </span>
 
-                  <span>{item.task_priority}</span>
+                  <span>{item.category}</span>
                 </Button>
               </div>
             </div>

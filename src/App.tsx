@@ -22,9 +22,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
 import Apptool from "./components/app_tools";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-const queryClient = new QueryClient();
 
 function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
@@ -42,77 +39,63 @@ function App() {
   }, [toggleDarkMode]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <main
-        className={`${
-          darkMode ? "dark-theme" : "light-theme"
-        } w-screen min-h-screen`}
-      >
-        <Router>
-          {authenticated && <Nav />}
-          {authenticated &&
-            [
-              "name",
-              "calendar",
-              "time",
-              "priority",
-              "category",
-              "success",
-            ].includes(trackScreen) && <AddTask />}
+    <main
+      className={`${
+        darkMode ? "dark-theme" : "light-theme"
+      } w-screen min-h-screen`}
+    >
+      <Router>
+        {authenticated && <Nav />}
+        {authenticated &&
+          [
+            "name",
+            "calendar",
+            "time",
+            "priority",
+            "category",
+            "success",
+          ].includes(trackScreen) && <AddTask />}
 
-          {authenticated && <Apptool />}
+        {authenticated && <Apptool />}
 
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute
-                  authenticated={authenticated}
-                  redirectTo="/auth"
-                >
-                  <Homepage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/calendar"
-              element={
-                <ProtectedRoute
-                  authenticated={authenticated}
-                  redirectTo="/auth"
-                >
-                  <Calendar />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/focus"
-              element={
-                <ProtectedRoute
-                  authenticated={authenticated}
-                  redirectTo="/auth"
-                >
-                  <Focus />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute
-                  authenticated={authenticated}
-                  redirectTo="/auth"
-                >
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/auth" element={<Auth />} />
-          </Routes>
-        </Router>
-        <ToastContainer autoClose={5000} hideProgressBar={false} />
-      </main>
-    </QueryClientProvider>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute authenticated={authenticated} redirectTo="/auth">
+                <Homepage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calendar"
+            element={
+              <ProtectedRoute authenticated={authenticated} redirectTo="/auth">
+                <Calendar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/focus"
+            element={
+              <ProtectedRoute authenticated={authenticated} redirectTo="/auth">
+                <Focus />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute authenticated={authenticated} redirectTo="/auth">
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/auth" element={<Auth />} />
+        </Routes>
+      </Router>
+      <ToastContainer autoClose={5000} hideProgressBar={false} />
+    </main>
   );
 }
 

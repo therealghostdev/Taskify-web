@@ -27,21 +27,30 @@ export const getDefaultBgColor = (itemName: string) => {
 
 export const formatDate = (date: string) => {
   const currentDate = new Date();
-  const [day, month, year] = date.split("/");
-  const formattedDate = new Date(
-    parseInt(year),
-    parseInt(month) - 1,
-    parseInt(day)
-  );
+  const inputDate = new Date(date); // Convert the string to a Date object
 
-  if (formattedDate.toDateString() === currentDate.toDateString()) {
+  const isSameDay = inputDate.toDateString() === currentDate.toDateString();
+  const isTomorrow =
+    inputDate.getDate() === currentDate.getDate() + 1 &&
+    inputDate.getMonth() === currentDate.getMonth() &&
+    inputDate.getFullYear() === currentDate.getFullYear();
+  const isYesterday =
+    inputDate.getDate() === currentDate.getDate() - 1 &&
+    inputDate.getMonth() === currentDate.getMonth() &&
+    inputDate.getFullYear() === currentDate.getFullYear();
+
+  if (isSameDay) {
     return "Today";
-  } else if (formattedDate.getDate() === currentDate.getDate() + 1) {
+  } else if (isTomorrow) {
     return "Tomorrow";
-  } else if (formattedDate.getDate() === currentDate.getDate() - 1) {
+  } else if (isYesterday) {
     return "Yesterday";
   } else {
     // Format date as "dd/mm/yyyy"
+    const day = inputDate.getDate().toString().padStart(2, "0");
+    const month = (inputDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = inputDate.getFullYear();
+
     return `${day}/${month}/${year}`;
   }
 };

@@ -1,4 +1,4 @@
-import data from "../../utils/data/task_data.json";
+import data1 from "../../utils/data/task_data.json";
 import groceryIcon from "../../assets/grocery.svg";
 import workIcon from "../../assets/briefcase.svg";
 import sportIcon from "../../assets/sport.svg";
@@ -19,7 +19,7 @@ import filterIcon from "../../assets/filter-icon.svg";
 import { useThemeContext } from "../../utils/app_context/general";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState, useRef } from "react";
-import { TaskDataType } from "../../utils/types/todo";
+import { TaskDataType, TaskDataType1 } from "../../utils/types/todo";
 import {
   getDefaultBgColor,
   formatDate,
@@ -29,6 +29,12 @@ import { CleaningServicesTwoTone } from "@mui/icons-material";
 import { ArrowDropDown } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
 import Popup from "./popup";
+import { getAllTasks } from "../../api";
+import axios from "../../../lib/axios";
+import { useMutation, useQuery } from "../../../lib/tanstackQuery";
+import { AxiosError } from "axios";
+import { base_url, task } from "../../api/route";
+import { LoginBody } from "../../utils/types/todo";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
@@ -38,14 +44,52 @@ export default function Index() {
   const inputContainerRef = useRef<HTMLDivElement | null>(null);
   const mobileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [filteredData, setFilteredData] = useState<TaskDataType[] | null>(null);
+  const [filteredData, setFilteredData] = useState<TaskDataType1[] | null>(
+    null
+  );
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchTask, setSearchTask] = useState<string>("");
   const [taskScreen, setTaskScreen] = useState<boolean>(false);
   const [isFiltered, setIsFiltered] = useState<boolean>(false);
-  const [taskScreenData, setTaskScreenData] = useState<TaskDataType[] | null>(
+  const [taskScreenData, setTaskScreenData] = useState<TaskDataType1[] | null>(
     null
   );
+
+  const [tasksValue, setTasksValue] = useState<any>(null);
+
+  const queryParam = (
+    query1: string,
+    query2?: string
+  ): Record<string, string> => {
+    const queryParams: Record<string, string> = {
+      filter_by_date: query1,
+    };
+
+    if (query2) {
+      queryParams.status = query2;
+    }
+
+    return queryParams;
+  };
+
+  const { isLoading, data, error } = useQuery({
+    queryKey: ["task", filteredData],
+    queryFn: async () => {
+      const currentDate = new Date()?.toISOString()?.split("T")[0];
+      return await getAllTasks(queryParam(currentDate));
+    },
+    staleTime: 60000,
+  });
+
+  // useEffect(() => {
+  //   if (data?.data?.data) {
+  //     // Safely accessing the nested data array
+  //     console.log("Fetched tasks:", data.data.data);
+  //     // setFilteredData(data.data.data); // Set filteredData correctly
+  //   }
+  // }, [data]);
+  // // console.log(data?.data.data);
+  // console.log(filteredData);
 
   useEffect(() => {
     const updateViewValue = () => {
@@ -79,23 +123,10 @@ export default function Index() {
     };
   }, []);
 
-  const getCurrentDayTasks = () => {
-    const today = new Date();
-
-    const filteredTasks = data
-      .filter((item) => {
-        const completionDate = item.created_at;
-
-        return completionDate === today.toLocaleDateString("en-GB").toString();
-      })
-      .sort((a, b) => a.task_priority - b.task_priority);
-    setFilteredData(filteredTasks);
+  const reset = () => {
+    setFilteredData([]);
     setIsFiltered(false);
   };
-
-  useEffect(() => {
-    getCurrentDayTasks();
-  }, []);
 
   const getIconRender = (item: string) => {
     let icon;
@@ -139,19 +170,16 @@ export default function Index() {
 
   useEffect(() => {
     const searchItem = () => {
-      const today = new Date().toLocaleDateString("en-GB");
-      if (filteredData) {
-        const filtered = data.filter(
-          (item) =>
-            item.task_name.toLowerCase().includes(searchTask.toLowerCase()) &&
-            item.created_at === today
+      if (data?.data.data) {
+        const filtered = data?.data?.data?.filter((item: TaskDataType1) =>
+          item.name.toLowerCase().includes(searchTask.toLowerCase())
         );
         setFilteredData(filtered);
       }
     };
 
     searchItem();
-  }, [searchTask]);
+  }, [searchTask, data]);
 
   const handleMenuButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
@@ -162,33 +190,33 @@ export default function Index() {
   };
 
   const handleMenuItemClick = (category: string) => {
-    let filtered;
-    const today = new Date().toLocaleDateString("en-GB");
+    const tasks = data?.data?.data;
+
+    if (!tasks) {
+      console.error("No tasks data available");
+      return;
+    }
+
+    let filtered: TaskDataType1[];
 
     if (category === "Completed") {
-      filtered = data.filter(
-        (item) => item.completed === true && item.created_at === today
-      );
-      setIsFiltered(true);
+      filtered = tasks.filter((item: TaskDataType1) => item.completed === true);
     } else if (category === "Priority less than 5") {
-      filtered = data.filter(
-        (item) => item.task_priority < 5 && item.created_at === today
-      );
-      setIsFiltered(true);
+      filtered = tasks.filter((item: TaskDataType1) => item.priority < 5);
     } else if (category === "Priority greater than 5") {
-      filtered = data.filter(
-        (item) => item.task_priority > 5 && item.created_at === today
-      );
-      setIsFiltered(true);
+      filtered = tasks.filter((item: TaskDataType1) => item.priority > 5);
     } else if (category === "All") {
-      filtered = data.filter((item) => item.created_at === today);
-      setIsFiltered(false);
+      filtered = [...tasks];
     } else {
-      filtered = data.filter((item) => item.created_at === today);
+      filtered = [...tasks];
       setIsFiltered(false);
+      setFilteredData(null);
+      handleMenuClose();
+      return;
     }
 
     setFilteredData(filtered);
+    setIsFiltered(true);
     handleMenuClose();
   };
 
@@ -198,11 +226,35 @@ export default function Index() {
     setTaskScreenData(null);
   };
 
-  const getTaskData = (item: TaskDataType[]) => {
+  const getTaskData = (item: TaskDataType1[]) => {
     setTaskScreenData(item);
     setTaskScreen(true);
   };
   // End of popup functions
+
+  // const { mutate, isPending } = useMutation({
+  //   mutationFn: async () => {
+  //     const url = queryParam("2024-10-10");
+  //     return await getAllTasks(url);
+  //   },
+  //   onSuccess: (val) => {
+  //     const tasks = val.data1.data1;
+  //     // setData(tasks);
+  //   },
+  //   onError: (err: AxiosError) => {
+  //     console.error("Error:", err.response ? err.response.data1 : err.message);
+  //   },
+  // });
+
+  // useEffect(() => {
+  //   mutate();
+  // }, []);
+
+  const tasksToDisplay = isFiltered ? filteredData : data?.data?.data;
+  console.log(tasksToDisplay);
+  useEffect(() => {
+    console.log(filteredData);
+  }, [filteredData]);
 
   return (
     <section
@@ -268,7 +320,10 @@ export default function Index() {
                       id="search"
                       name="searchTask"
                       value={searchTask}
-                      onChange={(e) => setSearchTask(e.target.value || "")}
+                      onChange={(e) => {
+                        setSearchTask(e.target.value || "");
+                        setIsFiltered(true);
+                      }}
                       type="text"
                       className={`rounded-md w-full px-16 ${
                         darkMode
@@ -292,7 +347,10 @@ export default function Index() {
                   type="text"
                   name="searchTask"
                   value={searchTask}
-                  onChange={(e) => setSearchTask(e.target.value || "")}
+                  onChange={(e) => {
+                    setSearchTask(e.target.value || "");
+                    setIsFiltered(true);
+                  }}
                   className={`rounded-sm md:w-3/4 w-full px-16 ${
                     darkMode
                       ? "bg-[#252525] text-[#AFAFAF] focus:outline-[#ffffff]"
@@ -331,7 +389,7 @@ export default function Index() {
       </section>
 
       <section>
-        {filteredData && filteredData?.length <= 0 && (
+        {tasksToDisplay && tasksToDisplay?.length <= 0 && (
           <div className="px-4 py-6 flex flex-col justify-center items-center w-full md:h-[400px]">
             <div className="w-full flex flex-col justify-center items-center">
               <img
@@ -346,7 +404,7 @@ export default function Index() {
                   darkMode ? "text-[#AFAFAF]" : "text-[#808080]"
                 }`}
               >
-                {filteredData.length < 0
+                {tasksToDisplay?.length <= 0
                   ? "What do you want to do today"
                   : "No task found"}
               </h1>
@@ -362,7 +420,7 @@ export default function Index() {
           </div>
         )}
 
-        {filteredData && filteredData.length > 0 && (
+        {tasksToDisplay && tasksToDisplay?.length > 0 && (
           <div className="my-6 overflow-hidden">
             <div className="w-full px-12 py-5 my-8">
               <Button
@@ -407,9 +465,9 @@ export default function Index() {
               </Menu>
             </div>
             <div className="w-full flex flex-col items-center md:h-[500px] h-[800px] overflow-auto">
-              {filteredData.map((item) => (
+              {tasksToDisplay.map((item: TaskDataType1) => (
                 <div
-                  key={item.id}
+                  key={item._id}
                   onClick={() => getTaskData(Array(item))}
                   className={`${
                     darkMode
@@ -421,13 +479,13 @@ export default function Index() {
                     <input type="radio" disabled />
                   </div>
                   <div className="w-2/4 flex flex-col text-wrap">
-                    <span className="my-2">{item.task_name}</span>
+                    <span className="my-2">{item.name}</span>
                     <span
                       className={`my-2 ${
                         darkMode ? "text-[#AFAFAF]" : "text-[#808080]"
                       }`}
                     >
-                      Created: {formatDate(item.created_at)}
+                      Created: {formatDate(item.createdAt)}
                     </span>
                   </div>
                   <div className="w-2/4 flex justify-center items-baseline">
@@ -436,16 +494,16 @@ export default function Index() {
                     >
                       <div
                         className={`flex rounded-md items-center justify-center px-4 py-4 mx-4 ${getDefaultBgColor(
-                          item.task_category
+                          item.category
                         )}`}
                       >
                         <div className="flex flex-wrap">
                           <img
-                            src={getIconRender(item.task_category)}
+                            src={getIconRender(item.category)}
                             alt="category-icon"
                             className="mx-2"
                           />
-                          {item.task_category}
+                          {item.category}
                         </div>
                       </div>
 
@@ -455,7 +513,7 @@ export default function Index() {
                           alt="priority-icon"
                           className={`${darkMode ? "" : "filter-invert"}`}
                         />
-                        <span>{item.task_priority}</span>
+                        <span>{item.priority}</span>
                       </div>
                     </div>
                   </div>
@@ -468,7 +526,7 @@ export default function Index() {
         {isFiltered && (
           <button
             className="fixed lg:bottom-40 md:right-24 md:bottom-72 bottom-52 right-12 rounded-md py-4 px-2 z-10"
-            onClick={getCurrentDayTasks}
+            onClick={reset}
           >
             <CleaningServicesTwoTone
               style={{ width: "50px", height: "50px" }}

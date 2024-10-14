@@ -76,46 +76,41 @@ export default function Login({ registerSwap }: RegisterProps) {
     }, 0);
   };
 
+  // Cookies.remove("token1");
+  // Cookies.remove("token2");
+  // Cookies.remove("token3");
+
   const url = base_url + auth_login;
   const { mutate, isPending } = useMutation({
     mutationFn: async (userData: LoginBody) => await userLogin(url, userData),
     onSuccess: (authVal) => {
       const { data } = authVal;
-      console.log(data);
-      const token = data.userSession.auth_data.token.split(" ")[1];
-      console.log(token);
-      Cookies.set("jwtToken", token, {
+      // Store tokens and set authenticated state
+      Cookies.set("token1", data.userSession.auth_data.token.split(" ")[1], {
         expires: 1,
-        sameSite: "Strict",
-        secure: true,
+        secure: false,
+        sameSite: "Lax",
       });
-
-      Cookies.set("csrf", data.userSession.auth_data.csrf, {
+      Cookies.set("token2", data.userSession.auth_data.csrf, {
         expires: 1,
-        sameSite: "Strict",
-        secure: true,
+        secure: false,
+        sameSite: "Lax",
       });
-
-      Cookies.set("refresh", data.userSession.auth_data.refreshToken.value, {
+      Cookies.set("token3", data.userSession.auth_data.refreshToken.value, {
         expires: 7,
-        sameSite: "Strict",
-        secure: true,
+        secure: false,
+        sameSite: "Lax",
       });
 
-      setAuthenticated(true);
-
-      const csrf = Cookies.get("csrf");
-      const jwt = Cookies.get("jwtToken");
-      const refresh = Cookies.get("refresh");
-
-      if (csrf && jwt && refresh) {
-        localStorage.setItem("message", "user_is_signed");
-        navigate("/");
+      if (
+        Cookies.get("token1") &&
+        Cookies.get("token2") &&
+        Cookies.get("token3")
+      ) {
+        setAuthenticated(true); // Set the authenticated state
+        localStorage.setItem("authenticated", "true"); // Persist state in localStorage
+        navigate("/"); // Redirect to home after login
       }
-
-      // setTimeout(() => {
-      //   window.location.reload; // must fix having to reload page so nav works properly
-      // }, 3000);
     },
     onError: (err: AxiosError) => {
       console.error(err);

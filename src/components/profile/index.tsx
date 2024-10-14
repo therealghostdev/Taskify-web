@@ -22,6 +22,7 @@ import taskData from "../../utils/data/task_data.json";
 import { TaskDataType } from "../../utils/types/todo";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 
 export default function Index() {
   const { authenticated, setAuthenticated } = useAuthContext();
@@ -103,8 +104,15 @@ export default function Index() {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    setAuthenticated(false);
+    localStorage.removeItem("authenticated");
+    // setAuthenticated(false);
+
+    const cookies = Cookies.get();
+
+    Object.keys(cookies).forEach((cookieName) => {
+      Cookies.remove(cookieName);
+    });
+
     notify("logout success");
   };
 
