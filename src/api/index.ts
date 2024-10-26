@@ -64,7 +64,6 @@ const combineDateTime = (date: string, time: string): string => {
 
   const combinedDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
   console.log(combinedDate, "combime func");
-  
 
   return combinedDate.toISOString();
 };
@@ -80,7 +79,6 @@ const flattenUpdateTaskData = (
 
   const utcDateTime = time && date ? combineDateTime(date, time) : "";
   console.log(utcDateTime, "fl");
-  
 
   const flattenedData: UpdateTaskRequestBody = {
     name: todo.name || "",
@@ -93,7 +91,7 @@ const flattenUpdateTaskData = (
   };
 
   console.log(flattenedData, "fl");
-  
+
   if (omitCreatedAt) {
     delete flattenedData.createdAt;
   }
@@ -110,8 +108,6 @@ export const updateTasks = async (queryParams: Todo[], data: Todo[]) => {
     // Flatten queryParams with createdAt if needed
     const flattenedParams = flattenUpdateTaskData(queryParams);
 
-    console.log(flattenedParams, "flattenedP");
-    
     // Flatten data without createdAt for request body
     const flattenedData = flattenUpdateTaskData(data, true);
 
@@ -153,20 +149,20 @@ const flattenCreateTaskData = (todos: Todo[]): CreateTaskRequestBody => {
   };
 };
 
-export const createTask = async (queryParams: Todo[], data: Todo[]) => {
+export const createTask = async (data: Todo[]) => {
   const token1 = Cookies.get("token1");
   const token2 = Cookies.get("token2");
 
   try {
     // Flatten both query params and request body
-    const flattenedParams = flattenCreateTaskData(queryParams);
+    // const flattenedParams = flattenCreateTaskData(queryParams);
     const flattenedData = flattenCreateTaskData(data);
 
     const response = await axios.post(
       `${base_url}${update_task}`,
       flattenedData,
       {
-        params: flattenedParams,
+        // params: flattenedParams,
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${token1}`,

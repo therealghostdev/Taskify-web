@@ -20,12 +20,15 @@ export default function Success() {
 
     const reset = todos.map((item) => ({
       ...item,
-      task: "",
+      name: "",
       category: "",
-      task_description: "",
+      description: "",
       task_priority: 0,
       expected_date_of_completion: "",
       time: "",
+      completed: false,
+      priority: 0,
+      createdAt: "",
     }));
 
     updateTodos(reset);

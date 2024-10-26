@@ -14,7 +14,7 @@ import AddCategory from "./AddCategory";
 import Confirm from "./confirm";
 import Success from "./success";
 import { AnimatePresence } from "framer-motion";
-import { updateTasks } from "../../../api";
+import { updateTasks, createTask } from "../../../api";
 import { useMutation } from "../../../../lib/tanstackQuery";
 import { toast } from "react-toastify";
 import { Todo } from "../../../utils/types/todo";
@@ -72,22 +72,24 @@ export default function AddTask() {
         )
           await updateTasks(queryParams(), data);
       }
-    } else if (todos.length > 0) {
+    }
+
+    if (todos.length > 0) {
       for (const item of todos) {
         if (
           item.name !== "" &&
           item.category !== "" &&
-          item.createdAt !== "" &&
           item.priority > 0 &&
           item.expected_date_of_completion !== "" &&
           item.time !== "" &&
-          item.priority > 0 &&
           item.description !== ""
         ) {
-          console.log(todos); // replace with request func
+          await createTask(todos);
         }
       }
-    } else {
+    }
+
+    if (editTodos.length === 0 && todos.length === 0) {
       notify("No data to update");
     }
     return Promise.resolve();
@@ -118,8 +120,8 @@ export default function AddTask() {
       ...item,
       name: "",
       category: "",
-      task_description: "",
-      task_priority: 0,
+      description: "",
+      priority: 0,
       expected_date_of_completion: "",
       time: "",
       completed: false,
@@ -134,10 +136,12 @@ export default function AddTask() {
         ...item,
         name: "",
         category: "",
-        task_description: "",
-        task_priority: 0,
+        description: "",
+        priority: 0,
         expected_date_of_completion: "",
         time: "",
+        createdAt: "",
+        completed: false,
       }));
 
       updateTodos(resetTodos);
@@ -193,7 +197,11 @@ export default function AddTask() {
             ) : trackScreen === "category" ? (
               <AddCategory />
             ) : trackScreen === "confirm" ? (
-              <Confirm request={() => task_update(editTodos)} />
+              <Confirm
+                request={() =>
+                  editTodos.length > 0 ? task_update(editTodos) : ""
+                }
+              />
             ) : trackScreen === "success" ? (
               <Success />
             ) : (

@@ -27,13 +27,13 @@ export default function Nav() {
 
   const addTask = () => {
     todos.forEach((item) => {
-      if (item.task === "") {
+      if (item.name === "") {
         trackScreenFunc("name");
       } else if (item.expected_date_of_completion === "") {
         trackScreenFunc("calendar");
       } else if (item.time === "") {
         trackScreenFunc("time");
-      } else if (item.task_priority === 0) {
+      } else if (item.priority === 0) {
         trackScreenFunc("priority");
       } else if (item.category === "") {
         trackScreenFunc("category");

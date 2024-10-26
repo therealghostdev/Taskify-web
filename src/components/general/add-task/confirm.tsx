@@ -19,24 +19,28 @@ export default function Confirm(props: ConfirmPropTypes) {
 
     const reset = todos.map((item) => ({
       ...item,
-      task: "",
+      name: "",
       category: "",
-      task_description: "",
-      task_priority: 0,
+      description: "",
+      priority: 0,
       expected_date_of_completion: "",
       time: "",
+      completed: false,
+      createdAt: "",
     }));
 
     updateTodos(reset);
 
     const reset2 = editTodos.map((item) => ({
       ...item,
-      task: "",
+      name: "",
       category: "",
-      task_description: "",
-      task_priority: 0,
+      description: "",
+      priority: 0,
       expected_date_of_completion: "",
       time: "",
+      completed: false,
+      createdAt: "",
     }));
 
     updateEditTodos(reset2);

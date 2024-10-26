@@ -107,9 +107,8 @@ export default function Login({ registerSwap }: RegisterProps) {
         Cookies.get("token2") &&
         Cookies.get("token3")
       ) {
-        // window.location.reload();
-        // setAuthenticated(true); // Set the authenticated state
         navigate("/"); // Redirect to home after login
+        window.location.reload();
       }
     },
     onError: (err: AxiosError) => {

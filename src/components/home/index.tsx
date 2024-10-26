@@ -1,4 +1,3 @@
-import data1 from "../../utils/data/task_data.json";
 import groceryIcon from "../../assets/grocery.svg";
 import workIcon from "../../assets/briefcase.svg";
 import sportIcon from "../../assets/sport.svg";
@@ -16,10 +15,7 @@ import noItem from "../../assets/Checklist-rafiki 1.svg";
 import userData from "../../utils/data/user_data.json";
 import defaultImg from "../../assets/default-profile.png";
 import filterIcon from "../../assets/filter-icon.svg";
-import {
-  useThemeContext,
-  useTrackContext,
-} from "../../utils/app_context/general";
+import { useThemeContext } from "../../utils/app_context/general";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState, useRef } from "react";
 import { TaskDataType1 } from "../../utils/types/todo";
@@ -53,12 +49,6 @@ export default function Index() {
   const [taskScreenData, setTaskScreenData] = useState<TaskDataType1[] | null>(
     null
   );
-
-  // const { trackScreenFunc } = useTrackContext();
-
-  // useEffect(() => {
-  //   trackScreenFunc("confirm");
-  // }, []);
 
   const queryParam = (
     query1: string,
@@ -225,29 +215,7 @@ export default function Index() {
   };
   // End of popup functions
 
-  // const { mutate, isPending } = useMutation({
-  //   mutationFn: async () => {
-  //     const url = queryParam("2024-10-10");
-  //     return await getAllTasks(url);
-  //   },
-  //   onSuccess: (val) => {
-  //     const tasks = val.data1.data1;
-  //     // setData(tasks);
-  //   },
-  //   onError: (err: AxiosError) => {
-  //     console.error("Error:", err.response ? err.response.data1 : err.message);
-  //   },
-  // });
-
-  // useEffect(() => {
-  //   mutate();
-  // }, []);
-
   const tasksToDisplay = isFiltered ? filteredData : data?.data?.data;
-  console.log(tasksToDisplay);
-  useEffect(() => {
-    console.log(filteredData);
-  }, [filteredData]);
 
   return (
     <section
