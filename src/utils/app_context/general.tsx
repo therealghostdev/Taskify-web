@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { Todo, ThemeContextType, Note } from "../types/todo";
 import actions from "../../components/app_tools/actions";
 import { type ActionsState } from "../types/todo";
+import Cookies from "js-cookie";
 
 // Create the initial state based on actions
 const initialActionsState: ActionsState = actions.reduce((state, action) => {
@@ -24,6 +25,14 @@ const EditTodoContext = createContext<{
 }>({
   editTodos: [],
   updateEditTodos: () => {},
+});
+
+const QueryContext = createContext<{
+  query: Todo[];
+  updateQuery: (newTodos: Todo[]) => void;
+}>({
+  query: [],
+  updateQuery: () => {},
 });
 
 // create context to toggle darkmode on/off
@@ -83,19 +92,29 @@ export const useTodoContext = () => useContext(TodoContext);
 // Custom hook to access and edit calendar page todo list context
 export const useEditTodoContext = () => useContext(EditTodoContext);
 
+// Custom hook to access and edit request query
+export const useQueryContext = () => useContext(QueryContext);
+
 // Custom hook to access the theme context
 export const useThemeContext = () => useContext(ThemeContext);
+
+const cookie1 = Cookies.get("token1");
+const cookie2 = Cookies.get("token2");
+const cookie3 = Cookies.get("token3");
 
 // Custom hook to access the authentication context
 export const useAuthContext = () => {
   const [authenticated, setAuthenticated] = useState<boolean>(() => {
-    const storedAuthState = localStorage.getItem("authenticated");
-    return storedAuthState === "true";
+    return !!cookie1 && !!cookie2 && !!cookie3;
   });
 
   useEffect(() => {
-    localStorage.setItem("authenticated", authenticated.toString());
-  }, [authenticated]);
+    if (!!cookie1 && !!cookie2 && !!cookie3) {
+      setAuthenticated(true);
+    } else {
+      setAuthenticated(false);
+    }
+  }, []);
 
   return { authenticated, setAuthenticated };
 };
@@ -117,12 +136,13 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   // State for managing todo list
   const [todos, setTodos] = useState<Todo[]>([
     {
-      task: "",
-      task_description: "",
+      name: "",
+      description: "",
       time: "",
       category: "",
-      task_priority: 0,
+      priority: 0,
       expected_date_of_completion: "",
+      completed: false,
     },
   ]);
 
@@ -134,18 +154,37 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   // State for managing calendar-page todo list
   const [editTodos, setEditTodos] = useState<Todo[]>([
     {
-      task: "",
-      task_description: "",
+      name: "",
+      description: "",
       time: "",
       category: "",
-      task_priority: 0,
+      priority: 0,
       expected_date_of_completion: "",
+      completed: false,
     },
   ]);
 
   // Function to update the todo list
   const updateEditTodos = (newTodos: Todo[]) => {
     setEditTodos(newTodos);
+  };
+
+  // State for request query
+  const [query, setQuery] = useState<Todo[]>([
+    {
+      name: "",
+      description: "",
+      time: "",
+      category: "",
+      priority: 0,
+      expected_date_of_completion: "",
+      completed: false,
+    },
+  ]);
+
+  // Function to update query
+  const updateQuery = (query: Todo[]) => {
+    setQuery(query);
   };
 
   // State for managing app theme
@@ -159,13 +198,14 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   // State for managing authentication
   const [authenticated, setAuthenticated] = useState<boolean>(() => {
-    // Check if token is available in local storage
-    return !!localStorage.getItem("authenticated");
+    // Check if token is available in cookie storage
+    const token = !!cookie1 && !!cookie2 && !!cookie3;
+    return token;
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("authenticated");
-    setAuthenticated(!!token);
+    const token = !!cookie1 && !!cookie2 && !!cookie3;
+    setAuthenticated(token);
   }, []);
 
   // state for tracking task screen
@@ -259,31 +299,33 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <TodoContext.Provider value={{ todos, updateTodos }}>
       <EditTodoContext.Provider value={{ editTodos, updateEditTodos }}>
-        <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
-          <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
-            <TrackTaskScreenContext.Provider
-              value={{ trackScreen, trackScreenFunc }}
-            >
-              <PopperContext.Provider
-                value={{ actionsState, toggleActionState }}
+        <QueryContext.Provider value={{ query, updateQuery }}>
+          <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
+            <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
+              <TrackTaskScreenContext.Provider
+                value={{ trackScreen, trackScreenFunc }}
               >
-                <NotesContext.Provider
-                  value={{
-                    notes,
-                    addNote,
-                    deleteNote,
-                    selectNote,
-                    selectedNote,
-                    displayNote,
-                    toggleDisplay,
-                  }}
+                <PopperContext.Provider
+                  value={{ actionsState, toggleActionState }}
                 >
-                  {children}
-                </NotesContext.Provider>
-              </PopperContext.Provider>
-            </TrackTaskScreenContext.Provider>
-          </AuthContext.Provider>
-        </ThemeContext.Provider>
+                  <NotesContext.Provider
+                    value={{
+                      notes,
+                      addNote,
+                      deleteNote,
+                      selectNote,
+                      selectedNote,
+                      displayNote,
+                      toggleDisplay,
+                    }}
+                  >
+                    {children}
+                  </NotesContext.Provider>
+                </PopperContext.Provider>
+              </TrackTaskScreenContext.Provider>
+            </AuthContext.Provider>
+          </ThemeContext.Provider>
+        </QueryContext.Provider>
       </EditTodoContext.Provider>
     </TodoContext.Provider>
   );

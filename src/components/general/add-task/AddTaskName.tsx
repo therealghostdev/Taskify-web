@@ -35,14 +35,16 @@ export default function AddTaskName() {
 
   const [error, setError] = useState("");
 
+  console.log(editTodos);
+
   // checks if there's date in calendar page state.
   const getTaskDetailsformTodoState = () => {
     editTodos.map((item) => {
-      if (item.task !== "" || item.task_description !== "") {
+      if (item.name !== "" || item.description !== "") {
         setEditTaskname((prev) => ({
           ...prev,
-          taskname: item.task,
-          taskdescription: item.task_description,
+          taskname: item.name,
+          taskdescription: item.description,
         }));
       }
     });
@@ -80,8 +82,8 @@ export default function AddTaskName() {
       if (editTaskname.taskname === "" || editTaskname.taskdescription === "") {
         const updatedTodos = todos.map((todo) => ({
           ...todo,
-          task: formValues.taskname,
-          task_description: formValues.taskdescription,
+          name: formValues.taskname,
+          description: formValues.taskdescription,
         }));
 
         // Set the updated todos back to the context
@@ -90,8 +92,8 @@ export default function AddTaskName() {
       } else {
         const updatedCalendarTodos = editTodos.map((item) => ({
           ...item,
-          task: formValues.taskname,
-          task_description: formValues.taskdescription,
+          name: formValues.taskname,
+          description: formValues.taskdescription,
         }));
 
         updateEditTodos(updatedCalendarTodos);

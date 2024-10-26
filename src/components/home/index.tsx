@@ -16,10 +16,13 @@ import noItem from "../../assets/Checklist-rafiki 1.svg";
 import userData from "../../utils/data/user_data.json";
 import defaultImg from "../../assets/default-profile.png";
 import filterIcon from "../../assets/filter-icon.svg";
-import { useThemeContext } from "../../utils/app_context/general";
+import {
+  useThemeContext,
+  useTrackContext,
+} from "../../utils/app_context/general";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState, useRef } from "react";
-import { TaskDataType, TaskDataType1 } from "../../utils/types/todo";
+import { TaskDataType1 } from "../../utils/types/todo";
 import {
   getDefaultBgColor,
   formatDate,
@@ -30,11 +33,7 @@ import { ArrowDropDown } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
 import Popup from "./popup";
 import { getAllTasks } from "../../api";
-import axios from "../../../lib/axios";
-import { useMutation, useQuery } from "../../../lib/tanstackQuery";
-import { AxiosError } from "axios";
-import { base_url, task } from "../../api/route";
-import { LoginBody } from "../../utils/types/todo";
+import { useQuery } from "../../../lib/tanstackQuery";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
@@ -55,7 +54,11 @@ export default function Index() {
     null
   );
 
-  const [tasksValue, setTasksValue] = useState<any>(null);
+  // const { trackScreenFunc } = useTrackContext();
+
+  // useEffect(() => {
+  //   trackScreenFunc("confirm");
+  // }, []);
 
   const queryParam = (
     query1: string,
@@ -80,16 +83,6 @@ export default function Index() {
     },
     staleTime: 60000,
   });
-
-  // useEffect(() => {
-  //   if (data?.data?.data) {
-  //     // Safely accessing the nested data array
-  //     console.log("Fetched tasks:", data.data.data);
-  //     // setFilteredData(data.data.data); // Set filteredData correctly
-  //   }
-  // }, [data]);
-  // // console.log(data?.data.data);
-  // console.log(filteredData);
 
   useEffect(() => {
     const updateViewValue = () => {

@@ -9,3 +9,5 @@ export const task = "/user/task";
 export const refresh_auth = "/user/refresh_token";
 
 export const update_fcm_token = "/user/update_user_token";
+
+export const update_task = "/user/task";

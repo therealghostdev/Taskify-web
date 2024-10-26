@@ -3,15 +3,22 @@ import {
   useEditTodoContext,
   useThemeContext,
   useTodoContext,
+  useQueryContext,
 } from "../../../utils/app_context/general";
 import AddTaskName from "./AddTaskName";
 import AddDate from "./AddDate";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import AddTime from "./AddTime";
 import AddPriority from "./AddPriority";
 import AddCategory from "./AddCategory";
+import Confirm from "./confirm";
 import Success from "./success";
 import { AnimatePresence } from "framer-motion";
+import { updateTasks } from "../../../api";
+import { useMutation } from "../../../../lib/tanstackQuery";
+import { toast } from "react-toastify";
+import { Todo } from "../../../utils/types/todo";
+import axios from "axios";
 
 export default function AddTask() {
   const { todos, updateTodos } = useTodoContext();
@@ -19,6 +26,125 @@ export default function AddTask() {
   const { trackScreen, trackScreenFunc } = useTrackContext();
   const flowContainerRef = useRef<HTMLDivElement>(null);
   const { darkMode } = useThemeContext();
+  const { query, updateQuery } = useQueryContext();
+
+  const customId = "1";
+  const notify = (message: string) => {
+    toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
+  };
+
+  const queryParams = (): Todo[] => {
+    return query.map((item) => {
+      const timeParts = item.expected_date_of_completion
+        .split("T")[1]
+        .split(":");
+      const time = `${timeParts[0]}:${timeParts[1]}`;
+
+      const formattedDate = new Date(
+        item.expected_date_of_completion
+      ).toLocaleDateString("en-GB");
+
+      return {
+        name: item.name,
+        description: item.description,
+        category: item.category,
+        priority: item.priority,
+        expected_date_of_completion: formattedDate,
+        completed: item.completed,
+        createdAt: item.createdAt,
+        time: time,
+      };
+    });
+  };
+
+  const validateReqBody = async (data: Todo[]): Promise<unknown> => {
+    if (editTodos.length > 0) {
+      for (const item of editTodos) {
+        if (
+          item.name !== "" &&
+          item.category !== "" &&
+          item.createdAt !== "" &&
+          item.priority > 0 &&
+          item.expected_date_of_completion !== "" &&
+          item.time !== "" &&
+          item.priority > 0 &&
+          item.description !== ""
+        )
+          await updateTasks(queryParams(), data);
+      }
+    } else if (todos.length > 0) {
+      for (const item of todos) {
+        if (
+          item.name !== "" &&
+          item.category !== "" &&
+          item.createdAt !== "" &&
+          item.priority > 0 &&
+          item.expected_date_of_completion !== "" &&
+          item.time !== "" &&
+          item.priority > 0 &&
+          item.description !== ""
+        ) {
+          console.log(todos); // replace with request func
+        }
+      }
+    } else {
+      notify("No data to update");
+    }
+    return Promise.resolve();
+  };
+
+  const { isPending, isSuccess, mutate } = useMutation({
+    mutationFn: validateReqBody,
+    onSuccess: () => {
+      clearState();
+      trackScreenFunc("success");
+    },
+    onError: (err) => {
+      if (axios.isAxiosError(err) && err.response) {
+        const message = err.response.data?.message;
+        notify(message);
+      } else {
+        notify("Something went wrong");
+      }
+    },
+  });
+
+  const task_update = (data: Todo[]) => {
+    mutate(data);
+  };
+
+  const clearState = () => {
+    const resetEditTodos = editTodos.map((item) => ({
+      ...item,
+      name: "",
+      category: "",
+      task_description: "",
+      task_priority: 0,
+      expected_date_of_completion: "",
+      time: "",
+      completed: false,
+      createdAt: "",
+    }));
+
+    updateEditTodos(resetEditTodos);
+    updateQuery(resetEditTodos);
+
+    if (trackScreen === "success") {
+      const resetTodos = todos.map((item) => ({
+        ...item,
+        name: "",
+        category: "",
+        task_description: "",
+        task_priority: 0,
+        expected_date_of_completion: "",
+        time: "",
+      }));
+
+      updateTodos(resetTodos);
+    }
+
+    trackScreenFunc("");
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -26,33 +152,7 @@ export default function AddTask() {
         flowContainerRef.current &&
         !flowContainerRef.current.contains(e.target as Node)
       ) {
-        const resetEditTodos = editTodos.map((item) => ({
-          ...item,
-          task: "",
-          category: "",
-          task_description: "",
-          task_priority: 0,
-          expected_date_of_completion: "",
-          time: "",
-        }));
-
-        updateEditTodos(resetEditTodos);
-
-        if (trackScreen === "success") {
-          const resetTodos = todos.map((item) => ({
-            ...item,
-            task: "",
-            category: "",
-            task_description: "",
-            task_priority: 0,
-            expected_date_of_completion: "",
-            time: "",
-          }));
-
-          updateTodos(resetTodos);
-        }
-
-        trackScreenFunc("");
+        clearState();
       }
     };
 
@@ -62,9 +162,15 @@ export default function AddTask() {
   }, [editTodos, todos, trackScreen, trackScreenFunc]);
 
   return (
-    ["name", "calendar", "time", "priority", "category", "success"].includes(
-      trackScreen
-    ) && (
+    [
+      "name",
+      "calendar",
+      "time",
+      "priority",
+      "category",
+      "confirm",
+      "success",
+    ].includes(trackScreen) && (
       <div
         className={`${
           darkMode ? "dark-overlay" : "light-overlay"
@@ -86,6 +192,8 @@ export default function AddTask() {
               <AddPriority />
             ) : trackScreen === "category" ? (
               <AddCategory />
+            ) : trackScreen === "confirm" ? (
+              <Confirm request={() => task_update(editTodos)} />
             ) : trackScreen === "success" ? (
               <Success />
             ) : (

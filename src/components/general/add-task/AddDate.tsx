@@ -31,13 +31,18 @@ const AddDate = () => {
   const updatedSelectedDate = () => {
     editTodos.forEach((item) => {
       if (item.expected_date_of_completion !== "") {
-        const [day, month, year] = item.expected_date_of_completion.split("/");
+        const extractedDate = item.expected_date_of_completion;
+        const extractedTime = item.expected_date_of_completion.split("T")[1];
+        item.time = extractedTime;
+        
 
-        const date = new Date(
-          parseInt(year),
-          parseInt(month) - 1,
-          parseInt(day)
-        );
+        const dateObject = new Date(extractedDate);
+
+        const day = dateObject.getDate();
+        const month = dateObject.getMonth();
+        const year = dateObject.getFullYear();
+
+        const date = new Date(year, month, day);
 
         setSelectedDate(date);
       }

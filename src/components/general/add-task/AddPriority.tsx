@@ -26,9 +26,9 @@ export default function AddPriority() {
   // check if edit priority value isn't empty
   const getEditPriorityValue = () => {
     editTodos.forEach((item) => {
-      if (item.task_priority !== 0) {
-        setPriority(item.task_priority);
-        setActiveBtn(item.task_priority - 1);
+      if (item.priority !== 0) {
+        setPriority(item.priority);
+        setActiveBtn(item.priority - 1);
       }
     });
   };
@@ -37,14 +37,14 @@ export default function AddPriority() {
     if (editPriority !== 0) {
       const updatedTodo = editTodos.map((item) => ({
         ...item,
-        task_priority: priority,
+        priority: priority,
       }));
       updateEditTodos(updatedTodo);
       trackScreenFunc("category");
     } else {
       const updatedTodo = todos.map((item) => ({
         ...item,
-        task_priority: priority,
+        priority: priority,
       }));
 
       updateTodos(updatedTodo);
@@ -72,7 +72,7 @@ export default function AddPriority() {
   }, []);
 
   useEffect(() => {
-    if (editTodos.some(item => item.task_priority !== 0)) {
+    if (editTodos.some(item => item.priority !== 0)) {
       setEditPriority(priority);
     }
   }, [priority, editTodos]);

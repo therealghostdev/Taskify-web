@@ -22,6 +22,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
 import Apptool from "./components/app_tools";
+import NotFound from "./pages/not_found";
 
 function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
@@ -54,6 +55,7 @@ function App() {
             "priority",
             "category",
             "success",
+            "confirm",
           ].includes(trackScreen) && <AddTask />}
 
         {authenticated && <Apptool />}
@@ -91,7 +93,8 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/auth" element={<Auth />} />
+          {!authenticated && <Route path="/auth" element={<Auth />} />}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
       <ToastContainer autoClose={5000} hideProgressBar={false} />

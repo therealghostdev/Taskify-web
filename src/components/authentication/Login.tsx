@@ -107,8 +107,8 @@ export default function Login({ registerSwap }: RegisterProps) {
         Cookies.get("token2") &&
         Cookies.get("token3")
       ) {
-        setAuthenticated(true); // Set the authenticated state
-        localStorage.setItem("authenticated", "true"); // Persist state in localStorage
+        // window.location.reload();
+        // setAuthenticated(true); // Set the authenticated state
         navigate("/"); // Redirect to home after login
       }
     },

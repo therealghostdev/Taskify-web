@@ -1,6 +1,10 @@
-import { TaskDataType, TaskDataType1, TaskScreenPropType } from "../../utils/types/todo";
+import {
+  TaskDataType1,
+  TaskScreenPropType,
+} from "../../utils/types/todo";
 import {
   useEditTodoContext,
+  useQueryContext,
   useThemeContext,
   useTrackContext,
 } from "../../utils/app_context/general";
@@ -32,6 +36,7 @@ export default function Popup(props: TaskScreenPropType) {
   const { darkMode } = useThemeContext();
   const { trackScreenFunc } = useTrackContext();
   const popupRef = useRef<HTMLSelectElement | null>(null);
+  const { updateQuery } = useQueryContext();
 
   const getIconRender = (item: string) => {
     let icon;
@@ -81,14 +86,17 @@ export default function Popup(props: TaskScreenPropType) {
     const updatedTodos = editTodos.map((content) => ({
       ...content,
       id: item._id,
-      task: item.name,
-      task_priority: item.priority,
+      name: item.name,
+      priority: item.priority,
       category: item.category,
-      task_description: item.description,
-      time: item.createdAt,
-      expected_date_of_completion: item.expected_completion_time,
+      description: item.description,
+      completed: item.completed,
+      createdAt: item.createdAt,
+      time: item.createdAt.toString(),
+      expected_date_of_completion: item.expected_completion_time.toString(),
     }));
     updateEditTodos(updatedTodos);
+    updateQuery(updatedTodos);
     trackScreenFunc("name");
     props.close();
   };
@@ -169,6 +177,7 @@ export default function Popup(props: TaskScreenPropType) {
               <div className="w-3/4 flex justify-end">
                 <Button
                   className="flex justify-between items-center"
+                  onClick={() => jumpToScreen("time", item)}
                   style={{
                     backgroundColor: darkMode ? "#363636" : "#bdbdbd",
                     color: "#FFFFFF",
@@ -229,10 +238,10 @@ export default function Popup(props: TaskScreenPropType) {
                   }}
                 >
                   <span className="mx-2">
-                    <img src={flag} alt={item.category.toString()} />
+                    <img src={flag} alt={item.priority.toString()} />
                   </span>
 
-                  <span>{item.category}</span>
+                  <span>{item.priority}</span>
                 </Button>
               </div>
             </div>

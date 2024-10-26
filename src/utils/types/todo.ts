@@ -1,13 +1,15 @@
 import { ReactNode } from "react";
 
 export interface Todo {
-  id?: number;
-  task: string;
-  task_description: string;
-  task_priority: number;
+  id?: string;
+  name: string;
+  description: string;
+  priority: number;
   expected_date_of_completion: string;
   category: string;
   time: string;
+  completed: boolean;
+  createdAt?: string;
 }
 export interface LoginProps {
   loginSwap: () => void;
@@ -179,4 +181,26 @@ export interface RegisterBody {
 export interface LoginBody {
   username: string;
   password: string;
+}
+
+export interface CreateTaskRequestBody {
+  name: string;
+  description: string;
+  category: string;
+  priority: number;
+  expected_completion_time: string;
+}
+
+export interface UpdateTaskRequestBody {
+  name: string;
+  description: string;
+  category: string;
+  priority: number;
+  expected_completion_time: string;
+  completed: boolean;
+  createdAt?: string;
+}
+
+export interface ConfirmPropTypes {
+  request: () => void;
 }
