@@ -30,6 +30,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Popup from "./popup";
 import { getAllTasks } from "../../api";
 import { useQuery } from "../../../lib/tanstackQuery";
+import LoadingSpinner from "../loading/loading1";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
@@ -364,7 +365,7 @@ export default function Index() {
       </section>
 
       <section>
-        {!tasksToDisplay || tasksToDisplay.length === 0 ? (
+        {!isLoading && (!tasksToDisplay || tasksToDisplay.length === 0) ? (
           <div className="px-4 py-6 flex flex-col justify-center items-center w-full md:h-[400px]">
             <div className="w-full flex flex-col justify-center items-center">
               <img
@@ -392,7 +393,7 @@ export default function Index() {
               </p>
             </div>
           </div>
-        ) : (
+        ) : !isLoading ? (
           <div className="my-6 overflow-hidden">
             <div className="w-full px-12 py-5 my-8">
               <Button
@@ -491,6 +492,10 @@ export default function Index() {
                 </div>
               ))}
             </div>
+          </div>
+        ) : (
+          <div className="w-full md:h-[500px] h-[600px] my-8 flex flex-col justify-center items-center">
+            <LoadingSpinner />
           </div>
         )}
       </section>

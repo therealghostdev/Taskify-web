@@ -32,7 +32,7 @@ import { formatDate } from "../../utils/reusable_functions/functions";
 import React, { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { DeleteTask } from "../../api";
-import { useMutation } from "../../../lib/tanstackQuery";
+import { useMutation, useQueryClient } from "../../../lib/tanstackQuery";
 import { AxiosError } from "axios";
 
 export default function Popup(props: TaskScreenPropType) {
@@ -155,9 +155,13 @@ export default function Popup(props: TaskScreenPropType) {
     }
   };
 
+  const queryClient = useQueryClient();
   const { isPending, mutate } = useMutation({
     mutationFn: (params: DeleteTaskQuery[]) => DeleteTask(params),
-    onSuccess: () => props.close(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["task"] });
+      props.close();
+    },
     onError: (err: AxiosError) => {
       if (err.response && err.response.data) {
         const data = err.response.data as { message?: string };

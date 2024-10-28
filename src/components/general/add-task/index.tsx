@@ -15,7 +15,7 @@ import Confirm from "./confirm";
 import Success from "./success";
 import { AnimatePresence } from "framer-motion";
 import { updateTasks, createTask } from "../../../api";
-import { useMutation } from "../../../../lib/tanstackQuery";
+import { useMutation, useQueryClient } from "../../../../lib/tanstackQuery";
 import { toast } from "react-toastify";
 import { Todo } from "../../../utils/types/todo";
 import axios from "axios";
@@ -95,11 +95,13 @@ export default function AddTask() {
     return Promise.resolve();
   };
 
+  const queryClient = useQueryClient();
   const { isPending, isSuccess, mutate } = useMutation({
     mutationFn: validateReqBody,
     onSuccess: () => {
       clearState();
       trackScreenFunc("success");
+      queryClient.invalidateQueries({ queryKey: ["task"] });
     },
     onError: (err) => {
       if (axios.isAxiosError(err) && err.response) {

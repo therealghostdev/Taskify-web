@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 
-export { useQuery, useMutation };
+export { useQuery, useMutation, useQueryClient };
