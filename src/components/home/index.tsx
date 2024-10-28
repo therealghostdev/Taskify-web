@@ -39,9 +39,7 @@ export default function Index() {
   const inputContainerRef = useRef<HTMLDivElement | null>(null);
   const mobileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [filteredData, setFilteredData] = useState<TaskDataType1[] | null>(
-    null
-  );
+  const [filteredData, setFilteredData] = useState<TaskDataType1[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchTask, setSearchTask] = useState<string>("");
   const [taskScreen, setTaskScreen] = useState<boolean>(false);
@@ -49,6 +47,7 @@ export default function Index() {
   const [taskScreenData, setTaskScreenData] = useState<TaskDataType1[] | null>(
     null
   );
+  const [taskValues, setTaskValues] = useState<TaskDataType1[]>([]);
 
   const queryParam = (
     query1: string,
@@ -75,15 +74,11 @@ export default function Index() {
   });
 
   useEffect(() => {
-    const updateViewValue = () => {
-      if (width < 768) {
-        setIsMobileView(true);
-      } else {
-        setIsMobileView(false);
-      }
-    };
+    setTaskValues(data?.data?.data);
+  }, [data]);
 
-    updateViewValue();
+  useEffect(() => {
+    setIsMobileView(width < 768);
   }, [width]);
 
   const showInputOnMobileDevices = () => {
@@ -109,6 +104,10 @@ export default function Index() {
   const reset = () => {
     setFilteredData([]);
     setIsFiltered(false);
+
+    if (searchTask.length > 0 || searchTask === " ") {
+      setSearchTask("");
+    }
   };
 
   const getIconRender = (item: string) => {
@@ -153,8 +152,8 @@ export default function Index() {
 
   useEffect(() => {
     const searchItem = () => {
-      if (data?.data.data) {
-        const filtered = data?.data?.data?.filter((item: TaskDataType1) =>
+      if (taskValues && taskValues.length > 0) {
+        const filtered = taskValues.filter((item: TaskDataType1) =>
           item.name.toLowerCase().includes(searchTask.toLowerCase())
         );
         setFilteredData(filtered);
@@ -173,10 +172,9 @@ export default function Index() {
   };
 
   const handleMenuItemClick = (category: string) => {
-    const tasks = data?.data?.data;
+    const tasks = taskValues;
 
-    if (!tasks) {
-      console.error("No tasks data available");
+    if (!tasks || tasks.length === 0) {
       return;
     }
 
@@ -193,7 +191,7 @@ export default function Index() {
     } else {
       filtered = [...tasks];
       setIsFiltered(false);
-      setFilteredData(null);
+      setFilteredData([]);
       handleMenuClose();
       return;
     }
@@ -215,7 +213,13 @@ export default function Index() {
   };
   // End of popup functions
 
-  const tasksToDisplay = isFiltered ? filteredData : data?.data?.data;
+  useEffect(() => {
+    if (!isFiltered) {
+      setFilteredData([]);
+    }
+  }, [isFiltered]);
+
+  const tasksToDisplay = isFiltered ? filteredData : taskValues;
 
   return (
     <section
@@ -350,7 +354,7 @@ export default function Index() {
       </section>
 
       <section>
-        {tasksToDisplay && tasksToDisplay?.length <= 0 && (
+        {!tasksToDisplay || tasksToDisplay.length === 0 ? (
           <div className="px-4 py-6 flex flex-col justify-center items-center w-full md:h-[400px]">
             <div className="w-full flex flex-col justify-center items-center">
               <img
@@ -365,11 +369,10 @@ export default function Index() {
                   darkMode ? "text-[#AFAFAF]" : "text-[#808080]"
                 }`}
               >
-                {tasksToDisplay?.length <= 0
+                {tasksToDisplay && tasksToDisplay?.length <= 0
                   ? "What do you want to do today"
                   : "No task found"}
               </h1>
-
               <p
                 className={`text-lg mt-4 ${
                   darkMode ? "text-[#AFAFAF]" : "text-[#808080]"
@@ -379,9 +382,7 @@ export default function Index() {
               </p>
             </div>
           </div>
-        )}
-
-        {tasksToDisplay && tasksToDisplay?.length > 0 && (
+        ) : (
           <div className="my-6 overflow-hidden">
             <div className="w-full px-12 py-5 my-8">
               <Button
@@ -399,7 +400,6 @@ export default function Index() {
                   <ArrowDropDown />
                 </span>
               </Button>
-
               <Menu
                 id="tasks"
                 keepMounted
@@ -450,9 +450,7 @@ export default function Index() {
                     </span>
                   </div>
                   <div className="w-2/4 flex justify-center items-baseline">
-                    <div
-                      className={`w-full flex items-baseline justify-center`}
-                    >
+                    <div className="w-full flex items-baseline justify-center">
                       <div
                         className={`flex rounded-md items-center justify-center px-4 py-4 mx-4 ${getDefaultBgColor(
                           item.category
@@ -467,7 +465,6 @@ export default function Index() {
                           {item.category}
                         </div>
                       </div>
-
                       <div className="w-[40px] h-[20px] flex items-center justify-center border px-2 py-4 border-[#8687E7] rounded-md">
                         <img
                           src={flagIcon}
@@ -483,18 +480,16 @@ export default function Index() {
             </div>
           </div>
         )}
-
-        {isFiltered && (
-          <button
-            className="fixed lg:bottom-40 md:right-24 md:bottom-72 bottom-52 right-12 rounded-md py-4 px-2 z-10"
-            onClick={reset}
-          >
-            <CleaningServicesTwoTone
-              style={{ width: "50px", height: "50px" }}
-            />
-          </button>
-        )}
       </section>
+
+      {isFiltered && (
+        <button
+          className="fixed lg:bottom-40 md:right-24 md:bottom-72 bottom-52 right-12 rounded-md py-4 px-2 z-10"
+          onClick={reset}
+        >
+          <CleaningServicesTwoTone style={{ width: "50px", height: "50px" }} />
+        </button>
+      )}
     </section>
   );
 }
