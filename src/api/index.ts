@@ -5,6 +5,8 @@ import {
   Todo,
   CreateTaskRequestBody,
   UpdateTaskRequestBody,
+  TaskDataType1,
+  DeleteTaskQuery,
 } from "../utils/types/todo";
 import Cookies from "js-cookie";
 import { base_url, task, update_task } from "./route";
@@ -78,7 +80,6 @@ const flattenUpdateTaskData = (
   const date = todo.expected_date_of_completion;
 
   const utcDateTime = time && date ? combineDateTime(date, time) : "";
-  console.log(utcDateTime, "fl");
 
   const flattenedData: UpdateTaskRequestBody = {
     name: todo.name || "",
@@ -89,8 +90,6 @@ const flattenUpdateTaskData = (
     completed: todo.completed,
     createdAt: todo.createdAt || "",
   };
-
-  console.log(flattenedData, "fl");
 
   if (omitCreatedAt) {
     delete flattenedData.createdAt;
@@ -171,6 +170,47 @@ export const createTask = async (data: Todo[]) => {
         },
       }
     );
+
+    return response;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+const flattenDeleteTaskData = (
+  todos: DeleteTaskQuery[],
+): DeleteTaskQuery => {
+  const todo = todos[0] || {};
+
+  const flattenedData: DeleteTaskQuery = {
+    name: todo.name || "",
+    category: todo.category || "",
+    expected_completion_time: todo.expected_completion_time || "",
+    completed: todo.completed,
+    createdAt: todo.createdAt || todo.createdAt || "",
+  };
+
+  return flattenedData;
+};
+
+export const DeleteTask = async (queryParams: DeleteTaskQuery[]) => {
+  const token1 = Cookies.get("token1");
+  const token2 = Cookies.get("token2");
+
+  try {
+    // Flatten queryParams with createdAt if needed
+    const flattenedParams = flattenDeleteTaskData(queryParams);
+
+    const response = await axios.delete(`${base_url}${update_task}`, {
+      params: flattenedParams,
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token1}`,
+        "x-csrf-token": token2,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
 
     return response;
   } catch (err) {

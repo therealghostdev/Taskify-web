@@ -1,4 +1,5 @@
 import {
+  DeleteTaskQuery,
   TaskDataType1,
   TaskScreenPropType,
 } from "../../utils/types/todo";
@@ -30,13 +31,16 @@ import flag from "../../assets/flag.svg";
 import { formatDate } from "../../utils/reusable_functions/functions";
 import React, { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
+import { DeleteTask } from "../../api";
+import { useMutation } from "../../../lib/tanstackQuery";
+import { AxiosError } from "axios";
 
 export default function Popup(props: TaskScreenPropType) {
   const { editTodos, updateEditTodos } = useEditTodoContext();
   const { darkMode } = useThemeContext();
   const { trackScreenFunc } = useTrackContext();
   const popupRef = useRef<HTMLSelectElement | null>(null);
-  const { updateQuery } = useQueryContext();
+  const { query, updateQuery } = useQueryContext();
 
   const getIconRender = (item: string) => {
     let icon;
@@ -120,6 +124,49 @@ export default function Popup(props: TaskScreenPropType) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const queryParams = (): DeleteTaskQuery[] => {
+    if (props.data) {
+      console.log("if block ran");
+
+      return props.data.map((item) => {
+        return {
+          name: item.name,
+          priority: item.priority,
+          category: item.category,
+          description: item.description,
+          completed: item.completed,
+          createdAt: item.createdAt,
+          expected_completion_time: item.expected_completion_time.toString(),
+        };
+      });
+    } else {
+      console.log("else block ran");
+
+      return [];
+    }
+  };
+
+  const handleDelete = () => {
+    if (query.length > 0) {
+      mutate(queryParams());
+    } else {
+      notify("No task data available for deletion.");
+    }
+  };
+
+  const { isPending, mutate } = useMutation({
+    mutationFn: (params: DeleteTaskQuery[]) => DeleteTask(params),
+    onSuccess: () => props.close(),
+    onError: (err: AxiosError) => {
+      if (err.response && err.response.data) {
+        const data = err.response.data as { message?: string };
+        notify(data.message || "An unexpected error occurred");
+      } else {
+        notify("Network error or no response from the server.");
+      }
+    },
+  });
 
   return (
     <section
@@ -248,7 +295,7 @@ export default function Popup(props: TaskScreenPropType) {
 
             <div>
               <Button
-                onClick={() => notify("coming soon")}
+                onClick={handleDelete}
                 className="flex justify-between items-center"
                 style={{
                   backgroundColor: darkMode ? "#363636" : "#bdbdbd",

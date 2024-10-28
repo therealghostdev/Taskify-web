@@ -99,6 +99,14 @@ export interface TaskDataType1 {
   __v: number; // Version key (used internally by Mongoose)
 }
 
+export interface DeleteTaskQuery {
+  name: string;
+  completed: boolean;
+  createdAt: string;
+  category: string;
+  expected_completion_time: string;
+}
+
 export interface PopupPropsTypes {
   camera: boolean;
   text: string;
@@ -139,6 +147,7 @@ export interface FocusPopupProps {
 export interface TaskScreenPropType {
   data: TaskDataType1[] | null;
   close: () => void;
+  taskIndex: number;
 }
 
 export interface NotepadTextStyleType {

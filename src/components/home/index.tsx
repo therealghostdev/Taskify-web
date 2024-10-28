@@ -48,6 +48,7 @@ export default function Index() {
     null
   );
   const [taskValues, setTaskValues] = useState<TaskDataType1[]>([]);
+  const [taskIndex, setTaskIndex] = useState<number>(0);
 
   const queryParam = (
     query1: string,
@@ -205,11 +206,16 @@ export default function Index() {
   const closePopup = () => {
     setTaskScreen(false);
     setTaskScreenData(null);
+    setTaskIndex(0);
   };
 
   const getTaskData = (item: TaskDataType1[]) => {
     setTaskScreenData(item);
     setTaskScreen(true);
+  };
+
+  const getIndexValue = (index: number) => {
+    setTaskIndex(index);
   };
   // End of popup functions
 
@@ -246,7 +252,11 @@ export default function Index() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.8, type: "tween" }}
               >
-                <Popup data={taskScreenData} close={closePopup} />
+                <Popup
+                  data={taskScreenData}
+                  close={closePopup}
+                  taskIndex={taskIndex}
+                />
               </motion.div>
             )}
           </AnimatePresence>
@@ -426,10 +436,13 @@ export default function Index() {
               </Menu>
             </div>
             <div className="w-full flex flex-col items-center md:h-[500px] h-[800px] overflow-auto">
-              {tasksToDisplay.map((item: TaskDataType1) => (
+              {tasksToDisplay.map((item: TaskDataType1, index: number) => (
                 <div
                   key={item._id}
-                  onClick={() => getTaskData(Array(item))}
+                  onClick={() => {
+                    getTaskData(Array(item));
+                    getIndexValue(index);
+                  }}
                   className={`${
                     darkMode
                       ? "bg-[#4C4C4C] text-white"
