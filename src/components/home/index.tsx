@@ -71,8 +71,8 @@ export default function Index() {
     return queryParams;
   };
 
-  const { isLoading, data, error, refetch } = useQuery({
-    queryKey: ["task", filteredData],
+  const { isLoading, data, error, refetch, isFetching } = useQuery({
+    queryKey: ["task"],
     queryFn: async () => {
       const currentDate = new Date()?.toISOString()?.split("T")[0];
       return await getAllTasks(queryParam(currentDate));
@@ -95,7 +95,6 @@ export default function Index() {
     } else {
       if (error?.message === "task not found") {
         setTaskValues([]);
-        console.log(error);
       }
     }
   }, [error]);
@@ -199,28 +198,24 @@ export default function Index() {
   };
 
   const handleMenuItemClick = (category: string) => {
-    const tasks = taskValues;
-
-    if (!tasks || tasks.length === 0) {
-      return;
-    }
+    if (!taskValues || taskValues.length === 0) return;
 
     let filtered: TaskDataType1[];
 
     if (category === "Completed") {
-      filtered = tasks.filter((item: TaskDataType1) => item.completed === true);
+      filtered = taskValues.filter((item) => item.completed === true);
     } else if (category === "Priority less than 5") {
-      filtered = tasks.filter((item: TaskDataType1) => item.priority < 5);
+      filtered = taskValues.filter((item) => item.priority < 5);
     } else if (category === "Priority greater than 5") {
-      filtered = tasks.filter((item: TaskDataType1) => item.priority > 5);
+      filtered = taskValues.filter((item) => item.priority > 5);
     } else if (category === "All") {
-      filtered = [...tasks];
-    } else {
-      filtered = [...tasks];
-      setIsFiltered(false);
-      setFilteredData([]);
+      reset();
       handleMenuClose();
       return;
+    } else {
+      filtered = [...taskValues];
+      reset();
+      handleMenuClose();
     }
 
     setFilteredData(filtered);
@@ -240,13 +235,8 @@ export default function Index() {
   };
   // End of popup functions
 
-  useEffect(() => {
-    if (!isFiltered) {
-      setFilteredData([]);
-    }
-  }, [isFiltered]);
-
   const tasksToDisplay = isFiltered ? filteredData : taskValues;
+  const loading = isLoading || isFetching;
 
   return (
     <section
@@ -385,7 +375,7 @@ export default function Index() {
       </section>
 
       <section>
-        {!isLoading && (!tasksToDisplay || tasksToDisplay.length === 0) ? (
+        {!loading && (!tasksToDisplay || tasksToDisplay.length === 0) ? (
           <div className="px-4 py-6 flex flex-col justify-center items-center w-full md:h-[400px]">
             <div className="w-full flex flex-col justify-center items-center">
               <img
@@ -413,7 +403,7 @@ export default function Index() {
               </p>
             </div>
           </div>
-        ) : !isLoading ? (
+        ) : !loading ? (
           <div className="my-6 overflow-hidden">
             <div className="w-full px-12 py-5 my-8">
               <Button
