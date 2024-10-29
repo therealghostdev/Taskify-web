@@ -1,9 +1,6 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import AppleIcon from "@mui/icons-material/Apple";
-import {
-  useThemeContext,
-  useAuthContext,
-} from "../../utils/app_context/general";
+import { useThemeContext } from "../../utils/app_context/general";
 import {
   RegisterProps,
   LoginErrorsState,
@@ -17,6 +14,7 @@ import { userLogin } from "../../api";
 import { auth_login, base_url } from "../../api/route";
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
+import LoadingSpinner3 from "../loading/loading3";
 
 export default function Login({ registerSwap }: RegisterProps) {
   const [formState, setFormState] = useState({
@@ -25,8 +23,6 @@ export default function Login({ registerSwap }: RegisterProps) {
   });
   const { userName, password } = formState;
   const { darkMode } = useThemeContext();
-
-  const { setAuthenticated } = useAuthContext();
 
   const passwordRegex =
     /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])(?=.*[0-9a-zA-Z]).{8,}$/;
@@ -76,10 +72,6 @@ export default function Login({ registerSwap }: RegisterProps) {
     }, 0);
   };
 
-  // Cookies.remove("token1");
-  // Cookies.remove("token2");
-  // Cookies.remove("token3");
-
   const url = base_url + auth_login;
   const { mutate, isPending } = useMutation({
     mutationFn: async (userData: LoginBody) => await userLogin(url, userData),
@@ -107,6 +99,7 @@ export default function Login({ registerSwap }: RegisterProps) {
         Cookies.get("token2") &&
         Cookies.get("token3")
       ) {
+        clearForm();
         navigate("/"); // Redirect to home after login
         window.location.reload();
       }
@@ -131,10 +124,6 @@ export default function Login({ registerSwap }: RegisterProps) {
   const login = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!errors.disabledBtn) {
-      // clearForm();
-      // setAuthenticated(true);
-      // notify("This app is in dev mode");
-
       mutate({ username: userName, password });
     }
   };
@@ -219,12 +208,17 @@ export default function Login({ registerSwap }: RegisterProps) {
             <div className="pt-7 pb-3 w-full flex justify-center">
               <button
                 disabled={errors.disabledBtn}
-                className={`login text-lg w-full py-3 rounded-md bg-[#8687e7] ${
+                className={`login text-lg w-full py-3 rounded-md bg-[#8687e7] flex justify-center items-center ${
                   errors.disabledBtn ? "opacity-40 cursor-not-allowed" : ""
                 }`}
                 type="submit"
               >
                 Login
+                {isPending && (
+                  <span className="ml-4">
+                    <LoadingSpinner3 />
+                  </span>
+                )}
               </button>
             </div>
             <div className="flex items-center justify-center py-5">

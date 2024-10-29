@@ -1,18 +1,14 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import AppleIcon from "@mui/icons-material/Apple";
-import {
-  useThemeContext,
-  // useAuthContext,
-} from "../../utils/app_context/general";
+import { useThemeContext } from "../../utils/app_context/general";
 import { ErrorsState, LoginProps, RegisterBody } from "../../utils/types/todo";
 import { toast } from "react-toastify";
-// import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-// import useQuery from "../../../lib/tanstackQuery";
 import { useMutation } from "../../../lib/tanstackQuery";
 import { userRegister } from "../../api";
 import { auth_reg, base_url } from "../../api/route";
 import { AxiosError } from "axios";
+import LoadingSpinner3 from "../loading/loading3";
 
 export default function Register({ loginSwap }: LoginProps) {
   const [formState, setFormState] = useState({
@@ -63,7 +59,7 @@ export default function Register({ loginSwap }: LoginProps) {
   };
 
   const url = base_url + auth_reg;
-  const { mutate, isPending, isError, error, isSuccess } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async (userData: RegisterBody) =>
       await userRegister(url, userData),
     onSuccess: () => {
@@ -311,12 +307,17 @@ export default function Register({ loginSwap }: LoginProps) {
             <div className="register pt-7 pb-3 w-full flex justify-center">
               <button
                 disabled={errors.disabledBtn}
-                className={`login text-lg w-full py-3 rounded-md bg-[#8687e7] ${
+                className={`login text-lg w-full py-3 rounded-md bg-[#8687e7] flex justify-center items-center ${
                   errors.disabledBtn ? "opacity-40 cursor-not-allowed" : ""
                 }`}
                 type="submit"
               >
                 Register
+                {isPending && (
+                  <span className="ml-4">
+                    <LoadingSpinner3 />
+                  </span>
+                )}
               </button>
             </div>
             <div className="flex items-center justify-center py-5">
