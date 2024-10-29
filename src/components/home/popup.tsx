@@ -34,6 +34,7 @@ import { toast } from "react-toastify";
 import { DeleteTask } from "../../api";
 import { useMutation, useQueryClient } from "../../../lib/tanstackQuery";
 import { AxiosError } from "axios";
+import LoadingSpinner2 from "../loading/loading2";
 
 export default function Popup(props: TaskScreenPropType) {
   const { editTodos, updateEditTodos } = useEditTodoContext();
@@ -308,6 +309,8 @@ export default function Popup(props: TaskScreenPropType) {
               >
                 <Delete className="text-[#FF4949]" />
                 <span>Delete Task</span>
+
+                {isPending && <LoadingSpinner2 />}
               </Button>
             </div>
 

@@ -1,7 +1,8 @@
-import "./loading1.css";
+import "../../styles/loading1.scss";
 import { useThemeContext } from "../../utils/app_context/general";
+import { LoadinSpinnerPropType } from "../../utils/types/todo";
 
-const LoadingSpinner = () => {
+const LoadingSpinner = (props: LoadinSpinnerPropType) => {
   const { darkMode } = useThemeContext();
 
   return (
@@ -19,7 +20,7 @@ const LoadingSpinner = () => {
           darkMode ? "text-white" : "text-black"
         }`}
       >
-        loading
+        {props.text ? props.text : "loading"}
       </div>
     </div>
   );

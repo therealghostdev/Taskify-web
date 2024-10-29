@@ -19,6 +19,7 @@ import { useMutation, useQueryClient } from "../../../../lib/tanstackQuery";
 import { toast } from "react-toastify";
 import { Todo } from "../../../utils/types/todo";
 import axios from "axios";
+import LoadingSpinner from "../../loading/loading1";
 
 export default function AddTask() {
   const { todos, updateTodos } = useTodoContext();
@@ -96,7 +97,7 @@ export default function AddTask() {
   };
 
   const queryClient = useQueryClient();
-  const { isPending, isSuccess, mutate } = useMutation({
+  const { isPending, mutate } = useMutation({
     mutationFn: validateReqBody,
     onSuccess: () => {
       clearState();
@@ -167,51 +168,56 @@ export default function AddTask() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [editTodos, todos, trackScreen, trackScreenFunc]);
 
-  return (
-    [
-      "name",
-      "calendar",
-      "time",
-      "priority",
-      "category",
-      "confirm",
-      "success",
-    ].includes(trackScreen) && (
+  return [
+    "name",
+    "calendar",
+    "time",
+    "priority",
+    "category",
+    "confirm",
+    "success",
+  ].includes(trackScreen) && !isPending ? (
+    <div
+      className={`${
+        darkMode ? "dark-overlay" : "light-overlay"
+      } fixed top-0 left-0`}
+    >
       <div
-        className={`${
-          darkMode ? "dark-overlay" : "light-overlay"
-        } fixed top-0 left-0`}
-      >
-        <div
-          ref={flowContainerRef}
-          className={`fixed flex justify-center items-center p-4 lg:w-2/4 md:w-3/4 w-full lg:top-16 md:top-52 top-36 left-0 h-auto lg:translate-x-1/2 
+        ref={flowContainerRef}
+        className={`fixed flex justify-center items-center p-4 lg:w-2/4 md:w-3/4 w-full lg:top-16 md:top-52 top-36 left-0 h-auto lg:translate-x-1/2 
         md:translate-x-20 bg-transparent`}
-        >
-          <AnimatePresence>
-            {trackScreen === "name" ? (
-              <AddTaskName />
-            ) : trackScreen === "calendar" ? (
-              <AddDate />
-            ) : trackScreen === "time" ? (
-              <AddTime />
-            ) : trackScreen === "priority" ? (
-              <AddPriority />
-            ) : trackScreen === "category" ? (
-              <AddCategory />
-            ) : trackScreen === "confirm" ? (
-              <Confirm
-                request={() =>
-                  editTodos.length > 0 ? task_update(editTodos) : ""
-                }
-              />
-            ) : trackScreen === "success" ? (
-              <Success />
-            ) : (
-              ""
-            )}
-          </AnimatePresence>
-        </div>
+      >
+        <AnimatePresence>
+          {trackScreen === "name" ? (
+            <AddTaskName />
+          ) : trackScreen === "calendar" ? (
+            <AddDate />
+          ) : trackScreen === "time" ? (
+            <AddTime />
+          ) : trackScreen === "priority" ? (
+            <AddPriority />
+          ) : trackScreen === "category" ? (
+            <AddCategory />
+          ) : trackScreen === "confirm" ? (
+            <Confirm
+              request={() =>
+                editTodos.length > 0 ? task_update(editTodos) : ""
+              }
+            />
+          ) : trackScreen === "success" ? (
+            <Success />
+          ) : (
+            ""
+          )}
+        </AnimatePresence>
       </div>
-    )
+    </div>
+  ) : (
+    <div
+      className={`fixed flex justify-center items-center p-4 md:h-[400px] min-h-screen lg:w-2/4 md:w-3/4 w-full lg:top-16 md:top-52 top-36 left-0 lg:translate-x-1/2 
+        md:translate-x-20 ${darkMode ? "bg-[#000000]" : "bg-[#ffffff]"}`}
+    >
+      <LoadingSpinner text="updating" />
+    </div>
   );
 }

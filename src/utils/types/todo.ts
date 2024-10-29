@@ -213,3 +213,7 @@ export interface UpdateTaskRequestBody {
 export interface ConfirmPropTypes {
   request: () => void;
 }
+
+export interface LoadinSpinnerPropType {
+  text?: string;
+}
