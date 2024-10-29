@@ -162,6 +162,10 @@ export default function Popup(props: TaskScreenPropType) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["task"] });
       props.close();
+      const cachedData = queryClient.getQueryData<TaskDataType1[]>(["task"]);
+      if (!cachedData || cachedData.length === 0) {
+        props.refetch();
+      }
     },
     onError: (err: AxiosError) => {
       if (err.response && err.response.data) {

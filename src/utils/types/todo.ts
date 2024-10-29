@@ -147,7 +147,7 @@ export interface FocusPopupProps {
 export interface TaskScreenPropType {
   data: TaskDataType1[] | null;
   close: () => void;
-  taskIndex: number;
+  refetch: () => void;
 }
 
 export interface NotepadTextStyleType {

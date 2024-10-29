@@ -31,6 +31,8 @@ import Popup from "./popup";
 import { getAllTasks } from "../../api";
 import { useQuery } from "../../../lib/tanstackQuery";
 import LoadingSpinner from "../loading/loading1";
+import { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
@@ -49,7 +51,10 @@ export default function Index() {
     null
   );
   const [taskValues, setTaskValues] = useState<TaskDataType1[]>([]);
-  const [taskIndex, setTaskIndex] = useState<number>(0);
+
+  const customId = "1";
+  const notify = (message: string) =>
+    toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
   const queryParam = (
     query1: string,
@@ -66,7 +71,7 @@ export default function Index() {
     return queryParams;
   };
 
-  const { isLoading, data, error } = useQuery({
+  const { isLoading, data, error, refetch } = useQuery({
     queryKey: ["task", filteredData],
     queryFn: async () => {
       const currentDate = new Date()?.toISOString()?.split("T")[0];
@@ -74,6 +79,26 @@ export default function Index() {
     },
     staleTime: 60000,
   });
+
+  useEffect(() => {
+    if (error && error instanceof AxiosError) {
+      if (error.status === 404) {
+        setTaskValues([]);
+      } else {
+        if (error.response && error.response.data) {
+          const data = error.response.data as { message?: string };
+          notify(data.message || "An unexpected error occurred");
+        } else {
+          notify("Network error or no response from the server.");
+        }
+      }
+    } else {
+      if (error?.message === "task not found") {
+        setTaskValues([]);
+        console.log(error);
+      }
+    }
+  }, [error]);
 
   useEffect(() => {
     setTaskValues(data?.data?.data);
@@ -207,16 +232,11 @@ export default function Index() {
   const closePopup = () => {
     setTaskScreen(false);
     setTaskScreenData(null);
-    setTaskIndex(0);
   };
 
   const getTaskData = (item: TaskDataType1[]) => {
     setTaskScreenData(item);
     setTaskScreen(true);
-  };
-
-  const getIndexValue = (index: number) => {
-    setTaskIndex(index);
   };
   // End of popup functions
 
@@ -256,7 +276,7 @@ export default function Index() {
                 <Popup
                   data={taskScreenData}
                   close={closePopup}
-                  taskIndex={taskIndex}
+                  refetch={refetch}
                 />
               </motion.div>
             )}
@@ -437,12 +457,11 @@ export default function Index() {
               </Menu>
             </div>
             <div className="w-full flex flex-col items-center md:h-[500px] h-[800px] overflow-auto">
-              {tasksToDisplay.map((item: TaskDataType1, index: number) => (
+              {tasksToDisplay.map((item: TaskDataType1) => (
                 <div
                   key={item._id}
                   onClick={() => {
                     getTaskData(Array(item));
-                    getIndexValue(index);
                   }}
                   className={`${
                     darkMode
