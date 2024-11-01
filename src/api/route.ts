@@ -1,4 +1,5 @@
-export const base_url = "http://localhost:3000"; // update change to live url
+export const base_url =
+  import.meta.env.MODE === "development" ? "http://localhost:3000" : "";
 
 export const auth_reg = "/register";
 
@@ -13,3 +14,5 @@ export const refresh_auth = "/user/refresh_token";
 export const update_fcm_token = "/user/update_user_token";
 
 export const update_task = "/user/task";
+
+export const logout = "/logout";

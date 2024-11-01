@@ -97,17 +97,17 @@ export default function Login({ registerSwap }: RegisterProps) {
       Cookies.set("token1", data.userSession.auth_data.token.split(" ")[1], {
         expires: 1,
         secure: false,
-        sameSite: "Lax",
+        sameSite: import.meta.env.MODE === "production" ? "Strict" : "Lax",
       });
       Cookies.set("token2", data.userSession.auth_data.csrf, {
         expires: 1,
         secure: false,
-        sameSite: "Lax",
+        sameSite: import.meta.env.MODE === "production" ? "Strict" : "Lax",
       });
       Cookies.set("token3", data.userSession.auth_data.refreshToken.value, {
         expires: 7,
         secure: false,
-        sameSite: "Lax",
+        sameSite: import.meta.env.MODE === "production" ? "Strict" : "Lax",
       });
 
       if (
@@ -121,7 +121,6 @@ export default function Login({ registerSwap }: RegisterProps) {
       }
     },
     onError: (err: AxiosError) => {
-      console.error(err);
       if (err.status === 404) {
         notify("username or password invalid");
       } else if (err.status === 429) {

@@ -5,11 +5,10 @@ import {
   Todo,
   CreateTaskRequestBody,
   UpdateTaskRequestBody,
-  TaskDataType1,
   DeleteTaskQuery,
 } from "../utils/types/todo";
 import Cookies from "js-cookie";
-import { auth_glogin, base_url, task, update_task } from "./route";
+import { base_url, task, update_task, logout } from "./route";
 
 export const userRegister = async (url: string, data: RegisterBody) => {
   try {
@@ -217,11 +216,22 @@ export const DeleteTask = async (queryParams: DeleteTaskQuery[]) => {
   }
 };
 
-export const loginWithGoogle = async (queryParams: { username: string }) => {
+export const logOut = async () => {
+  const token1 = Cookies.get("token1");
+  const token2 = Cookies.get("token2");
+
   try {
-    const response = await axios.get(`${base_url}${auth_glogin}`, {
-      params: queryParams,
-    });
+    const response = await axios.post(
+      `${base_url}${logout}`,
+      {},
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token1}`,
+          "x-csrf-token": token2,
+        },
+      }
+    );
     return response;
   } catch (err) {
     console.log(err);

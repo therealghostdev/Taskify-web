@@ -1,7 +1,4 @@
-import {
-  useAuthContext,
-  useThemeContext,
-} from "../../utils/app_context/general";
+import { useThemeContext } from "../../utils/app_context/general";
 import PersonIcon from "@mui/icons-material/Person";
 import KeyIcon from "@mui/icons-material/Key";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
@@ -23,9 +20,12 @@ import { TaskDataType } from "../../utils/types/todo";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
+import { useMutation } from "../../../lib/tanstackQuery";
+import { logOut } from "../../api";
+import { AxiosError } from "axios";
+import LoadingSpinner3 from "../loading/loading3";
 
 export default function Index() {
-  const { authenticated, setAuthenticated } = useAuthContext();
   const { darkMode, toggleDarkMode } = useThemeContext();
   const [popup, setPopup] = useState<boolean>(false);
   const [singleInput, setSingleInput] = useState<boolean>(false);
@@ -40,6 +40,10 @@ export default function Index() {
   );
 
   const closePopup = () => setPopup(false);
+
+  const [apiCallType, setApiCallType] = useState<"logout" | "otherCall" | null>(
+    null
+  );
 
   const toggleTheme = () => {
     toggleDarkMode(!darkMode);
@@ -103,15 +107,39 @@ export default function Index() {
     setCamera(true);
   };
 
+  const { isPending, mutate } = useMutation({
+    mutationFn: () => logOut(),
+    onSuccess: () => {
+      if (apiCallType === "logout") {
+        notify("logout success");
+
+        const cookies = Cookies.get();
+
+        Object.keys(cookies).forEach((cookieName) => {
+          Cookies.remove(cookieName);
+        });
+
+        window.location.reload();
+      }
+    },
+    onError: (err: AxiosError) => {
+      if (err.status === 404) {
+        notify("User not found");
+      } else if (err.status === 429) {
+        notify("Too many login attempts, Try again in 15 minutes");
+      } else if (err.response && err.response.data) {
+        const data = err.response.data as { message?: string };
+
+        notify(data.message || "An unexpected error occurred");
+      } else {
+        notify("Network error or no response from the server.");
+      }
+    },
+  });
+
   const logout = () => {
-    const cookies = Cookies.get();
-
-    Object.keys(cookies).forEach((cookieName) => {
-      Cookies.remove(cookieName);
-    });
-
-    window.location.reload(); // temporary
-    notify("logout success");
+    setApiCallType("logout");
+    mutate();
   };
 
   useEffect(() => {
@@ -120,6 +148,7 @@ export default function Index() {
 
     setFilteredTask(filtered);
     setCompletedTasks(completed);
+    setApiCallType(null);
   }, []);
 
   return (
@@ -173,14 +202,10 @@ export default function Index() {
                   className="w-full h-full rounded-full"
                 />
               </div>
-              {authenticated ? (
-                <h1 className="text-2xl">{`${user.firstname} ${user.lastname}`}</h1>
-              ) : (
-                <h1 className="text-2xl">No name found</h1>
-              )}
-              <h2 className="text-lg">
-                @{authenticated ? user.username : "no username found"}
-              </h2>
+
+              <h1 className="text-2xl">{`${user.firstname} ${user.lastname}`}</h1>
+
+              <h2 className="text-lg">@{user.username}</h2>
             </div>
           ))}
         </div>
@@ -344,9 +369,14 @@ export default function Index() {
             onClick={() => logout()}
             className={`text-2xl flex justify-between text-[#FF4949] my-2`}
           >
-            <span>
+            <span className="flex items-center">
               <LogoutIcon className="mr-4" />
               Logout
+              {isPending && (
+                <span className="ml-2">
+                  <LoadingSpinner3 />
+                </span>
+              )}
             </span>
           </button>
         </div>
