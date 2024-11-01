@@ -189,7 +189,7 @@ export interface RegisterBody {
 
 export interface LoginBody {
   username: string;
-  password: string;
+  password?: string;
 }
 
 export interface CreateTaskRequestBody {

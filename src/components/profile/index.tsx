@@ -104,15 +104,13 @@ export default function Index() {
   };
 
   const logout = () => {
-    localStorage.removeItem("authenticated");
-    // setAuthenticated(false);
-
     const cookies = Cookies.get();
 
     Object.keys(cookies).forEach((cookieName) => {
       Cookies.remove(cookieName);
     });
 
+    window.location.reload(); // temporary
     notify("logout success");
   };
 

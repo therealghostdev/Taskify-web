@@ -9,7 +9,7 @@ import {
   DeleteTaskQuery,
 } from "../utils/types/todo";
 import Cookies from "js-cookie";
-import { base_url, task, update_task } from "./route";
+import { auth_glogin, base_url, task, update_task } from "./route";
 
 export const userRegister = async (url: string, data: RegisterBody) => {
   try {
@@ -178,9 +178,7 @@ export const createTask = async (data: Todo[]) => {
   }
 };
 
-const flattenDeleteTaskData = (
-  todos: DeleteTaskQuery[],
-): DeleteTaskQuery => {
+const flattenDeleteTaskData = (todos: DeleteTaskQuery[]): DeleteTaskQuery => {
   const todo = todos[0] || {};
 
   const flattenedData: DeleteTaskQuery = {
@@ -212,6 +210,18 @@ export const DeleteTask = async (queryParams: DeleteTaskQuery[]) => {
       },
     });
 
+    return response;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const loginWithGoogle = async (queryParams: { username: string }) => {
+  try {
+    const response = await axios.get(`${base_url}${auth_glogin}`, {
+      params: queryParams,
+    });
     return response;
   } catch (err) {
     console.log(err);
