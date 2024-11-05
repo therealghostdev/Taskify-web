@@ -28,7 +28,10 @@ import movieIcon from "../../assets/video-camera.svg";
 import homeIcon from "../../assets/home.svg";
 import addIcon from "../../assets/add.svg";
 import flag from "../../assets/flag.svg";
-import { formatDate } from "../../utils/reusable_functions/functions";
+import {
+  formatDate,
+  formatTime,
+} from "../../utils/reusable_functions/functions";
 import React, { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { DeleteTask } from "../../api";
@@ -97,7 +100,7 @@ export default function Popup(props: TaskScreenPropType) {
       description: item.description,
       completed: item.completed,
       createdAt: item.createdAt,
-      time: item.createdAt.toString(),
+      time: item.expected_completion_time.toString(),
       expected_date_of_completion: item.expected_completion_time.toString(),
     }));
     updateEditTodos(updatedTodos);
@@ -226,14 +229,14 @@ export default function Popup(props: TaskScreenPropType) {
                 </span>
 
                 <span className="inline-block w-2/4">
-                  <p className="text-lg">Task Time:</p>
+                  <p className="text-lg">Created:</p>
                 </span>
               </div>
 
               <div className="w-3/4 flex justify-end">
                 <Button
                   className="flex justify-between items-center"
-                  onClick={() => jumpToScreen("time", item)}
+                  onClick={() => jumpToScreen("calendar", item)}
                   style={{
                     backgroundColor: darkMode ? "#363636" : "#bdbdbd",
                     color: "#FFFFFF",
@@ -247,11 +250,36 @@ export default function Popup(props: TaskScreenPropType) {
             <div className="flex justify-between items-center w-full my-6">
               <div className="flex justify-between items-center w-1/4 mr-4">
                 <span className="inline-block w-2/4">
+                  <img src={timer} alt="time" />
+                </span>
+
+                <span className="inline-block w-2/4">
+                  <p className="text-lg">Expected Completion Time:</p>
+                </span>
+              </div>
+
+              <div className="w-3/4 flex justify-end">
+                <Button
+                  className="flex justify-between items-center"
+                  onClick={() => jumpToScreen("time", item)}
+                  style={{
+                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                    color: "#FFFFFF",
+                  }}
+                >
+                  <span>{formatTime(item.expected_completion_time)}</span>
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center w-full my-6">
+              <div className="flex justify-between items-center w-1/4 mr-4">
+                <span className="inline-block w-2/4">
                   <img src={tag} alt="category" />
                 </span>
 
                 <span className="inline-block w-2/4">
-                  <p className="text-lg">Task Category:</p>
+                  <p className="text-lg">Category:</p>
                 </span>
               </div>
 
@@ -280,7 +308,7 @@ export default function Popup(props: TaskScreenPropType) {
                 </span>
 
                 <span className="inline-block w-2/4">
-                  <p className="text-lg">Task Priority:</p>
+                  <p className="text-lg">Priority:</p>
                 </span>
               </div>
 

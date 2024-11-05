@@ -174,7 +174,7 @@ export default function AddCategory() {
         category: category,
       }));
       updateEditTodos(updatedCalendarTodos);
-      trackScreenFunc(editCategory !== "" ? "confirm" : "");
+      trackScreenFunc(editCategory !== "" ? "question" : "");
     } else {
       // Otherwise, update todos
       const updatedTodos = todos.map((item) => ({

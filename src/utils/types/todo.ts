@@ -10,6 +10,7 @@ export interface Todo {
   time: string;
   completed: boolean;
   createdAt?: string;
+  duration?: number;
 }
 export interface LoginProps {
   loginSwap: () => void;

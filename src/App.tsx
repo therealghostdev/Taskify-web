@@ -55,6 +55,8 @@ function App() {
             "priority",
             "category",
             "success",
+            "question",
+            "duration",
             "confirm",
           ].includes(trackScreen) && <AddTask />}
 

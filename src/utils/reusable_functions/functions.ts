@@ -55,6 +55,14 @@ export const formatDate = (date: string) => {
   }
 };
 
+export const formatTime = (date: string) => {
+  const inputDate = new Date(date).toISOString();
+  const timeParts = inputDate.split("T")[1].split(":");
+
+  const time = `${timeParts[0]}:${timeParts[1]}`;
+  return time;
+};
+
 export const queryParam = (
   query1: string,
   query2?: string

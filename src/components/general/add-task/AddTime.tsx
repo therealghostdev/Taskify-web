@@ -33,6 +33,14 @@ export default function AddTime() {
     editTodos.map((item) => {
       if (item.time !== "") {
         setEditTime(item.time);
+      } else {
+        if (item.expected_date_of_completion !== "") {
+          const timeParts = item.expected_date_of_completion
+            .split("T")[1]
+            .split(":");
+          const time = `${timeParts[0]}:${timeParts[1]}`;
+          setEditTime(time);
+        }
       }
     });
   };

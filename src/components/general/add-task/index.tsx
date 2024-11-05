@@ -7,7 +7,7 @@ import {
 } from "../../../utils/app_context/general";
 import AddTaskName from "./AddTaskName";
 import AddDate from "./AddDate";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import AddTime from "./AddTime";
 import AddPriority from "./AddPriority";
 import AddCategory from "./AddCategory";
@@ -20,6 +20,8 @@ import { toast } from "react-toastify";
 import { Todo } from "../../../utils/types/todo";
 import axios from "axios";
 import LoadingSpinner from "../../loading/loading1";
+import Question from "./question";
+import Duration from "./duration";
 
 export default function AddTask() {
   const { todos, updateTodos } = useTodoContext();
@@ -71,7 +73,9 @@ export default function AddTask() {
           item.priority > 0 &&
           item.description !== ""
         )
-          await updateTasks(queryParams(), data);
+          console.log(queryParams(), "is query");
+
+        await updateTasks(queryParams(), data);
       }
     }
 
@@ -116,8 +120,7 @@ export default function AddTask() {
   });
 
   const task_update = (data: Todo[]) => {
-    console.log(editTodos, "todo values");
-    
+    console.log(editTodos);
     mutate(data);
   };
 
@@ -177,6 +180,8 @@ export default function AddTask() {
     "time",
     "priority",
     "category",
+    "question",
+    "duration",
     "confirm",
     "success",
   ].includes(trackScreen) && !isPending ? (
@@ -201,6 +206,10 @@ export default function AddTask() {
             <AddPriority />
           ) : trackScreen === "category" ? (
             <AddCategory />
+          ) : trackScreen === "question" ? (
+            <Question />
+          ) : trackScreen === "duration" ? (
+            <Duration />
           ) : trackScreen === "confirm" ? (
             <Confirm
               request={() =>

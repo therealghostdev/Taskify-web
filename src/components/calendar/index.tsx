@@ -94,9 +94,10 @@ export default function Index() {
 
   const getTaskByCompleteStatus = () => {
     const filteredTask = values?.filter((item: TaskDataType1) => {
+      const expected_completion_time = new Date(item.expected_completion_time);
       return (
         item.completed === true &&
-        item.expected_completion_time ===
+        expected_completion_time.toLocaleDateString("en-GB") ===
           selectedDate.toLocaleDateString("en-GB").toString()
       );
     });
