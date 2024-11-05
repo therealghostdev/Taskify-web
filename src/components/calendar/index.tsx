@@ -1,9 +1,11 @@
-import { useThemeContext } from "../../utils/app_context/general";
+import {
+  useThemeContext,
+  useQueryContext,
+} from "../../utils/app_context/general";
 import Calendar from "react-calendar";
 import "../../styles/calendar.scss";
 import { useEffect, useState } from "react";
-import data from "../../utils/data/task_data.json";
-import { TaskDataType } from "../../utils/types/todo";
+import { TaskDataType1 } from "../../utils/types/todo";
 import groceryIcon from "../../assets/grocery.svg";
 import workIcon from "../../assets/briefcase.svg";
 import sportIcon from "../../assets/sport.svg";
@@ -22,15 +24,28 @@ import {
   useEditTodoContext,
   useTrackContext,
 } from "../../utils/app_context/general";
-import { getDefaultBgColor, formatDate } from "../../utils/reusable_functions/functions";
+import {
+  getDefaultBgColor,
+  formatDate,
+} from "../../utils/reusable_functions/functions";
+import { getAllTasks } from "../../api";
+import { queryParam } from "../../utils/reusable_functions/functions";
+import { useMutation } from "../../../lib/tanstackQuery";
+import axios from "../../../lib/axios";
+import { toast } from "react-toastify";
+import LoadingSpinner from "../loading/loading1";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [filteredData, setFilteredData] = useState<TaskDataType[] | null>(null);
+  const [filteredData, setFilteredData] = useState<TaskDataType1[] | null>(
+    null
+  );
   const { editTodos, updateEditTodos } = useEditTodoContext();
   const { trackScreenFunc } = useTrackContext();
   const [activeBtn, setActiveBtn] = useState<boolean>(false);
+  const [values, setValues] = useState<TaskDataType1[] | null>([]);
+  const { updateQuery } = useQueryContext();
 
   const handleDateChange = (value: any) => {
     if (value instanceof Date) {
@@ -38,28 +53,55 @@ export default function Index() {
     }
   };
 
-  const getTaskByDate = () => {
-    const filteredTasks = data.filter((item) => {
-      const completionDate = item.created_at;
+  const customId = "1";
+  const notify = (message: string) =>
+    toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
-      return (
-        completionDate === selectedDate.toLocaleDateString("en-GB").toString()
-      );
+  const { isPending, mutate } = useMutation({
+    mutationFn: (chosenDate: string) => {
+      return getAllTasks(queryParam(chosenDate));
+    },
+    onSuccess: (data) => {
+      setValues(data?.data?.data);
+      console.log(data);
+    },
+    onError: (err) => {
+      if (axios.isAxiosError(err) && err.response) {
+        const message = err.response.data?.message;
+        if (err.response.status === 404) {
+          setValues([]);
+        } else {
+          notify(message || "An error occurred");
+        }
+      } else {
+        notify("Something went wrong");
+      }
+    },
+  });
+
+  const getTaskByDate = () => {
+    const filteredTasks = values?.filter((item: TaskDataType1) => {
+      const itemCompletionDate = new Date(
+        item.expected_completion_time
+      ).toLocaleDateString("en-GB");
+      const selectedCompletionDate = selectedDate.toLocaleDateString("en-GB");
+
+      return itemCompletionDate === selectedCompletionDate;
     });
-    setFilteredData(filteredTasks);
+    setFilteredData(filteredTasks || null);
     setActiveBtn(false);
   };
 
   const getTaskByCompleteStatus = () => {
-    const filteredTask = data.filter((item) => {
+    const filteredTask = values?.filter((item: TaskDataType1) => {
       return (
         item.completed === true &&
-        item.completion_date ===
+        item.expected_completion_time ===
           selectedDate.toLocaleDateString("en-GB").toString()
       );
     });
 
-    setFilteredData(filteredTask);
+    setFilteredData(filteredTask || null);
     setActiveBtn(true);
   };
 
@@ -106,25 +148,40 @@ export default function Index() {
     return icon;
   };
 
-  const getTaskData = (item: TaskDataType) => {
-    const updatedTodos = editTodos.map((content) => ({
-      ...content,
-      id: item.id,
-      task: item.task_name,
-      task_priority: item.task_priority,
-      category: item.task_category,
-      task_description: item.task_title,
-      time: item.completion_time,
-      expected_date_of_completion: item.completion_date,
-    }));
-    updateEditTodos(updatedTodos);
+  const getTaskData = (item: TaskDataType1) => {
+    const updatedTodos = editTodos.map((content) => {
+      return {
+        ...content,
+        id: item._id,
+        name: item.name,
+        priority: item.priority,
+        category: item.category,
+        description: item.description,
+        completed: item.completed,
+        createdAt: item.createdAt,
+        time: item.createdAt.toString(),
+        expected_date_of_completion: item.expected_completion_time.toString(),
+      };
+    });
 
+    updateEditTodos(updatedTodos);
+    updateQuery(updatedTodos);
     trackScreenFunc("name");
   };
 
   useEffect(() => {
+    if (selectedDate) {
+      const localDateString = `${selectedDate.getFullYear()}-${String(
+        selectedDate.getMonth() + 1
+      ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
+
+      mutate(localDateString);
+    }
+  }, [selectedDate, mutate]);
+
+  useEffect(() => {
     getTaskByDate();
-  }, [selectedDate]);
+  }, [values]);
 
   return (
     <div className={`w-full h-auto flex flex-col gap-y-6 text-[#8687E7]`}>
@@ -164,11 +221,11 @@ export default function Index() {
           </button>
         </div>
 
-        {filteredData && (
+        {!isPending && filteredData && filteredData.length > 0 && (
           <div className="w-full flex flex-col items-center md:h-[500px] h-[800px] overflow-auto my-8">
             {filteredData.map((item) => (
               <div
-                key={item.id}
+                key={item.name}
                 onClick={() => getTaskData(item)}
                 className={`${
                   darkMode
@@ -180,29 +237,29 @@ export default function Index() {
                   <input type="radio" disabled />
                 </div>
                 <div className="w-2/4 flex flex-col text-wrap">
-                  <span className="my-2">{item.task_name}</span>
+                  <span className="my-2">{item.name}</span>
                   <span
                     className={`my-2 ${
                       darkMode ? "text-[#AFAFAF]" : "text-[#808080]"
                     }`}
                   >
-                    Created: {formatDate(item.created_at)}
+                    Created: {formatDate(item.createdAt)}
                   </span>
                 </div>
                 <div className="w-2/4 flex justify-center items-baseline">
                   <div className={`w-full flex items-baseline justify-center`}>
                     <div
                       className={`flex rounded-md items-center justify-center px-4 py-4 mx-4 ${getDefaultBgColor(
-                        item.task_category
+                        item.category
                       )}`}
                     >
                       <div className="flex flex-wrap">
                         <img
-                          src={getIconRender(item.task_category)}
+                          src={getIconRender(item.category)}
                           alt="category-icon"
                           className="mx-2"
                         />
-                        {item.task_category}
+                        {item.category}
                       </div>
                     </div>
 
@@ -212,7 +269,7 @@ export default function Index() {
                         alt="priority-icon"
                         className={`${darkMode ? "" : "filter-invert"}`}
                       />
-                      <span>{item.task_priority}</span>
+                      <span>{item.priority}</span>
                     </div>
                   </div>
                 </div>
@@ -221,7 +278,7 @@ export default function Index() {
           </div>
         )}
 
-        {filteredData && filteredData?.length <= 0 && (
+        {!isPending && (!filteredData || filteredData.length === 0) && (
           <div className="px-4 py-6 flex flex-col justify-center items-center w-full md:h-[400px]">
             <div className="w-full flex flex-col justify-center items-center">
               <img
@@ -239,6 +296,12 @@ export default function Index() {
                 No Task to display
               </h1>
             </div>
+          </div>
+        )}
+
+        {isPending && (
+          <div className="w-full lg:h-[200px] md:h-[500px] h-[400px] my-8 flex flex-col justify-center items-center">
+            <LoadingSpinner />
           </div>
         )}
       </div>

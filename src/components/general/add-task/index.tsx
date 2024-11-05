@@ -110,11 +110,14 @@ export default function AddTask() {
         notify(message);
       } else {
         notify("Something went wrong");
+        console.log(err);
       }
     },
   });
 
   const task_update = (data: Todo[]) => {
+    console.log(editTodos, "todo values");
+    
     mutate(data);
   };
 

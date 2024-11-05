@@ -54,3 +54,18 @@ export const formatDate = (date: string) => {
     return `${day}/${month}/${year}`;
   }
 };
+
+export const queryParam = (
+  query1: string,
+  query2?: string
+): Record<string, string> => {
+  const queryParams: Record<string, string> = {
+    filter_by_date: query1,
+  };
+
+  if (query2) {
+    queryParams.status = query2;
+  }
+
+  return queryParams;
+};

@@ -33,6 +33,7 @@ import { useQuery } from "../../../lib/tanstackQuery";
 import LoadingSpinner from "../loading/loading1";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
+import { queryParam } from "../../utils/reusable_functions/functions";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
@@ -56,26 +57,15 @@ export default function Index() {
   const notify = (message: string) =>
     toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
-  const queryParam = (
-    query1: string,
-    query2?: string
-  ): Record<string, string> => {
-    const queryParams: Record<string, string> = {
-      filter_by_date: query1,
-    };
-
-    if (query2) {
-      queryParams.status = query2;
-    }
-
-    return queryParams;
-  };
-
   const { isLoading, data, error, refetch, isFetching } = useQuery({
     queryKey: ["task"],
     queryFn: async () => {
-      const currentDate = new Date()?.toISOString()?.split("T")[0];
-      return await getAllTasks(queryParam(currentDate));
+      const currentDate = new Date();
+      const localDateString = `${currentDate.getFullYear()}-${String(
+        currentDate.getMonth() + 1
+      ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
+
+      return await getAllTasks(queryParam(localDateString));
     },
     staleTime: 60000,
   });
