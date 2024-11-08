@@ -2,6 +2,7 @@ import {
   DeleteTaskQuery,
   TaskDataType1,
   TaskScreenPropType,
+  Todo,
 } from "../../utils/types/todo";
 import {
   useEditTodoContext,
@@ -32,19 +33,23 @@ import {
   formatDate,
   formatTime,
 } from "../../utils/reusable_functions/functions";
-import React, { useEffect, useRef } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { DeleteTask } from "../../api";
+import { DeleteTask, updateTasks } from "../../api";
 import { useMutation, useQueryClient } from "../../../lib/tanstackQuery";
 import { AxiosError } from "axios";
 import LoadingSpinner2 from "../loading/loading2";
+import Timer from "../../assets/timer.svg";
 
 export default function Popup(props: TaskScreenPropType) {
   const { editTodos, updateEditTodos } = useEditTodoContext();
   const { darkMode } = useThemeContext();
   const { trackScreenFunc } = useTrackContext();
   const popupRef = useRef<HTMLSelectElement | null>(null);
-  const { query, updateQuery } = useQueryContext();
+  const { updateQuery } = useQueryContext();
+  const [isRoutineBtn, setIsRoutineBtn] = useState<boolean>(false);
+  const [recurrence, setRecurrence] = useState<string>("");
+  const [routine_error, setRoutine_error] = useState<string>("");
 
   const getIconRender = (item: string) => {
     let icon;
@@ -109,10 +114,15 @@ export default function Popup(props: TaskScreenPropType) {
     props.close();
   };
 
+  const makeTaskRoutine = () => {
+    setIsRoutineBtn(true);
+  };
+
   const jumpToScreen = (item: string, item2: TaskDataType1) => {
     editTask(item2);
     trackScreenFunc(item);
     props.close();
+    console.log(item2);
   };
 
   useEffect(() => {
@@ -129,39 +139,59 @@ export default function Popup(props: TaskScreenPropType) {
     };
   }, []);
 
-  const queryParams = (): DeleteTaskQuery[] => {
-    if (props.data) {
-      console.log("if block ran");
-
-      return props.data.map((item) => {
-        return {
-          name: item.name,
-          priority: item.priority,
-          category: item.category,
-          description: item.description,
-          completed: item.completed,
-          createdAt: item.createdAt,
-          expected_completion_time: item.expected_completion_time.toString(),
-        };
-      });
-    } else {
-      console.log("else block ran");
-
-      return [];
+  const handleDelete = () => {
+    if (!props.data || props.data.length === 0) {
+      notify("No task data available for deletion.");
+      return;
     }
+
+    // Create delete params directly
+    const deleteParams = props.data.map((item) => ({
+      name: item.name,
+      priority: item.priority,
+      category: item.category,
+      description: item.description,
+      completed: item.completed,
+      createdAt: item.createdAt,
+      expected_completion_time: item.expected_completion_time.toString(),
+    }));
+
+    mutate({
+      isDelete: true,
+      data: deleteParams,
+    });
   };
 
-  const handleDelete = () => {
-    if (query.length > 0) {
-      mutate(queryParams());
+  const requestTypehelper = async (
+    isDelete: boolean,
+    deleteParams?: DeleteTaskQuery[],
+    updateParams?: Todo[],
+    body?: Todo[]
+  ) => {
+    if (isDelete && deleteParams) {
+      return DeleteTask(deleteParams);
+    } else if (!isDelete && updateParams && body) {
+      return updateTasks(updateParams, body);
     } else {
-      notify("No task data available for deletion.");
+      notify("Empty values provided");
     }
   };
 
   const queryClient = useQueryClient();
-  const { isPending, mutate } = useMutation({
-    mutationFn: (params: DeleteTaskQuery[]) => DeleteTask(params),
+  const { mutate, isPending } = useMutation({
+    mutationFn: (payload: {
+      isDelete: boolean;
+      data: DeleteTaskQuery[] | Todo[];
+      body?: Todo[];
+    }) => {
+      const { isDelete, data, body } = payload;
+      return requestTypehelper(
+        isDelete,
+        isDelete ? (data as DeleteTaskQuery[]) : undefined,
+        !isDelete ? (data as Todo[]) : undefined,
+        !isDelete ? (body as Todo[]) : undefined
+      );
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["task"] });
       props.close();
@@ -171,19 +201,88 @@ export default function Popup(props: TaskScreenPropType) {
       }
     },
     onError: (err: AxiosError) => {
-      if (err.response && err.response.data) {
-        const data = err.response.data as { message?: string };
-        notify(data.message || "An unexpected error occurred");
-      } else {
-        notify("Network error or no response from the server.");
-      }
+      const data = err.response?.data as { message?: string };
+      notify(data?.message || "An unexpected error occurred");
     },
   });
+
+  const handleSelectInput = (e: ChangeEvent<HTMLSelectElement>) => {
+    setRecurrence(e.target.value);
+  };
+
+  const handleAbortBtnClick = () => {
+    setIsRoutineBtn(false);
+    setRecurrence("");
+  };
+
+  const convertTaskToTodo = (task: TaskDataType1): Todo => {
+    const [date, time] = task.expected_completion_time.split("T");
+    const formattedTime = time.slice(0, 5);
+
+    return {
+      name: task.name,
+      description: task.description,
+      priority: task.priority,
+      category: task.category,
+      completed: task.completed,
+      expected_date_of_completion: new Date(date).toLocaleDateString("en-GB"),
+      time: formattedTime,
+    };
+  };
+
+  const handleContinueBtnClick = (items: TaskDataType1[]) => {
+    if (recurrence === "" || !isRoutineBtn) {
+      setRoutine_error("Please choose a recurrence option");
+      return;
+    }
+
+    const todos = items.map(convertTaskToTodo);
+
+    // updated todos with routine info
+    const updatedTodos = todos.map((item) => ({
+      ...item,
+      isRoutine: isRoutineBtn,
+      recurrence: recurrence,
+    }));
+
+    // query params values
+    const queryParams = items.map((item) => {
+      const timeParts = item.expected_completion_time.split("T")[1].split(":");
+      const time = `${timeParts[0]}:${timeParts[1]}`;
+
+      const formattedDate = new Date(
+        item.expected_completion_time
+      ).toLocaleDateString("en-GB");
+
+      return {
+        name: item.name,
+        description: item.description,
+        category: item.category,
+        priority: item.priority,
+        expected_date_of_completion: formattedDate,
+        completed: item.completed,
+        createdAt: item.createdAt,
+        time: time,
+      };
+    });
+
+    // Update states and make API call
+    Promise.all([updateEditTodos(updatedTodos), updateQuery(todos)]).then(
+      () => {
+        mutate({
+          isDelete: false,
+          data: queryParams,
+          body: updatedTodos,
+        });
+      }
+    );
+  };
 
   return (
     <section
       ref={popupRef}
-      className="flex flex-col justify-center items-center rounded-lg lg:w-2/4 md:w-3/4 w-[98%] h-full overflow-auto px-8 py-4"
+      className="flex flex-col justify-center items-center rounded-lg lg:w-2/4 md:w-3/4 w-[98%] 
+       h-full overflow-auto px-8 py-4"
     >
       <section className="w-full flex justify-between">
         <div>
@@ -236,13 +335,37 @@ export default function Popup(props: TaskScreenPropType) {
               <div className="w-3/4 flex justify-end">
                 <Button
                   className="flex justify-between items-center"
-                  onClick={() => jumpToScreen("calendar", item)}
                   style={{
                     backgroundColor: darkMode ? "#363636" : "#bdbdbd",
                     color: "#FFFFFF",
                   }}
                 >
                   <span>{formatDate(item.createdAt)}</span>
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center w-full my-6">
+              <div className="flex justify-between items-center w-1/4 mr-4">
+                <span className="inline-block w-2/4">
+                  <img src={timer} alt="time" />
+                </span>
+
+                <span className="inline-block w-2/4">
+                  <p className="text-lg">Expected Completion Date:</p>
+                </span>
+              </div>
+
+              <div className="w-3/4 flex justify-end">
+                <Button
+                  className="flex justify-between items-center"
+                  onClick={() => jumpToScreen("time", item)}
+                  style={{
+                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                    color: "#FFFFFF",
+                  }}
+                >
+                  <span>{formatDate(item.expected_completion_time)}</span>
                 </Button>
               </div>
             </div>
@@ -330,7 +453,7 @@ export default function Popup(props: TaskScreenPropType) {
               </div>
             </div>
 
-            <div>
+            <div className="flex justify-between items-center w-full my-6">
               <Button
                 onClick={handleDelete}
                 className="flex justify-between items-center"
@@ -341,6 +464,28 @@ export default function Popup(props: TaskScreenPropType) {
               >
                 <Delete className="text-[#FF4949]" />
                 <span>Delete Task</span>
+
+                {isPending && <LoadingSpinner2 />}
+              </Button>
+
+              <Button
+                onClick={makeTaskRoutine}
+                className="flex justify-between items-center"
+                style={{
+                  backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                  color: "green",
+                }}
+              >
+                <img
+                  src={Timer}
+                  alt="timer"
+                  className={`${darkMode ? "" : "filter-invert"} mr-2`}
+                />
+                <span>
+                  {item.isRoutine
+                    ? "Remove Task as Routine"
+                    : "Make Task A Routine"}
+                </span>
 
                 {isPending && <LoadingSpinner2 />}
               </Button>
@@ -359,6 +504,74 @@ export default function Popup(props: TaskScreenPropType) {
                 Edit Task
               </Button>
             </div>
+
+            {isRoutineBtn && (
+              <div
+                className={`flex flex-col justify-center items-center gap-y-3 h-2/4 lg:w-2/4 w-full fixed top-[20%] lg:left-[25%] 
+            left-[2%]
+            ${darkMode ? "bg-[#000000fd]" : "bg-[#999999fd]"}`}
+              >
+                <h1
+                  className={`${
+                    darkMode ? "text-white" : "text-black"
+                  } text-2xl mb-2`}
+                >
+                  Set Routine Occurence
+                </h1>
+                <select
+                  name="recurrence"
+                  id=""
+                  onChange={handleSelectInput}
+                  className={`py-3 px-3 rounded-md outline-none border-none w-3/4 ${
+                    darkMode
+                      ? "bg-[#363636] text-white"
+                      : "bg-[#bdbdbd] text-black"
+                  } ${routine_error !== "" ? "border-red-500" : ""}`}
+                >
+                  <option value="">Select an occurence</option>
+                  <option value="daliy">daily</option>
+                  <option value="weekly">weekly</option>
+                  <option value="monthly">monthly</option>
+                </select>
+
+                {routine_error !== "" && (
+                  <small className="text-red-500 text-sm my-2">
+                    {routine_error}
+                  </small>
+                )}
+              </div>
+            )}
+
+            {isRoutineBtn && recurrence !== "" && (
+              <div
+                className={`flex flex-col justify-center items-center gap-y-3 h-2/4 lg:w-2/4 w-full fixed top-[20%] lg:left-[25%] 
+            left-[2%]
+            ${darkMode ? "bg-[#000000fd]" : "bg-[#999999fd]"}`}
+              >
+                <h1
+                  className={`${
+                    darkMode ? "text-white" : "text-black"
+                  } text-2xl mb-2`}
+                >
+                  Confirm This action
+                </h1>
+                <div className="flex w-full gap-x-10 my-2">
+                  <button
+                    onClick={handleAbortBtnClick}
+                    className="z-10 cursor-pointer bg-[#8687E7] py-6 px-4 w-2/4 h-2/4 text-white flex justify-center items-center"
+                  >
+                    Abort
+                  </button>
+
+                  <button
+                    onClick={() => handleContinueBtnClick(Array(item))}
+                    className="z-10 cursor-pointer bg-[#8687E7] py-6 px-4 w-2/4 h-2/4 text-white flex justify-center items-center"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            )}
           </React.Fragment>
         ))}
       </section>

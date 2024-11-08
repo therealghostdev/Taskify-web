@@ -62,8 +62,7 @@ export default function Index() {
       return getAllTasks(queryParam(chosenDate));
     },
     onSuccess: (data) => {
-      setValues(data?.data?.data);
-      console.log(data);
+      setValues(data?.data?.data)
     },
     onError: (err) => {
       if (axios.isAxiosError(err) && err.response) {
@@ -160,7 +159,7 @@ export default function Index() {
         description: item.description,
         completed: item.completed,
         createdAt: item.createdAt,
-        time: item.createdAt.toString(),
+        time: item.expected_completion_time.toString(),
         expected_date_of_completion: item.expected_completion_time.toString(),
       };
     });

@@ -7,6 +7,7 @@ import {
   useEditTodoContext,
 } from "../../../utils/app_context/general";
 import { ConfirmPropTypes } from "../../../utils/types/todo";
+import { useEffect } from "react";
 
 export default function Confirm(props: ConfirmPropTypes) {
   const { darkMode } = useThemeContext();
@@ -41,10 +42,18 @@ export default function Confirm(props: ConfirmPropTypes) {
       time: "",
       completed: false,
       createdAt: "",
+      duration: 0,
+      completedAt: "",
+      isRoutine: false,
+      recurrence: "",
     }));
 
     updateEditTodos(reset2);
   };
+
+  useEffect(() => {
+    console.log(todos, "todo values confirm");
+  }, []);
   return (
     <motion.div
       initial={{ opacity: 0 }}

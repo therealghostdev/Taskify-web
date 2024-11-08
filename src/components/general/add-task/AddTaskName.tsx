@@ -35,8 +35,6 @@ export default function AddTaskName() {
 
   const [error, setError] = useState("");
 
-  console.log(editTodos);
-
   // checks if there's date in calendar page state.
   const getTaskDetailsformTodoState = () => {
     editTodos.map((item) => {

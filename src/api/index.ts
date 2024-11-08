@@ -88,6 +88,10 @@ const flattenUpdateTaskData = (
     expected_completion_time: utcDateTime,
     completed: todo.completed,
     createdAt: todo.createdAt || "",
+    isRoutine: todo.isRoutine,
+    recurrence: todo.recurrence,
+    duration: todo.duration,
+    completedAt: todo.completedAt,
   };
 
   if (omitCreatedAt) {

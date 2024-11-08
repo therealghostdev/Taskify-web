@@ -34,7 +34,6 @@ const AddDate = () => {
         const extractedDate = item.expected_date_of_completion;
         const extractedTime = item.expected_date_of_completion.split("T")[1];
         item.time = extractedTime;
-        
 
         const dateObject = new Date(extractedDate);
 

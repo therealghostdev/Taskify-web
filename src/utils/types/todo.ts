@@ -11,6 +11,9 @@ export interface Todo {
   completed: boolean;
   createdAt?: string;
   duration?: number;
+  completedAt?: string;
+  isRoutine?: boolean;
+  recurrence?: string;
 }
 export interface LoginProps {
   loginSwap: () => void;
@@ -209,6 +212,10 @@ export interface UpdateTaskRequestBody {
   expected_completion_time: string;
   completed: boolean;
   createdAt?: string;
+  isRoutine?: boolean;
+  completedAt?: string;
+  recurrence?: string;
+  duration?: number;
 }
 
 export interface ConfirmPropTypes {

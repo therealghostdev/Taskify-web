@@ -61,42 +61,40 @@ export default function AddTask() {
   };
 
   const validateReqBody = async (data: Todo[]): Promise<unknown> => {
-    if (editTodos.length > 0) {
-      for (const item of editTodos) {
-        if (
-          item.name !== "" &&
-          item.category !== "" &&
-          item.createdAt !== "" &&
-          item.priority > 0 &&
-          item.expected_date_of_completion !== "" &&
-          item.time !== "" &&
-          item.priority > 0 &&
-          item.description !== ""
-        )
-          console.log(queryParams(), "is query");
+    const validEditTodos = editTodos.filter(
+      (item) =>
+        item.name !== "" &&
+        item.category !== "" &&
+        item.createdAt !== "" &&
+        item.priority > 0 &&
+        item.expected_date_of_completion !== "" &&
+        item.time !== "" &&
+        item.description !== ""
+    );
 
-        await updateTasks(queryParams(), data);
-      }
+    const validTodos = todos.filter(
+      (item) =>
+        item.name !== "" &&
+        item.category !== "" &&
+        item.priority > 0 &&
+        item.expected_date_of_completion !== "" &&
+        item.time !== "" &&
+        item.description !== ""
+    );
+
+    if (validEditTodos.length > 0) {
+      await updateTasks(queryParams(), data);
     }
 
-    if (todos.length > 0) {
-      for (const item of todos) {
-        if (
-          item.name !== "" &&
-          item.category !== "" &&
-          item.priority > 0 &&
-          item.expected_date_of_completion !== "" &&
-          item.time !== "" &&
-          item.description !== ""
-        ) {
-          await createTask(todos);
-        }
-      }
+    if (validTodos.length > 0) {
+      console.log(validTodos, "is todo");
+      await createTask(validTodos);
     }
 
-    if (editTodos.length === 0 && todos.length === 0) {
+    if (validEditTodos.length === 0 && validTodos.length === 0) {
       notify("No data to update");
     }
+
     return Promise.resolve();
   };
 
@@ -213,7 +211,9 @@ export default function AddTask() {
           ) : trackScreen === "confirm" ? (
             <Confirm
               request={() =>
-                editTodos.length > 0 ? task_update(editTodos) : ""
+                editTodos.length > 0
+                  ? task_update(editTodos)
+                  : createTask(todos)
               }
             />
           ) : trackScreen === "success" ? (

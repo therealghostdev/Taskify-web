@@ -247,7 +247,7 @@ export default function Index() {
           <AnimatePresence>
             {taskScreen && (
               <motion.div
-                className="flex justify-center items-center w-full"
+                className="flex justify-center items-center w-full lg:h-full overflow-auto flex-col"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
