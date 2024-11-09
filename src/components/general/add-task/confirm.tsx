@@ -52,7 +52,7 @@ export default function Confirm(props: ConfirmPropTypes) {
   };
 
   useEffect(() => {
-    console.log(todos, "todo values confirm");
+    console.log(editTodos, "editTodo values confirm");
   }, []);
   return (
     <motion.div

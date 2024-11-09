@@ -58,6 +58,8 @@ function App() {
             "question",
             "duration",
             "confirm",
+            "completedAt",
+            "completedTime"
           ].includes(trackScreen) && <AddTask />}
 
         {authenticated && <Apptool />}

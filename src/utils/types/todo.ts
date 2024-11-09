@@ -14,6 +14,7 @@ export interface Todo {
   completedAt?: string;
   isRoutine?: boolean;
   recurrence?: string;
+  completedTime?: string;
 }
 export interface LoginProps {
   loginSwap: () => void;

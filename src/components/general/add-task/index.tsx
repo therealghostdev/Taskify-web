@@ -182,6 +182,8 @@ export default function AddTask() {
     "duration",
     "confirm",
     "success",
+    "completedAt",
+    "completedTime",
   ].includes(trackScreen) && !isPending ? (
     <div
       className={`${
@@ -196,9 +198,9 @@ export default function AddTask() {
         <AnimatePresence>
           {trackScreen === "name" ? (
             <AddTaskName />
-          ) : trackScreen === "calendar" ? (
+          ) : trackScreen === "calendar" || trackScreen === "completedAt" ? (
             <AddDate />
-          ) : trackScreen === "time" ? (
+          ) : trackScreen === "time" || trackScreen === "completedTime" ? (
             <AddTime />
           ) : trackScreen === "priority" ? (
             <AddPriority />

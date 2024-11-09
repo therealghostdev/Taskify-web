@@ -11,11 +11,15 @@ import { motion } from "framer-motion";
 
 const AddDate = () => {
   const { darkMode } = useThemeContext();
-  const { trackScreenFunc } = useTrackContext();
+  const { trackScreen, trackScreenFunc } = useTrackContext();
   const { todos, updateTodos } = useTodoContext();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { editTodos, updateEditTodos } = useEditTodoContext();
   const [editTodoState, setEditTodoState] = useState<Date | null>(null);
+
+  // state variables for when user tries to mark task as completed
+  const [duration, setDuration] = useState<number | undefined>(undefined);
+  const [completed, setCompleted] = useState<boolean>(false);
 
   // Calculate the last date of the current year
   const currentYear = new Date().getFullYear();
@@ -30,26 +34,57 @@ const AddDate = () => {
   // checks for edit task details
   const updatedSelectedDate = () => {
     editTodos.forEach((item) => {
-      if (item.expected_date_of_completion !== "") {
-        const extractedDate = item.expected_date_of_completion;
-        const extractedTime = item.expected_date_of_completion.split("T")[1];
-        item.time = extractedTime;
+      if (item.expected_date_of_completion || item.completedAt) {
+        let expectedDate, completedDate;
 
-        const dateObject = new Date(extractedDate);
+        // Handle expected_date_of_completion with both formats
+        if (item.expected_date_of_completion) {
+          if (item.expected_date_of_completion.includes("T")) {
+            expectedDate = new Date(item.expected_date_of_completion);
+          } else {
+            const [day, month, year] = item.expected_date_of_completion
+              .split("/")
+              .map(Number);
+            expectedDate = new Date(year, month - 1, day); // month is 0-based
+          }
+        }
 
-        const day = dateObject.getDate();
-        const month = dateObject.getMonth();
-        const year = dateObject.getFullYear();
+        // Handle completedAt with ISO format
+        if (item.completedAt) {
+          completedDate = new Date(item.completedAt);
+        }
 
-        const date = new Date(year, month, day);
+        // Determine the earliest date if both dates exist
+        let finalDate;
+        if (expectedDate && completedDate) {
+          finalDate =
+            completedDate < expectedDate ? completedDate : expectedDate;
+        } else {
+          finalDate = expectedDate || completedDate; // Use whichever is defined
+        }
 
-        setSelectedDate(date);
+        if (finalDate) {
+          console.log("Setting selected date to:", finalDate.toISOString());
+          const localDate = new Date(
+            finalDate.getFullYear(),
+            finalDate.getMonth(),
+            finalDate.getDate()
+          );
+          setSelectedDate(localDate);
+        }
       }
     });
   };
 
   const handleSave = () => {
-    if (editTodoState && editTodoState instanceof Date) {
+    if (duration && duration > 0 && completed) {
+      const updatedTodo = editTodos.map((item) => ({
+        ...item,
+        completedAt: selectedDate.toLocaleDateString("en-GB"),
+      }));
+      updateEditTodos(updatedTodo);
+      trackScreenFunc("completedTime");
+    } else if (editTodoState && editTodoState instanceof Date) {
       const updatedTodo = editTodos.map((item) => ({
         ...item,
         expected_date_of_completion: editTodoState.toLocaleDateString("en-GB"),
@@ -73,6 +108,18 @@ const AddDate = () => {
 
   useEffect(() => {
     updatedSelectedDate();
+
+    editTodos.map((item) => {
+      if (
+        item.duration &&
+        item.duration > 0 &&
+        item.completed &&
+        trackScreen === "completedAt"
+      ) {
+        setDuration(item.duration);
+        setCompleted(item.completed);
+      }
+    });
   }, []);
 
   useEffect(() => {

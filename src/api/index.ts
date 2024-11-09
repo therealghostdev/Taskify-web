@@ -77,8 +77,16 @@ const flattenUpdateTaskData = (
 
   const time = todo.time;
   const date = todo.expected_date_of_completion;
+  console.log(date, time, "date time");
 
   const utcDateTime = time && date ? combineDateTime(date, time) : "";
+
+  let completedAt;
+  if (todo.completedAt && todo.completedTime) {
+    completedAt = combineDateTime(todo.completedAt, todo.completedTime);
+  } else {
+    completedAt = undefined;
+  }
 
   const flattenedData: UpdateTaskRequestBody = {
     name: todo.name || "",
@@ -89,14 +97,16 @@ const flattenUpdateTaskData = (
     completed: todo.completed,
     createdAt: todo.createdAt || "",
     isRoutine: todo.isRoutine,
-    recurrence: todo.recurrence,
+    recurrence: todo.recurrence === "" ? undefined : todo.recurrence,
     duration: todo.duration,
-    completedAt: todo.completedAt,
+    completedAt: completedAt,
   };
 
   if (omitCreatedAt) {
     delete flattenedData.createdAt;
   }
+
+  console.log(flattenedData, "flattened");
 
   return flattenedData;
 };

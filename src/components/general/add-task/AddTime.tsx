@@ -15,10 +15,14 @@ export default function AddTime() {
   const [selectedTime, setSelectedTime] = useState<Moment | null>(moment());
   const { darkMode } = useThemeContext();
   const { todos, updateTodos } = useTodoContext();
-  const { trackScreenFunc } = useTrackContext();
+  const { trackScreen, trackScreenFunc } = useTrackContext();
   const [time, setTime] = useState<string>("");
   const { editTodos, updateEditTodos } = useEditTodoContext();
   const [editTime, setEditTime] = useState<string>("");
+
+  // state variables for when user tries to mark task as completed
+  const [duration, setDuration] = useState<number | undefined>(undefined);
+  const [completed, setCompleted] = useState<boolean>(false);
 
   const handleTimeChange = (time: Moment | string) => {
     if (moment.isMoment(time)) {
@@ -30,17 +34,32 @@ export default function AddTime() {
 
   // checks if edit time state isn't empty
   const getEditTimeValue = () => {
-    editTodos.map((item) => {
-      if (item.time !== "") {
-        setEditTime(item.time);
-      } else {
-        if (item.expected_date_of_completion !== "") {
-          const timeParts = item.expected_date_of_completion
-            .split("T")[1]
-            .split(":");
-          const time = `${timeParts[0]}:${timeParts[1]}`;
-          setEditTime(time);
+    editTodos.forEach((item) => {
+      // For completion time update
+      if (trackScreen === "completedTime") {
+        if (item.time && item.time !== "") {
+          const extractedTime = item.time.split("T")[1];
+          setSelectedTime(moment(extractedTime, "HH:mm"));
+          setTime(moment(extractedTime, "HH:mm").toString());
+          setEditTime(moment(extractedTime, "HH:mm").toString());
+          console.log("it ran1");
+        } else {
+          console.log("it ran2");
+          setSelectedTime(moment());
         }
+        return;
+      }
+
+      // For regular time edit
+      if (item.time !== "") {
+        const extractedTime = item.time.split("T")[1];
+        setSelectedTime(moment(extractedTime, "HH:mm"));
+        setTime(extractedTime);
+        setEditTime(extractedTime);
+      } else {
+        setSelectedTime(moment());
+        setEditTime(moment().toString())
+        setTime(moment().toString())
       }
     });
   };
@@ -49,11 +68,28 @@ export default function AddTime() {
   const value = selectedTime ? selectedTime : moment();
 
   const handleSave = () => {
-    if (editTime && editTime !== "") {
+    if (duration && duration > 0 && completed) {
       const updatedTodo = editTodos.map((item) => ({
         ...item,
-        time: selectedTime ? selectedTime?.format("HH:mm") : "",
+        completedTime: selectedTime ? selectedTime?.format("HH:mm") : editTime,
       }));
+      updateEditTodos(updatedTodo);
+      console.log(
+        editTodos.map((item) => item.time),
+        "is time"
+      );
+      trackScreenFunc("confirm");
+    } else if (editTime && editTime !== "") {
+      const updatedTodo = editTodos.map((item) => ({
+        ...item,
+        time: editTime,
+      }));
+      console.log(
+        editTodos.map((item) => item.time),
+        "is time2"
+      );
+      console.log(value, "is value");
+
       updateEditTodos(updatedTodo);
       trackScreenFunc("priority");
     } else {
@@ -73,6 +109,19 @@ export default function AddTime() {
 
   useEffect(() => {
     getEditTimeValue();
+    console.log(editTodos, "1");
+
+    editTodos.map((item) => {
+      if (
+        item.duration &&
+        item.duration > 0 &&
+        item.completed &&
+        trackScreen === "completedTime"
+      ) {
+        setDuration(item.duration);
+        setCompleted(item.completed);
+      }
+    });
   }, []);
 
   // updates time value
