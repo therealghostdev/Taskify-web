@@ -42,10 +42,10 @@ export default function Confirm(props: ConfirmPropTypes) {
       time: "",
       completed: false,
       createdAt: "",
-      duration: 0,
-      completedAt: "",
-      isRoutine: false,
-      recurrence: "",
+      duration: undefined,
+      completedAt: undefined,
+      isRoutine: undefined,
+      recurrence: undefined,
     }));
 
     updateEditTodos(reset2);
@@ -53,6 +53,7 @@ export default function Confirm(props: ConfirmPropTypes) {
 
   useEffect(() => {
     console.log(editTodos, "editTodo values confirm");
+    console.log(todos, "todo values confirm");
   }, []);
   return (
     <motion.div

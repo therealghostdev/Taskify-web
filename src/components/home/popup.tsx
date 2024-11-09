@@ -50,6 +50,7 @@ export default function Popup(props: TaskScreenPropType) {
   const [isRoutineBtn, setIsRoutineBtn] = useState<boolean>(false);
   const [recurrence, setRecurrence] = useState<string>("");
   const [routine_error, setRoutine_error] = useState<string>("");
+  const [routineBtn, setRoutineBtn] = useState<boolean>(false);
 
   const getIconRender = (item: string) => {
     let icon;
@@ -114,8 +115,9 @@ export default function Popup(props: TaskScreenPropType) {
     props.close();
   };
 
-  const makeTaskRoutine = () => {
-    setIsRoutineBtn(true);
+  const makeTaskRoutine = (value: boolean) => {
+    setIsRoutineBtn(!value);
+    setRoutineBtn(true);
   };
 
   const jumpToScreen = (item: string, item2: TaskDataType1) => {
@@ -231,7 +233,7 @@ export default function Popup(props: TaskScreenPropType) {
   };
 
   const handleContinueBtnClick = (items: TaskDataType1[]) => {
-    if (recurrence === "" || !isRoutineBtn) {
+    if (recurrence === "") {
       setRoutine_error("Please choose a recurrence option");
       return;
     }
@@ -239,17 +241,23 @@ export default function Popup(props: TaskScreenPropType) {
     const todos = items.map(convertTaskToTodo);
 
     // updated todos with routine info
-    const updatedTodos = todos.map((item) => ({
-      ...item,
-      isRoutine: isRoutineBtn,
-      recurrence: recurrence,
-    }));
+    const updatedTodos = todos.map((item) => {
+      if (item.completed) {
+        notify("cannot update a complete Task");
+        return item;
+      } else {
+        return {
+          ...item,
+          isRoutine: isRoutineBtn,
+          recurrence: recurrence,
+        };
+      }
+    });
 
     // query params values
     const queryParams = items.map((item) => {
       const timeParts = item.expected_completion_time.split("T")[1].split(":");
       const time = `${timeParts[0]}:${timeParts[1]}`;
-
       const formattedDate = new Date(
         item.expected_completion_time
       ).toLocaleDateString("en-GB");
@@ -274,6 +282,10 @@ export default function Popup(props: TaskScreenPropType) {
           data: queryParams,
           body: updatedTodos,
         });
+
+        setIsRoutineBtn(false);
+        setRecurrence("");
+        setRoutineBtn(false);
       }
     );
   };
@@ -469,7 +481,7 @@ export default function Popup(props: TaskScreenPropType) {
               </Button>
 
               <Button
-                onClick={makeTaskRoutine}
+                onClick={() => makeTaskRoutine(item.isRoutine)}
                 className="flex justify-between items-center"
                 style={{
                   backgroundColor: darkMode ? "#363636" : "#bdbdbd",
@@ -493,19 +505,21 @@ export default function Popup(props: TaskScreenPropType) {
 
             <div className="w-full absolute -bottom-28 px-4 py-6">
               <Button
+                disabled={item.completed}
                 onClick={() => editTask(item)}
                 className="flex justify-center items-center w-full"
                 style={{
-                  backgroundColor: "#8687E7",
+                  backgroundColor: item.completed ? "#868fe7" : "#8687E7",
                   color: "#FFFFFF",
                   padding: "3% 0%",
+                  cursor: item.completed ? "not-allowed" : "pointer",
                 }}
               >
                 Edit Task
               </Button>
             </div>
 
-            {isRoutineBtn && (
+            {routineBtn && (
               <div
                 className={`flex flex-col justify-center items-center gap-y-3 h-2/4 lg:w-2/4 w-full fixed top-[20%] lg:left-[25%] 
             left-[2%]
@@ -529,7 +543,7 @@ export default function Popup(props: TaskScreenPropType) {
                   } ${routine_error !== "" ? "border-red-500" : ""}`}
                 >
                   <option value="">Select an occurence</option>
-                  <option value="daliy">daily</option>
+                  <option value="daily">daily</option>
                   <option value="weekly">weekly</option>
                   <option value="monthly">monthly</option>
                 </select>
@@ -542,7 +556,7 @@ export default function Popup(props: TaskScreenPropType) {
               </div>
             )}
 
-            {isRoutineBtn && recurrence !== "" && (
+            {routineBtn && recurrence !== "" && (
               <div
                 className={`flex flex-col justify-center items-center gap-y-3 h-2/4 lg:w-2/4 w-full fixed top-[20%] lg:left-[25%] 
             left-[2%]
