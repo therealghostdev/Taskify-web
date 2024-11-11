@@ -226,3 +226,13 @@ export interface ConfirmPropTypes {
 export interface LoadinSpinnerPropType {
   text?: string;
 }
+
+export interface AuthDataType {
+  token: string;
+  expires: string;
+  csrf: string;
+  refreshToken: {
+    value: string;
+    version: number;
+  };
+}

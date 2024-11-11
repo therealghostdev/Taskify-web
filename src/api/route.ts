@@ -9,7 +9,7 @@ export const auth_glogin = "/taskify/v1/auth/google_auth";
 
 export const task = "/user/task";
 
-export const refresh_auth = "/user/refresh_token";
+export const refresh_auth = "/refresh_auth";
 
 export const update_fcm_token = "/user/update_user_token";
 

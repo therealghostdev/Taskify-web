@@ -3,12 +3,12 @@ import {
   useEditTodoContext,
   useTrackContext,
 } from "../../../utils/app_context/general";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 export default function Duration() {
   const { darkMode } = useThemeContext();
   const { editTodos, updateEditTodos } = useEditTodoContext();
-  const { trackScreen, trackScreenFunc } = useTrackContext();
+  const { trackScreenFunc } = useTrackContext();
 
   const [duration, setDuration] = useState<number | undefined>(undefined);
   const [error, setError] = useState<string>("");
@@ -35,10 +35,6 @@ export default function Duration() {
       setError("value must be greater than 0");
     }
   };
-
-  useEffect(() => {
-    console.log(trackScreen);
-  }, [trackScreen]);
 
   const handleBackClick = () => {
     trackScreenFunc("question");

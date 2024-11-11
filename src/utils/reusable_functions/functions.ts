@@ -1,3 +1,6 @@
+import Cookies from "js-cookie";
+import { AuthDataType } from "../types/todo";
+
 export const getDefaultBgColor = (itemName: string) => {
   switch (itemName) {
     case "Grocery":
@@ -76,4 +79,28 @@ export const queryParam = (
   }
 
   return queryParams;
+};
+
+export const setAuthCookies = (authData: AuthDataType) => {
+  Cookies.remove("token1");
+  Cookies.remove("token2");
+  Cookies.remove("token3");
+
+  Cookies.set("token1", authData.token.split(" ")[1], {
+    expires: 1,
+    secure: false,
+    sameSite: import.meta.env.MODE === "production" ? "Strict" : "Lax",
+  });
+
+  Cookies.set("token2", authData.csrf, {
+    expires: 1,
+    secure: false,
+    sameSite: import.meta.env.MODE === "production" ? "Strict" : "Lax",
+  });
+
+  Cookies.set("token3", authData.refreshToken.value, {
+    expires: 7,
+    secure: false,
+    sameSite: import.meta.env.MODE === "production" ? "Strict" : "Lax",
+  });
 };
