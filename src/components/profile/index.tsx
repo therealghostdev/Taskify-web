@@ -113,6 +113,8 @@ export default function Index() {
       if (apiCallType === "logout") {
         notify("logout success");
 
+        localStorage.clear();
+
         const cookies = Cookies.get();
 
         Object.keys(cookies).forEach((cookieName) => {

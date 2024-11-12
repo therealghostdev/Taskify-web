@@ -1,7 +1,8 @@
-import { base_url, refresh_auth } from "../src/api/route";
+import { base_url, refresh_auth, update_timezone } from "../src/api/route";
 import { setAuthCookies } from "../src/utils/reusable_functions/functions";
 import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
+import { updateTimeZone } from "../src/api";
 
 const api = axios.create({
   baseURL: base_url,
@@ -12,7 +13,12 @@ const api = axios.create({
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.config.url !== update_timezone && Cookies.get("token1")) {
+      updateTimeZone();
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 

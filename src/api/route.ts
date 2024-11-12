@@ -15,4 +15,6 @@ export const update_fcm_token = "/user/update_user_token";
 
 export const update_task = "/user/task";
 
+export const update_timezone = "/user/timezone";
+
 export const logout = "/logout";

@@ -8,7 +8,7 @@ import {
   DeleteTaskQuery,
 } from "../utils/types/todo";
 import Cookies from "js-cookie";
-import { base_url, task, update_task, logout } from "./route";
+import { base_url, task, update_task, logout, update_timezone } from "./route";
 
 export const userRegister = async (url: string, data: RegisterBody) => {
   try {
@@ -222,6 +222,32 @@ export const DeleteTask = async (queryParams: DeleteTaskQuery[]) => {
   } catch (err) {
     console.log(err);
     throw err;
+  }
+};
+
+export const updateTimeZone = async () => {
+  const savedTimezone = localStorage.getItem("timezone");
+  const token1 = Cookies.get("token1");
+  const token2 = Cookies.get("token2");
+
+  if (!savedTimezone) {
+    try {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      await api.put(
+        `${base_url}${update_timezone}`,
+        { timezone },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token1}`,
+            "x-csrf-token": token2,
+          },
+        }
+      );
+      localStorage.setItem("timezone", timezone);
+    } catch (err) {
+      throw err;
+    }
   }
 };
 
