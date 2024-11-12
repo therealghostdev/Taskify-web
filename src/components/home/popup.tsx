@@ -97,6 +97,8 @@ export default function Popup(props: TaskScreenPropType) {
     toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
   const editTask = (item: TaskDataType1) => {
+    console.log(item, "at editTask");
+    
     const updatedTodos = editTodos.map((content) => ({
       ...content,
       id: item._id,

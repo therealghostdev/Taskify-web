@@ -42,7 +42,7 @@ export default function AddTime() {
   const getEditTimeValue = () => {
     editTodos.forEach((item) => {
       if (trackScreen === "completedTime") {
-        if (item.time && item.time !== "") {
+        if (!item.completedTime || item.completedTime === "") {
           const extractedTime = item.time.split("T")[1];
           setSelectedTime(moment(extractedTime, "HH:mm"));
           setTime(extractedTime);
@@ -128,6 +128,20 @@ export default function AddTime() {
       }
     });
   }, []);
+
+  useEffect(() => {
+    const currentTime = moment().format("HH:mm");
+    setTime(currentTime);
+    setSelectedTime(moment());
+
+    if (duration && duration > 0 && completed) {
+      const updatedTodos = editTodos.map((item) => ({
+        ...item,
+        completedTime: currentTime,
+      }));
+      updateEditTodos(updatedTodos);
+    }
+  }, [duration, completed]);
 
   useEffect(() => {
     if (editTime && editTime !== "") {

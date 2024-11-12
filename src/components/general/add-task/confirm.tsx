@@ -46,6 +46,7 @@ export default function Confirm(props: ConfirmPropTypes) {
       completedAt: undefined,
       isRoutine: undefined,
       recurrence: undefined,
+      completedTime: undefined,
     }));
 
     updateEditTodos(reset2);

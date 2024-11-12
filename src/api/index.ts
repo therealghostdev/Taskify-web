@@ -63,7 +63,7 @@ const combineDateTime = (date: string, time: string): string => {
   const [hours, minutes] = time.split(":").map(Number);
 
   const combinedDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
-  console.log(combinedDate, "combime func");
+  console.log(combinedDate.toISOString(), "combime func");
 
   return combinedDate.toISOString();
 };

@@ -118,7 +118,7 @@ export default function AddTask() {
   });
 
   const task_update = (data: Todo[]) => {
-    console.log(editTodos);
+    console.log(editTodos, "at update request");
     mutate(data);
   };
 

@@ -58,7 +58,7 @@ const AddDate = () => {
         let finalDate;
         if (expectedDate && completedDate) {
           finalDate =
-            completedDate < expectedDate ? completedDate : expectedDate;
+            completedDate < expectedDate ? completedDate : expectedDate; // potential bug on this line
         } else {
           finalDate = expectedDate || completedDate; // Use whichever is defined
         }
