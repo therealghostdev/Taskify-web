@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Todo, ThemeContextType, Note } from "../types/todo";
+import { Todo, ThemeContextType, Note, QueryParamType } from "../types/todo";
 import actions from "../../components/app_tools/actions";
 import { type ActionsState } from "../types/todo";
 import Cookies from "js-cookie";
@@ -28,8 +28,8 @@ const EditTodoContext = createContext<{
 });
 
 const QueryContext = createContext<{
-  query: Todo[];
-  updateQuery: (newTodos: Todo[]) => void;
+  query: QueryParamType[];
+  updateQuery: (newTodos: QueryParamType[]) => void;
 }>({
   query: [],
   updateQuery: () => {},
@@ -170,20 +170,22 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // State for request query
-  const [query, setQuery] = useState<Todo[]>([
+  const [query, setQuery] = useState<QueryParamType[]>([
     {
       name: "",
       description: "",
-      time: "",
       category: "",
       priority: 0,
-      expected_date_of_completion: "",
+      expected_completion_time: "",
       completed: false,
+      createdAt: "",
+      recurrence: "",
+      isRoutine: false,
     },
   ]);
 
   // Function to update query
-  const updateQuery = (query: Todo[]) => {
+  const updateQuery = (query: QueryParamType[]) => {
     setQuery(query);
   };
 

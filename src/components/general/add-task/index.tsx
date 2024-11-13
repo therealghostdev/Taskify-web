@@ -17,7 +17,7 @@ import { AnimatePresence } from "framer-motion";
 import { updateTasks, createTask } from "../../../api";
 import { useMutation, useQueryClient } from "../../../../lib/tanstackQuery";
 import { toast } from "react-toastify";
-import { Todo } from "../../../utils/types/todo";
+import { QueryParamType, Todo } from "../../../utils/types/todo";
 import axios from "axios";
 import LoadingSpinner from "../../loading/loading1";
 import Question from "./question";
@@ -36,26 +36,18 @@ export default function AddTask() {
     toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
   };
 
-  const queryParams = (): Todo[] => {
+  const queryParams = (): QueryParamType[] => {
     return query.map((item) => {
-      const timeParts = item.expected_date_of_completion
-        .split("T")[1]
-        .split(":");
-      const time = `${timeParts[0]}:${timeParts[1]}`;
-
-      const formattedDate = new Date(
-        item.expected_date_of_completion
-      ).toLocaleDateString("en-GB");
-
       return {
         name: item.name,
         description: item.description,
         category: item.category,
         priority: item.priority,
-        expected_date_of_completion: formattedDate,
+        expected_completion_time: item.expected_completion_time,
         completed: item.completed,
         createdAt: item.createdAt,
-        time: time,
+        isRoutine: item.isRoutine,
+        recurrence: item.recurrence,
       };
     });
   };
@@ -118,7 +110,7 @@ export default function AddTask() {
   });
 
   const task_update = (data: Todo[]) => {
-    console.log(editTodos, "at update request");
+    console.log(data, "at update request");
     mutate(data);
   };
 
@@ -135,8 +127,21 @@ export default function AddTask() {
       createdAt: "",
     }));
 
+    const resetQuery = query.map((item) => ({
+      ...item,
+      name: "",
+      category: "",
+      description: "",
+      priority: 0,
+      expected_date_of_completion: "",
+      completed: false,
+      createdAt: "",
+      isRoutine: false,
+      recurrence: "",
+    }));
+
     updateEditTodos(resetEditTodos);
-    updateQuery(resetEditTodos);
+    updateQuery(resetQuery);
 
     if (trackScreen === "success") {
       const resetTodos = todos.map((item) => ({

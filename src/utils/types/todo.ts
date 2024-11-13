@@ -236,3 +236,15 @@ export interface AuthDataType {
     version: number;
   };
 }
+
+export interface QueryParamType {
+  name: string;
+  category: string;
+  expected_completion_time: string;
+  description: string;
+  recurrence: string;
+  isRoutine: boolean;
+  completed: boolean;
+  createdAt: string;
+  priority: number;
+}

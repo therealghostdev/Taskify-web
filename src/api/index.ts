@@ -6,6 +6,7 @@ import {
   CreateTaskRequestBody,
   UpdateTaskRequestBody,
   DeleteTaskQuery,
+  QueryParamType,
 } from "../utils/types/todo";
 import Cookies from "js-cookie";
 import { base_url, task, update_task, logout, update_timezone } from "./route";
@@ -58,14 +59,41 @@ export const getAllTasks = async (queryParams: Record<string, string>) => {
 
 // Helper function to combine date and time into UTC format
 const combineDateTime = (date: string, time: string): string => {
-  const [day, month, year] = date.split("/").map(Number);
+  try {
+    const [day, month, year] = date.split("/").map(Number);
 
-  const [hours, minutes] = time.split(":").map(Number);
+    if (!day || !month || !year) {
+      throw new Error("Invalid date format. Expected DD/MM/YYYY");
+    }
 
-  const combinedDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
-  console.log(combinedDate.toISOString(), "combime func");
+    const [hours, minutes] = time.split(":").map(Number);
 
-  return combinedDate.toISOString();
+    if (isNaN(hours) || isNaN(minutes)) {
+      throw new Error("Invalid time format. Expected HH:mm");
+    }
+
+    const localDate = new Date(year, month - 1, day, hours, minutes);
+    console.log(localDate, "here");
+
+    if (isNaN(localDate.getTime())) {
+      throw new Error("Invalid date/time combination");
+    }
+
+    // Convert to ISO string (UTC)
+    const utcDate = localDate.toISOString();
+
+    console.log({
+      inputDate: date,
+      inputTime: time,
+      localDateTime: localDate.toString(),
+      utcDateTime: utcDate,
+    });
+
+    return utcDate;
+  } catch (error) {
+    console.error("Error combining date and time:", error);
+    throw error;
+  }
 };
 
 const flattenUpdateTaskData = (
@@ -76,9 +104,9 @@ const flattenUpdateTaskData = (
 
   const time = todo.time;
   const date = todo.expected_date_of_completion;
-  console.log(date, time, "date time");
 
   const utcDateTime = time && date ? combineDateTime(date, time) : "";
+  console.log(utcDateTime, "is utcdate");
 
   let completedAt;
   if (todo.completedAt && todo.completedTime) {
@@ -111,16 +139,29 @@ const flattenUpdateTaskData = (
 };
 
 // Updated updateTasks function
-export const updateTasks = async (queryParams: Todo[], data: Todo[]) => {
+export const updateTasks = async (
+  queryParams: QueryParamType[],
+  data: Todo[]
+) => {
   const token1 = Cookies.get("token1");
   const token2 = Cookies.get("token2");
 
   try {
-    // Flatten queryParams with createdAt if needed
-    const flattenedParams = flattenUpdateTaskData(queryParams);
-
     // Flatten data without createdAt for request body
+    const param = queryParams[0] || {};
     const flattenedData = flattenUpdateTaskData(data, true);
+
+    const flattenedParams: QueryParamType = {
+      name: param.name,
+      description: param.description,
+      priority: param.priority,
+      category: param.category,
+      createdAt: param.createdAt,
+      isRoutine: param.isRoutine,
+      completed: param.completed,
+      recurrence: param.recurrence,
+      expected_completion_time: param.expected_completion_time,
+    };
 
     const response = await api.put(`${base_url}${update_task}`, flattenedData, {
       params: flattenedParams,

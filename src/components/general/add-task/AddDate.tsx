@@ -40,12 +40,13 @@ const AddDate = () => {
         // Handle expected_date_of_completion with both formats
         if (item.expected_date_of_completion) {
           if (item.expected_date_of_completion.includes("T")) {
-            expectedDate = new Date(item.expected_date_of_completion);
+            const date = item.expected_date_of_completion.split("T")[0];
+            expectedDate = new Date(date);
           } else {
             const [day, month, year] = item.expected_date_of_completion
               .split("/")
               .map(Number);
-            expectedDate = new Date(year, month - 1, day); // month is 0-based
+            expectedDate = new Date(year, month - 1, day);
           }
         }
 
@@ -65,12 +66,8 @@ const AddDate = () => {
 
         if (finalDate) {
           console.log("Setting selected date to:", finalDate.toISOString());
-          const localDate = new Date(
-            finalDate.getFullYear(),
-            finalDate.getMonth(),
-            finalDate.getDate()
-          );
-          setSelectedDate(localDate);
+          setSelectedDate(finalDate);
+          console.log(finalDate);
         }
       }
     });
@@ -128,6 +125,10 @@ const AddDate = () => {
         setEditTodoState(selectedDate);
       }
     });
+  }, [selectedDate]);
+
+  useEffect(() => {
+    console.log(selectedDate, "at effect");
   }, [selectedDate]);
 
   return (

@@ -5,7 +5,7 @@ import {
 import Calendar from "react-calendar";
 import "../../styles/calendar.scss";
 import { useEffect, useState } from "react";
-import { TaskDataType1 } from "../../utils/types/todo";
+import { QueryParamType, TaskDataType1 } from "../../utils/types/todo";
 import groceryIcon from "../../assets/grocery.svg";
 import workIcon from "../../assets/briefcase.svg";
 import sportIcon from "../../assets/sport.svg";
@@ -31,9 +31,9 @@ import {
 import { getAllTasks } from "../../api";
 import { queryParam } from "../../utils/reusable_functions/functions";
 import { useMutation } from "../../../lib/tanstackQuery";
-import axios from "../../../lib/axios";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../loading/loading1";
+import { AxiosError } from "axios";
 
 export default function Index() {
   const { darkMode } = useThemeContext();
@@ -62,15 +62,15 @@ export default function Index() {
       return getAllTasks(queryParam(chosenDate));
     },
     onSuccess: (data) => {
-      setValues(data?.data?.data)
+      setValues(data?.data?.data);
     },
-    onError: (err) => {
-      if (axios.isAxiosError(err) && err.response) {
-        const message = err.response.data?.message;
-        if (err.response.status === 404) {
+    onError: (err: AxiosError) => {
+      if (err.response && err.response.data) {
+        const data = err.response.data as { message?: string };
+        if (err.status === 404) {
           setValues([]);
         } else {
-          notify(message || "An error occurred");
+          notify(data.message || "An error occurred");
         }
       } else {
         notify("Something went wrong");
@@ -164,8 +164,20 @@ export default function Index() {
       };
     });
 
+    const updatedQuery: QueryParamType = {
+      name: item.name,
+      priority: item.priority,
+      category: item.category,
+      description: item.description,
+      completed: item.completed,
+      createdAt: item.createdAt,
+      expected_completion_time: item.expected_completion_time.toString(),
+      isRoutine: item.isRoutine,
+      recurrence: item.recurrence,
+    };
+
     updateEditTodos(updatedTodos);
-    updateQuery(updatedTodos);
+    updateQuery([updatedQuery]);
     trackScreenFunc("name");
   };
 

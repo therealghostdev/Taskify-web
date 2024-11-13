@@ -1,5 +1,6 @@
 import {
   DeleteTaskQuery,
+  QueryParamType,
   TaskDataType1,
   TaskScreenPropType,
   Todo,
@@ -46,7 +47,7 @@ export default function Popup(props: TaskScreenPropType) {
   const { darkMode } = useThemeContext();
   const { trackScreenFunc } = useTrackContext();
   const popupRef = useRef<HTMLSelectElement | null>(null);
-  const { updateQuery } = useQueryContext();
+  const { query, updateQuery } = useQueryContext();
   const [isRoutineBtn, setIsRoutineBtn] = useState<boolean>(false);
   const [recurrence, setRecurrence] = useState<string>("");
   const [routine_error, setRoutine_error] = useState<string>("");
@@ -96,9 +97,47 @@ export default function Popup(props: TaskScreenPropType) {
   const notify = (message: string) =>
     toast(message, { theme: darkMode ? "dark" : "light", toastId: customId });
 
+  const timezone = localStorage.getItem("timezone");
+
   const editTask = (item: TaskDataType1) => {
-    console.log(item, "at editTask");
-    
+    if (!timezone) {
+      notify("Timezone value not set, please refresh the page and try again");
+      return;
+    }
+
+    // Parse the UTC time to a date object
+    const expectedCompletionTime = new Date(item.expected_completion_time);
+
+    // Convert UTC to user's local timezone
+    const timeInTimezone = expectedCompletionTime.toLocaleString("en-GB", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+
+    // Separate date and time
+    const [extractedDate, extractedTime] = timeInTimezone.split(", ");
+    const [day, month, year] = extractedDate.split("/").map(Number);
+    const [hours, minutes, seconds] = extractedTime.split(":").map(Number);
+
+    const localDate = new Date(year, month - 1, day, hours, minutes, seconds);
+
+    // Adjust for timezone offset
+    const timezoneOffset = new Date().getTimezoneOffset() * 60000;
+    const adjustedDate = new Date(localDate.getTime() - timezoneOffset);
+
+    console.log({
+      originalUTC: item.expected_completion_time,
+      timezone,
+      convertedLocal: timeInTimezone,
+      localDate: adjustedDate.toISOString(),
+    });
+
     const updatedTodos = editTodos.map((content) => ({
       ...content,
       id: item._id,
@@ -108,11 +147,24 @@ export default function Popup(props: TaskScreenPropType) {
       description: item.description,
       completed: item.completed,
       createdAt: item.createdAt,
-      time: item.expected_completion_time.toString(),
-      expected_date_of_completion: item.expected_completion_time.toString(),
+      time: adjustedDate.toISOString(),
+      expected_date_of_completion: adjustedDate.toISOString(),
     }));
+
+    const updatedQuery: QueryParamType = {
+      name: item.name,
+      priority: item.priority,
+      category: item.category,
+      description: item.description,
+      completed: item.completed,
+      createdAt: item.createdAt,
+      expected_completion_time: item.expected_completion_time.toString(),
+      isRoutine: item.isRoutine,
+      recurrence: item.recurrence,
+    };
+
     updateEditTodos(updatedTodos);
-    updateQuery(updatedTodos);
+    updateQuery([updatedQuery]);
     trackScreenFunc("name");
     props.close();
   };
@@ -169,7 +221,7 @@ export default function Popup(props: TaskScreenPropType) {
   const requestTypehelper = async (
     isDelete: boolean,
     deleteParams?: DeleteTaskQuery[],
-    updateParams?: Todo[],
+    updateParams?: QueryParamType[],
     body?: Todo[]
   ) => {
     if (isDelete && deleteParams) {
@@ -192,7 +244,7 @@ export default function Popup(props: TaskScreenPropType) {
       return requestTypehelper(
         isDelete,
         isDelete ? (data as DeleteTaskQuery[]) : undefined,
-        !isDelete ? (data as Todo[]) : undefined,
+        !isDelete ? (data as QueryParamType[]) : undefined,
         !isDelete ? (body as Todo[]) : undefined
       );
     },
@@ -234,6 +286,20 @@ export default function Popup(props: TaskScreenPropType) {
     };
   };
 
+  const convertTaskToQuery = (task: TaskDataType1): QueryParamType => {
+    return {
+      name: task.name,
+      description: task.description,
+      priority: task.priority,
+      category: task.category,
+      completed: task.completed,
+      expected_completion_time: task.expected_completion_time,
+      recurrence: task.recurrence,
+      isRoutine: task.isRoutine,
+      createdAt: task.createdAt,
+    };
+  };
+
   const handleContinueBtnClick = (items: TaskDataType1[]) => {
     if (recurrence === "") {
       setRoutine_error("Please choose a recurrence option");
@@ -241,6 +307,7 @@ export default function Popup(props: TaskScreenPropType) {
     }
 
     const todos = items.map(convertTaskToTodo);
+    const queryParam = items.map(convertTaskToQuery);
 
     // updated todos with routine info
     const updatedTodos = todos.map((item) => {
@@ -256,32 +323,12 @@ export default function Popup(props: TaskScreenPropType) {
       }
     });
 
-    // query params values
-    const queryParams = items.map((item) => {
-      const timeParts = item.expected_completion_time.split("T")[1].split(":");
-      const time = `${timeParts[0]}:${timeParts[1]}`;
-      const formattedDate = new Date(
-        item.expected_completion_time
-      ).toLocaleDateString("en-GB");
-
-      return {
-        name: item.name,
-        description: item.description,
-        category: item.category,
-        priority: item.priority,
-        expected_date_of_completion: formattedDate,
-        completed: item.completed,
-        createdAt: item.createdAt,
-        time: time,
-      };
-    });
-
     // Update states and make API call
-    Promise.all([updateEditTodos(updatedTodos), updateQuery(todos)]).then(
+    Promise.all([updateEditTodos(updatedTodos), updateQuery(queryParam)]).then(
       () => {
         mutate({
           isDelete: false,
-          data: queryParams,
+          data: query,
           body: updatedTodos,
         });
 
