@@ -31,6 +31,7 @@ import homeIcon from "../../assets/home.svg";
 import addIcon from "../../assets/add.svg";
 import flag from "../../assets/flag.svg";
 import {
+  dateTimeWrapper,
   formatDate,
   formatTime,
 } from "../../utils/reusable_functions/functions";
@@ -52,6 +53,7 @@ export default function Popup(props: TaskScreenPropType) {
   const [recurrence, setRecurrence] = useState<string>("");
   const [routine_error, setRoutine_error] = useState<string>("");
   const [routineBtn, setRoutineBtn] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const getIconRender = (item: string) => {
     let icon;
@@ -105,38 +107,10 @@ export default function Popup(props: TaskScreenPropType) {
       return;
     }
 
-    // Parse the UTC time to a date object
-    const expectedCompletionTime = new Date(item.expected_completion_time);
-
-    // Convert UTC to user's local timezone
-    const timeInTimezone = expectedCompletionTime.toLocaleString("en-GB", {
-      timeZone: timezone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-
-    // Separate date and time
-    const [extractedDate, extractedTime] = timeInTimezone.split(", ");
-    const [day, month, year] = extractedDate.split("/").map(Number);
-    const [hours, minutes, seconds] = extractedTime.split(":").map(Number);
-
-    const localDate = new Date(year, month - 1, day, hours, minutes, seconds);
-
-    // Adjust for timezone offset
-    const timezoneOffset = new Date().getTimezoneOffset() * 60000;
-    const adjustedDate = new Date(localDate.getTime() - timezoneOffset);
-
-    console.log({
-      originalUTC: item.expected_completion_time,
-      timezone,
-      convertedLocal: timeInTimezone,
-      localDate: adjustedDate.toISOString(),
-    });
+    const adjustedDate = dateTimeWrapper(
+      item.expected_completion_time,
+      timezone
+    );
 
     const updatedTodos = editTodos.map((content) => ({
       ...content,
@@ -339,6 +313,12 @@ export default function Popup(props: TaskScreenPropType) {
     );
   };
 
+  useEffect(() => {
+    if (props.data && props.data?.length > 0) {
+      setIsLoading(false);
+    }
+  }, [props.data]);
+
   return (
     <section
       ref={popupRef}
@@ -359,285 +339,289 @@ export default function Popup(props: TaskScreenPropType) {
         </div>
       </section>
 
-      <section className="w-full flex flex-col justify-between relative md:px-6">
-        {props.data?.map((item, index) => (
-          <React.Fragment key={index}>
-            <div className="flex justify-between items-center w-full">
-              <div className="">
-                <h1 className="text-3xl my-4">{item.name}</h1>
-                <p>{item.description}</p>
-              </div>
+      {isLoading ? (
+        <LoadingSpinner2 />
+      ) : (
+        <section className="w-full flex flex-col justify-between relative md:px-6">
+          {props.data?.map((item, index) => (
+            <React.Fragment key={index}>
+              <div className="flex justify-between items-center w-full">
+                <div className="">
+                  <h1 className="text-3xl my-4">{item.name}</h1>
+                  <p>{item.description}</p>
+                </div>
 
-              <div className="">
-                <Button
-                  onClick={() => jumpToScreen("name", item)}
-                  className="flex justify-between items-center"
-                  style={{
-                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
-                    color: "#FFFFFF",
-                  }}
-                >
-                  <img src={editIcon} alt="edit" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center w-full my-6">
-              <div className="flex justify-between items-center w-1/4 mr-4">
-                <span className="inline-block w-2/4">
-                  <img src={timer} alt="time" />
-                </span>
-
-                <span className="inline-block w-2/4">
-                  <p className="text-lg">Created:</p>
-                </span>
-              </div>
-
-              <div className="w-3/4 flex justify-end">
-                <Button
-                  className="flex justify-between items-center"
-                  style={{
-                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
-                    color: "#FFFFFF",
-                  }}
-                >
-                  <span>{formatDate(item.createdAt)}</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center w-full my-6">
-              <div className="flex justify-between items-center w-1/4 mr-4">
-                <span className="inline-block w-2/4">
-                  <img src={timer} alt="time" />
-                </span>
-
-                <span className="inline-block w-2/4">
-                  <p className="text-lg">Expected Completion Date:</p>
-                </span>
-              </div>
-
-              <div className="w-3/4 flex justify-end">
-                <Button
-                  className="flex justify-between items-center"
-                  onClick={() => jumpToScreen("time", item)}
-                  style={{
-                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
-                    color: "#FFFFFF",
-                  }}
-                >
-                  <span>{formatDate(item.expected_completion_time)}</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center w-full my-6">
-              <div className="flex justify-between items-center w-1/4 mr-4">
-                <span className="inline-block w-2/4">
-                  <img src={timer} alt="time" />
-                </span>
-
-                <span className="inline-block w-2/4">
-                  <p className="text-lg">Expected Completion Time:</p>
-                </span>
-              </div>
-
-              <div className="w-3/4 flex justify-end">
-                <Button
-                  className="flex justify-between items-center"
-                  onClick={() => jumpToScreen("time", item)}
-                  style={{
-                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
-                    color: "#FFFFFF",
-                  }}
-                >
-                  <span>{formatTime(item.expected_completion_time)}</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center w-full my-6">
-              <div className="flex justify-between items-center w-1/4 mr-4">
-                <span className="inline-block w-2/4">
-                  <img src={tag} alt="category" />
-                </span>
-
-                <span className="inline-block w-2/4">
-                  <p className="text-lg">Category:</p>
-                </span>
-              </div>
-
-              <div className="w-3/4 flex justify-end">
-                <Button
-                  onClick={() => jumpToScreen("category", item)}
-                  className="flex justify-between items-center"
-                  style={{
-                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
-                    color: "#FFFFFF",
-                  }}
-                >
-                  <span className="mx-2">
-                    <img src={getIconRender(item.category)} alt="" />
-                  </span>
-
-                  <span>{item.category}</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center w-full my-6">
-              <div className="flex justify-between items-center w-1/4 mr-4">
-                <span className="inline-block w-2/4">
-                  <img src={flag} alt="priority" />
-                </span>
-
-                <span className="inline-block w-2/4">
-                  <p className="text-lg">Priority:</p>
-                </span>
-              </div>
-
-              <div className="w-3/4 flex justify-end">
-                <Button
-                  onClick={() => jumpToScreen("priority", item)}
-                  className="flex justify-between items-center"
-                  style={{
-                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
-                    color: "#FFFFFF",
-                  }}
-                >
-                  <span className="mx-2">
-                    <img src={flag} alt={item.priority.toString()} />
-                  </span>
-
-                  <span>{item.priority}</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center w-full my-6">
-              <Button
-                onClick={handleDelete}
-                className="flex justify-between items-center"
-                style={{
-                  backgroundColor: darkMode ? "#363636" : "#bdbdbd",
-                  color: "#FF4949",
-                }}
-              >
-                <Delete className="text-[#FF4949]" />
-                <span>Delete Task</span>
-
-                {isPending && <LoadingSpinner2 />}
-              </Button>
-
-              <Button
-                onClick={() => makeTaskRoutine(item.isRoutine)}
-                className="flex justify-between items-center"
-                style={{
-                  backgroundColor: darkMode ? "#363636" : "#bdbdbd",
-                  color: "green",
-                }}
-              >
-                <img
-                  src={Timer}
-                  alt="timer"
-                  className={`${darkMode ? "" : "filter-invert"} mr-2`}
-                />
-                <span>
-                  {item.isRoutine
-                    ? "Remove Task as Routine"
-                    : "Make Task A Routine"}
-                </span>
-
-                {isPending && <LoadingSpinner2 />}
-              </Button>
-            </div>
-
-            <div className="w-full absolute -bottom-28 px-4 py-6">
-              <Button
-                disabled={item.completed}
-                onClick={() => editTask(item)}
-                className="flex justify-center items-center w-full"
-                style={{
-                  backgroundColor: item.completed ? "#868fe7" : "#8687E7",
-                  color: "#FFFFFF",
-                  padding: "3% 0%",
-                  cursor: item.completed ? "not-allowed" : "pointer",
-                }}
-              >
-                Edit Task
-              </Button>
-            </div>
-
-            {routineBtn && (
-              <div
-                className={`flex flex-col justify-center items-center gap-y-3 h-2/4 lg:w-2/4 w-full fixed top-[20%] lg:left-[25%] 
-            left-[2%]
-            ${darkMode ? "bg-[#000000fd]" : "bg-[#999999fd]"}`}
-              >
-                <h1
-                  className={`${
-                    darkMode ? "text-white" : "text-black"
-                  } text-2xl mb-2`}
-                >
-                  Set Routine Occurence
-                </h1>
-                <select
-                  name="recurrence"
-                  id=""
-                  onChange={handleSelectInput}
-                  className={`py-3 px-3 rounded-md outline-none border-none w-3/4 ${
-                    darkMode
-                      ? "bg-[#363636] text-white"
-                      : "bg-[#bdbdbd] text-black"
-                  } ${routine_error !== "" ? "border-red-500" : ""}`}
-                >
-                  <option value="">Select an occurence</option>
-                  <option value="daily">daily</option>
-                  <option value="weekly">weekly</option>
-                  <option value="monthly">monthly</option>
-                </select>
-
-                {routine_error !== "" && (
-                  <small className="text-red-500 text-sm my-2">
-                    {routine_error}
-                  </small>
-                )}
-              </div>
-            )}
-
-            {routineBtn && recurrence !== "" && (
-              <div
-                className={`flex flex-col justify-center items-center gap-y-3 h-2/4 lg:w-2/4 w-full fixed top-[20%] lg:left-[25%] 
-            left-[2%]
-            ${darkMode ? "bg-[#000000fd]" : "bg-[#999999fd]"}`}
-              >
-                <h1
-                  className={`${
-                    darkMode ? "text-white" : "text-black"
-                  } text-2xl mb-2`}
-                >
-                  Confirm This action
-                </h1>
-                <div className="flex w-full gap-x-10 my-2">
-                  <button
-                    onClick={handleAbortBtnClick}
-                    className="z-10 cursor-pointer bg-[#8687E7] py-6 px-4 w-2/4 h-2/4 text-white flex justify-center items-center"
+                <div className="">
+                  <Button
+                    onClick={() => jumpToScreen("name", item)}
+                    className="flex justify-between items-center"
+                    style={{
+                      backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                      color: "#FFFFFF",
+                    }}
                   >
-                    Abort
-                  </button>
-
-                  <button
-                    onClick={() => handleContinueBtnClick(Array(item))}
-                    className="z-10 cursor-pointer bg-[#8687E7] py-6 px-4 w-2/4 h-2/4 text-white flex justify-center items-center"
-                  >
-                    Confirm
-                  </button>
+                    <img src={editIcon} alt="edit" />
+                  </Button>
                 </div>
               </div>
-            )}
-          </React.Fragment>
-        ))}
-      </section>
+
+              <div className="flex justify-between items-center w-full my-6">
+                <div className="flex justify-between items-center w-1/4 mr-4">
+                  <span className="inline-block w-2/4">
+                    <img src={timer} alt="time" />
+                  </span>
+
+                  <span className="inline-block w-2/4">
+                    <p className="text-lg">Created:</p>
+                  </span>
+                </div>
+
+                <div className="w-3/4 flex justify-end">
+                  <Button
+                    className="flex justify-between items-center"
+                    style={{
+                      backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    <span>{formatDate(item.createdAt)}</span>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center w-full my-6">
+                <div className="flex justify-between items-center w-1/4 mr-4">
+                  <span className="inline-block w-2/4">
+                    <img src={timer} alt="time" />
+                  </span>
+
+                  <span className="inline-block w-2/4">
+                    <p className="text-lg">Expected Completion Date:</p>
+                  </span>
+                </div>
+
+                <div className="w-3/4 flex justify-end">
+                  <Button
+                    className="flex justify-between items-center"
+                    onClick={() => jumpToScreen("calendar", item)}
+                    style={{
+                      backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    <span>{formatDate(item.createdAt)}</span>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center w-full my-6">
+                <div className="flex justify-between items-center w-1/4 mr-4">
+                  <span className="inline-block w-2/4">
+                    <img src={timer} alt="time" />
+                  </span>
+
+                  <span className="inline-block w-2/4">
+                    <p className="text-lg">Expected Completion Time:</p>
+                  </span>
+                </div>
+
+                <div className="w-3/4 flex justify-end">
+                  <Button
+                    className="flex justify-between items-center"
+                    onClick={() => jumpToScreen("time", item)}
+                    style={{
+                      backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    <span>{formatTime(item.expected_completion_time)}</span>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center w-full my-6">
+                <div className="flex justify-between items-center w-1/4 mr-4">
+                  <span className="inline-block w-2/4">
+                    <img src={tag} alt="category" />
+                  </span>
+
+                  <span className="inline-block w-2/4">
+                    <p className="text-lg">Category:</p>
+                  </span>
+                </div>
+
+                <div className="w-3/4 flex justify-end">
+                  <Button
+                    onClick={() => jumpToScreen("category", item)}
+                    className="flex justify-between items-center"
+                    style={{
+                      backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    <span className="mx-2">
+                      <img src={getIconRender(item.category)} alt="" />
+                    </span>
+
+                    <span>{item.category}</span>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center w-full my-6">
+                <div className="flex justify-between items-center w-1/4 mr-4">
+                  <span className="inline-block w-2/4">
+                    <img src={flag} alt="priority" />
+                  </span>
+
+                  <span className="inline-block w-2/4">
+                    <p className="text-lg">Priority:</p>
+                  </span>
+                </div>
+
+                <div className="w-3/4 flex justify-end">
+                  <Button
+                    onClick={() => jumpToScreen("priority", item)}
+                    className="flex justify-between items-center"
+                    style={{
+                      backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    <span className="mx-2">
+                      <img src={flag} alt={item.priority.toString()} />
+                    </span>
+
+                    <span>{item.priority}</span>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center w-full my-6">
+                <Button
+                  onClick={handleDelete}
+                  className="flex justify-between items-center"
+                  style={{
+                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                    color: "#FF4949",
+                  }}
+                >
+                  <Delete className="text-[#FF4949]" />
+                  <span>Delete Task</span>
+
+                  {isPending && <LoadingSpinner2 />}
+                </Button>
+
+                <Button
+                  onClick={() => makeTaskRoutine(item.isRoutine)}
+                  className="flex justify-between items-center"
+                  style={{
+                    backgroundColor: darkMode ? "#363636" : "#bdbdbd",
+                    color: "green",
+                  }}
+                >
+                  <img
+                    src={Timer}
+                    alt="timer"
+                    className={`${darkMode ? "" : "filter-invert"} mr-2`}
+                  />
+                  <span>
+                    {item.isRoutine
+                      ? "Remove Task as Routine"
+                      : "Make Task A Routine"}
+                  </span>
+
+                  {isPending && <LoadingSpinner2 />}
+                </Button>
+              </div>
+
+              <div className="w-full absolute -bottom-28 px-4 py-6">
+                <Button
+                  disabled={item.completed}
+                  onClick={() => editTask(item)}
+                  className="flex justify-center items-center w-full"
+                  style={{
+                    backgroundColor: item.completed ? "#868fe7" : "#8687E7",
+                    color: "#FFFFFF",
+                    padding: "3% 0%",
+                    cursor: item.completed ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Edit Task
+                </Button>
+              </div>
+
+              {routineBtn && (
+                <div
+                  className={`flex flex-col justify-center items-center gap-y-3 h-2/4 lg:w-2/4 w-full fixed top-[20%] lg:left-[25%] 
+            left-[2%]
+            ${darkMode ? "bg-[#000000fd]" : "bg-[#999999fd]"}`}
+                >
+                  <h1
+                    className={`${
+                      darkMode ? "text-white" : "text-black"
+                    } text-2xl mb-2`}
+                  >
+                    Set Routine Occurence
+                  </h1>
+                  <select
+                    name="recurrence"
+                    id=""
+                    onChange={handleSelectInput}
+                    className={`py-3 px-3 rounded-md outline-none border-none w-3/4 ${
+                      darkMode
+                        ? "bg-[#363636] text-white"
+                        : "bg-[#bdbdbd] text-black"
+                    } ${routine_error !== "" ? "border-red-500" : ""}`}
+                  >
+                    <option value="">Select an occurence</option>
+                    <option value="daily">daily</option>
+                    <option value="weekly">weekly</option>
+                    <option value="monthly">monthly</option>
+                  </select>
+
+                  {routine_error !== "" && (
+                    <small className="text-red-500 text-sm my-2">
+                      {routine_error}
+                    </small>
+                  )}
+                </div>
+              )}
+
+              {routineBtn && recurrence !== "" && (
+                <div
+                  className={`flex flex-col justify-center items-center gap-y-3 h-2/4 lg:w-2/4 w-full fixed top-[20%] lg:left-[25%] 
+            left-[2%]
+            ${darkMode ? "bg-[#000000fd]" : "bg-[#999999fd]"}`}
+                >
+                  <h1
+                    className={`${
+                      darkMode ? "text-white" : "text-black"
+                    } text-2xl mb-2`}
+                  >
+                    Confirm This action
+                  </h1>
+                  <div className="flex w-full gap-x-10 my-2">
+                    <button
+                      onClick={handleAbortBtnClick}
+                      className="z-10 cursor-pointer bg-[#8687E7] py-6 px-4 w-2/4 h-2/4 text-white flex justify-center items-center"
+                    >
+                      Abort
+                    </button>
+
+                    <button
+                      onClick={() => handleContinueBtnClick(Array(item))}
+                      className="z-10 cursor-pointer bg-[#8687E7] py-6 px-4 w-2/4 h-2/4 text-white flex justify-center items-center"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+        </section>
+      )}
     </section>
   );
 }

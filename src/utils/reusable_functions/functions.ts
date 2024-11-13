@@ -29,18 +29,41 @@ export const getDefaultBgColor = (itemName: string) => {
 };
 
 export const formatDate = (date: string) => {
+  console.log(date, "is given");
+  const timezone = localStorage.getItem("timezone");
+
   const currentDate = new Date();
   const inputDate = new Date(date); // Convert the string to a Date object
+  console.log(inputDate, "is inputDate");
 
-  const isSameDay = inputDate.toDateString() === currentDate.toDateString();
+  const DateInTimeZone = inputDate.toLocaleString("en-GB", {
+    timeZone: timezone || "",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  console.log(DateInTimeZone, "is datein timezone");
+  const [extractedDate, extractedTime] = DateInTimeZone.split(", ");
+
+  const [day, month, year] = extractedDate.split("/").map(Number);
+  const [hour, minutes, seconds] = extractedTime.split(":").map(Number);
+
+  const convertedDate = new Date(year, month - 1, day, hour, minutes, seconds);
+  console.log(convertedDate, "is convertedDate");
+
+  const isSameDay = convertedDate.toDateString() === currentDate.toDateString();
   const isTomorrow =
-    inputDate.getDate() === currentDate.getDate() + 1 &&
-    inputDate.getMonth() === currentDate.getMonth() &&
-    inputDate.getFullYear() === currentDate.getFullYear();
+    convertedDate.getDate() === currentDate.getDate() + 1 &&
+    convertedDate.getMonth() === currentDate.getMonth() &&
+    convertedDate.getFullYear() === currentDate.getFullYear();
   const isYesterday =
-    inputDate.getDate() === currentDate.getDate() - 1 &&
-    inputDate.getMonth() === currentDate.getMonth() &&
-    inputDate.getFullYear() === currentDate.getFullYear();
+    convertedDate.getDate() === currentDate.getDate() - 1 &&
+    convertedDate.getMonth() === currentDate.getMonth() &&
+    convertedDate.getFullYear() === currentDate.getFullYear();
 
   if (isSameDay) {
     return "Today";
@@ -50,14 +73,67 @@ export const formatDate = (date: string) => {
     return "Yesterday";
   } else {
     // Format date as "dd/mm/yyyy"
-    const day = inputDate.getDate().toString().padStart(2, "0");
-    const month = (inputDate.getMonth() + 1).toString().padStart(2, "0");
-    const year = inputDate.getFullYear();
+    const day = convertedDate.getDate().toString().padStart(2, "0");
+    const month = (convertedDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = convertedDate.getFullYear();
 
     return `${day}/${month}/${year}`;
   }
 };
 
+export const dateTimeWrapper = (date: string, timezone: string) => {
+  const utcDate = new Date(date);
+
+  const timeInTimezone = utcDate.toLocaleString("en-GB", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+
+  const [extractedDate, extractedTime] = timeInTimezone.split(", ");
+  const [day, month, year] = extractedDate.split("/").map(Number);
+  const [hours, minutes, seconds] = extractedTime.split(":").map(Number);
+
+  const localDate = new Date(year, month - 1, day, hours, minutes, seconds);
+
+  // Adjust for timezone offset
+  const timezoneOffset = new Date().getTimezoneOffset() * 60000;
+  const adjustedDate = new Date(localDate.getTime() - timezoneOffset);
+  return adjustedDate;
+};
+
+export const ViewDateWrapper = (
+  dateString: string | undefined,
+  timezone: string
+): string => {
+  const now = new Date();
+  const date = new Date(dateString || now);
+
+  if (isNaN(date.getTime())) {
+    return "";
+  }
+
+  // Format and return the date in the specified timezone
+  const newDate = date.toLocaleString("en-GB", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+
+  return new Date(newDate).toISOString();
+};
+
+// This function needs to be updated to display time in local timezone but gives error
 export const formatTime = (date: string) => {
   const inputDate = new Date(date).toISOString();
   const timeParts = inputDate.split("T")[1].split(":");
