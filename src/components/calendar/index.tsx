@@ -80,7 +80,11 @@ export default function Index() {
 
   const getTaskByDate = () => {
     const filteredTasks = values?.filter((item: TaskDataType1) => {
-      const itemCompletionDate = new Date(
+      if (item.isRoutine) {
+        return true;
+      }
+
+      let itemCompletionDate = new Date(
         item.expected_completion_time
       ).toLocaleDateString("en-GB");
       const selectedCompletionDate = selectedDate.toLocaleDateString("en-GB");
