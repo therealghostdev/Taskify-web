@@ -29,12 +29,10 @@ export const getDefaultBgColor = (itemName: string) => {
 };
 
 export const formatDate = (date: string) => {
-  console.log(date, "is given");
   const timezone = localStorage.getItem("timezone");
 
   const currentDate = new Date();
   const inputDate = new Date(date); // Convert the string to a Date object
-  console.log(inputDate, "is inputDate");
 
   const DateInTimeZone = inputDate.toLocaleString("en-GB", {
     timeZone: timezone || "",
@@ -46,15 +44,12 @@ export const formatDate = (date: string) => {
     second: "2-digit",
     hour12: false,
   });
-  console.log(DateInTimeZone, "is datein timezone");
   const [extractedDate, extractedTime] = DateInTimeZone.split(", ");
 
   const [day, month, year] = extractedDate.split("/").map(Number);
   const [hour, minutes, seconds] = extractedTime.split(":").map(Number);
 
   const convertedDate = new Date(year, month - 1, day, hour, minutes, seconds);
-  console.log(convertedDate, "is convertedDate");
-
   const isSameDay = convertedDate.toDateString() === currentDate.toDateString();
   const isTomorrow =
     convertedDate.getDate() === currentDate.getDate() + 1 &&

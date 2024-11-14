@@ -54,6 +54,7 @@ export default function Popup(props: TaskScreenPropType) {
   const [routine_error, setRoutine_error] = useState<string>("");
   const [routineBtn, setRoutineBtn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [request_button, setRequest_button] = useState<boolean>(false);
 
   const getIconRender = (item: string) => {
     let icon;
@@ -282,6 +283,7 @@ export default function Popup(props: TaskScreenPropType) {
 
     const todos = items.map(convertTaskToTodo);
     const queryParam = items.map(convertTaskToQuery);
+    console.log(queryParam);
 
     // updated todos with routine info
     const updatedTodos = todos.map((item) => {
@@ -297,21 +299,31 @@ export default function Popup(props: TaskScreenPropType) {
       }
     });
 
-    // Update states and make API call
-    Promise.all([updateEditTodos(updatedTodos), updateQuery(queryParam)]).then(
-      () => {
+    updateEditTodos(updatedTodos);
+    updateQuery(queryParam);
+    setRequest_button(true);
+  };
+
+  // Make routine and make API call
+  useEffect(() => {
+    if (request_button) {
+      Promise.all([editTodos, query]).then(() => {
         mutate({
           isDelete: false,
           data: query,
-          body: updatedTodos,
+          body: editTodos,
         });
 
         setIsRoutineBtn(false);
         setRecurrence("");
         setRoutineBtn(false);
-      }
-    );
-  };
+      });
+    }
+  }, [request_button]);
+
+  useEffect(() => {
+    setRequest_button(false);
+  }, []);
 
   useEffect(() => {
     if (props.data && props.data?.length > 0) {
@@ -588,7 +600,7 @@ export default function Popup(props: TaskScreenPropType) {
                 </div>
               )}
 
-              {routineBtn && recurrence !== "" && (
+              {!request_button && routineBtn && recurrence !== "" && (
                 <div
                   className={`flex flex-col justify-center items-center gap-y-3 h-2/4 lg:w-2/4 w-full fixed top-[20%] lg:left-[25%] 
             left-[2%]

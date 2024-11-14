@@ -73,7 +73,6 @@ const combineDateTime = (date: string, time: string): string => {
     }
 
     const localDate = new Date(year, month - 1, day, hours, minutes);
-    console.log(localDate, "here");
 
     if (isNaN(localDate.getTime())) {
       throw new Error("Invalid date/time combination");
@@ -81,13 +80,6 @@ const combineDateTime = (date: string, time: string): string => {
 
     // Convert to ISO string (UTC)
     const utcDate = localDate.toISOString();
-
-    console.log({
-      inputDate: date,
-      inputTime: time,
-      localDateTime: localDate.toString(),
-      utcDateTime: utcDate,
-    });
 
     return utcDate;
   } catch (error) {
@@ -133,7 +125,7 @@ const flattenUpdateTaskData = (
     delete flattenedData.createdAt;
   }
 
-  console.log(flattenedData, "flattened");
+  // console.log(flattenedData, "flattened");
 
   return flattenedData;
 };
