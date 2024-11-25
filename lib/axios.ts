@@ -2,7 +2,7 @@ import { base_url, refresh_auth, update_timezone } from "../src/api/route";
 import { setAuthCookies } from "../src/utils/reusable_functions/functions";
 import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
-import { updateTimeZone } from "../src/api";
+import { updateTimeZone, requestFcmToken } from "../src/api";
 
 const api = axios.create({
   baseURL: base_url,
@@ -16,6 +16,7 @@ api.interceptors.response.use(
   (response) => {
     if (response.config.url !== update_timezone && Cookies.get("token1")) {
       updateTimeZone();
+      requestFcmToken();
     }
     return response;
   },

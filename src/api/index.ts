@@ -9,7 +9,16 @@ import {
   QueryParamType,
 } from "../utils/types/todo";
 import Cookies from "js-cookie";
-import { base_url, task, update_task, logout, update_timezone } from "./route";
+import {
+  base_url,
+  task,
+  update_task,
+  logout,
+  update_timezone,
+  update_fcm_token,
+} from "./route";
+import { messaging } from "../../lib/firebase";
+import { getToken } from "firebase/messaging";
 
 export const userRegister = async (url: string, data: RegisterBody) => {
   try {
@@ -301,6 +310,37 @@ export const logOut = async () => {
       }
     );
     return response;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const requestFcmToken = async () => {
+  const fcmValidated = localStorage.getItem("message");
+  const token1 = Cookies.get("token1");
+  const token2 = Cookies.get("token2");
+
+  try {
+    const currentToken = await getToken(messaging, {
+      vapidKey: import.meta.env.VITE_VAPID_KEY,
+    });
+
+    if (currentToken && !fcmValidated) {
+      await api.put(
+        `${base_url}${update_fcm_token}`,
+        { fcmToken: currentToken },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token1}`,
+            "x-csrf-token": token2,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      localStorage.setItem("message", "true");
+    }
   } catch (err) {
     console.log(err);
     throw err;
