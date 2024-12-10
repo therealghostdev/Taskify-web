@@ -23,6 +23,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
 import Apptool from "./components/app_tools";
 import NotFound from "./pages/not_found";
+import { setupForegroundMessageListener } from "./utils/reusable_functions/functions";
 
 function App() {
   const { darkMode, toggleDarkMode } = useThemeContext();
@@ -38,6 +39,13 @@ function App() {
       prefersDarkMode.removeEventListener("change", listener);
     };
   }, [toggleDarkMode]);
+
+  useEffect(() => {
+    // Only set up if notification permission is granted
+    if (Notification.permission === "granted") {
+      setupForegroundMessageListener();
+    }
+  }, []);
 
   return (
     <main
@@ -59,7 +67,7 @@ function App() {
             "duration",
             "confirm",
             "completedAt",
-            "completedTime"
+            "completedTime",
           ].includes(trackScreen) && <AddTask />}
 
         {authenticated && <Apptool />}

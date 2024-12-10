@@ -18,8 +18,21 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 if ("serviceWorker" in navigator) {
   try {
-    await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    const registeration = await navigator.serviceWorker.register(
+      "/firebase-messaging-sw.js"
+    );
+
+    registeration.addEventListener("updatefound", () => {
+      registeration.installing;
+    });
   } catch (err) {
     console.error("service worker registeration failed:", err);
+
+    if (!("serviceWorker" in navigator)) {
+      console.error("Browser does not support service workers");
+    }
+    if (!("Notification" in window)) {
+      console.error("Browser does not support notifications");
+    }
   }
 }

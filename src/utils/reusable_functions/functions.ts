@@ -1,5 +1,7 @@
 import Cookies from "js-cookie";
 import { AuthDataType } from "../types/todo";
+import { onMessage } from "firebase/messaging";
+import { messaging } from "../../../lib/firebase";
 
 export const getDefaultBgColor = (itemName: string) => {
   switch (itemName) {
@@ -175,3 +177,19 @@ export const setAuthCookies = (authData: AuthDataType) => {
     sameSite: import.meta.env.MODE === "production" ? "Strict" : "Lax",
   });
 };
+
+export function setupForegroundMessageListener() {
+  onMessage(messaging, (payload) => {
+    // Create browser notification
+    new Notification(payload.notification.title, {
+      body: payload.notification.body,
+      icon: payload.notification.icon,
+    });
+
+    // Allows other parts of the app to react to the notification
+    const event = new CustomEvent("fcm-foreground-message", {
+      detail: payload,
+    });
+    window.dispatchEvent(event);
+  });
+}
